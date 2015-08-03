@@ -25,13 +25,13 @@ Easily write a WebApp that can move money in any way you like.
 bloc.
 
 Usage: 
-  bloc (directory_name)             # initalize project
-  bloc newkey                       # create private key
-  bloc compile [contract.sol]
-  bloc build (project_directory)
-  bloc upload [contract.sol]
-  bloc start
-  bloc call (contractname) (methodname) <function_args> ...
+  bloc (directory_name)                         # initalize project
+  bloc newkey                                   # create private key
+  bloc compile [contract.sol]                   # compile solidity contract and create metadata locally
+  bloc upload [contract.sol]                    # upload solidity contract and create metadata on chain
+  bloc build (project_directory)                # bundle project into app.js
+  bloc start                                    # run a webserver for you app
+  bloc call (contractname) (methodname) <function_args> ... # call a function within a contract from the command line
   bloc -h | --help
   bloc --version
 

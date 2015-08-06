@@ -1,0 +1,22 @@
+
+
+var main = function() {
+    var sc = require('../lib/scaffold.js');  
+    var cmd = require('../lib/cmd.js');
+    var cmdArr = cmd.argv._;
+
+    switch(cmdArr[0]) {
+      case 'compile': 
+          console.log("compile");
+          break;
+      case 'upload':
+          console.log("upload");
+          break;
+      default:
+          sc.createScaffold(cmdArr[0]);
+    }
+}
+
+if (require.main === module) {
+    main();
+}

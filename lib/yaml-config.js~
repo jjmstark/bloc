@@ -1,0 +1,13 @@
+
+var yaml = require('js-yaml');
+var fs   = require('fs');
+
+module.exports.defaultConfigObj = { 
+  apiURL: 'http://stablenet.blockapps.net',
+  appName: 'newproj',
+  appURL: 'http://google.com' 
+}
+
+module.exports.writeYaml(filename,obj) = {
+  fs.writeFileSync(filename, obj); 
+}

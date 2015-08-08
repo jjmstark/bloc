@@ -23,7 +23,11 @@ var main = function() {
           if (cmdArr[1] === undefined) {
           // compile all files
             var confURL = yamlConfig.readYaml('config.yaml').apiURL;
-            var dir = fs.readdirSync('contracts');
+            var dir = fs.readdirSync('contracts').filter(function(t) { 
+                var splitStr = t.split('.'); // maybe should use regex
+                return splitStr[splitStr.length-1] == 'sol';
+              }
+            );
             var dirPath = dir.map(function (t) { return 'contracts/' + t; });
             var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
@@ -37,7 +41,12 @@ var main = function() {
       case 'upload':
           console.log("uploading sources");
           var confURL = yamlConfig.readYaml('config.yaml').apiURL;
-          var dir = fs.readdirSync('contracts');
+          var dir = fs.readdirSync('contracts').filter(function(t) { 
+                var splitStr = t.split('.'); // maybe should use regex
+                return splitStr[splitStr.length-1] == 'sol';
+              }
+            );
+
           var dirPath = dir.map(function (t) { return 'contracts/' + t; });
           var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
    

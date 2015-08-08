@@ -69,7 +69,7 @@ var main = function() {
 
       case 'register':
           var config = yamlConfig.readYaml('config.yaml');
-          register.registerApp(config,function (res) { console.log(res); console.log("registered, confirm via email"); });
+          register.registerApp(config,function (res) { console.log(res + ": registered, confirm via email"); });
           break;
 
       case 'init':

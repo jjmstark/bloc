@@ -11,6 +11,7 @@ var main = function() {
     var prompt = require('prompt');
     var createPassword = require('../lib/prompt-schema.js').createPassword;
     var requestPassword = require('../lib/prompt-schema.js').requestPassword;
+    var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
     var key = require('../lib/keygen');
     var request = require('request');
   //  var upload = require('../lib/upload.js');
@@ -54,19 +55,23 @@ var main = function() {
           prompt.get(createPassword, function (err,result) {
             key.generateKey(result.password, confURL+'/faucet');
           });
-                     
+
           break;
 
       case 'register':
           var config = yamlConfig.readYaml('config.yaml');
-          register.registerApp(config,function (res) { console.log(res); });
+          register.registerApp(config,function (res) { console.log(res); console.log("registered, confirm via email"); });
           break;
 
       case 'init':
-         if (cmdArr[1] === undefined) { console.log("project name required"); break; }
-         sc.createDirScaffold(cmdArr[1]);
-         yamlConfig.defaultConfigObj.appName = cmdArr[1]; // use prompt to scaffold full opcp
-         yamlConfig.writeYaml(cmdArr[1] + "/config.yaml",yamlConfig.defaultConfigObj);
+         // if (cmdArr[1] === undefined) { console.log("project name required"); break; }
+         
+         prompt.start();
+         prompt.get(scaffoldApp, function(err,result) {
+            sc.createDirScaffold(result.appName); 
+            yamlConfig.writeYaml(result.appName + "/config.yaml",result);           
+          });
+         
          break;
           
       default:

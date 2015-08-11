@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="http://hacknet.blockapps.net/static/ethlightjs.min.js"></script>
+
+<div id="keygen">
+  <p id="key-intro"> We're about to generate a key. Protect it with a high entropy password. The key will be sent to you in email, encrypted, after you verify your login. </p>
+  <input type="password" name="keypass" id="keypass">
+  <label for="keypass">Enter a high entropy password</label>
+  <button id="keygen-button" onclick="genKeyShowUser()">Generate Key</button>
+</div>
+
+<div id="createUser"> 
+  <input type="text" name="email" id="email" required>
+  <label for="email">Email</label>
+  <input type="password" name="loginpass" id="loginpass" required>
+  <label for="loginpass">Password</label>
+  <input type="hidden" name="enckey" id="enckey" required>
+  <input type="text" name="address" id="address" readonly required>
+  <label for="address">Address</label>
+  <input type="hidden" name="app" id="app" value="theapp" required>   
+  <button id="user-button" onclick="submitUser()">Sign Up!</button>
+</div>
+
+<body onload="hideUserShowGenKey()">
+
+<script>  
+  function hideUserShowGenKey() {
+   console.log("hiding createUser");
+   createUser.style.display = 'none';
+  }
+
+  function genKeyShowUser() {
+   console.log("moving from keygen to create user");
+   createUser.style.display = 'table';
+   keygen.style.display = 'none';
+
+   var randomSeed = ethlightjs.keystore.generateRandomSeed();
+   var keystore = new ethlightjs.keystore(randomSeed,keypass.value);
+   var addr = keystore.generateNewAddress(keypass.value);
+   address.value = addr;
+   enckey.value=keystore.serialize();
+  }
+
+  function submitUser() {
+        var oReq = new XMLHttpRequest();
+        oReq.open("POST", "http://hacknet.blockapps.net/eth/v1.0/wallet", true);
+
+        var params = "app="+encodeURIComponent(app.value)
+                       +"&email="+encodeURIComponent(email.value)
+                       +"&loginpass=" + encodeURIComponent(loginpass.value)
+                       +"&address=" + encodeURIComponent(address.value)
+                       +"&enckey=" + encodeURIComponent(enckey.value);
+ 
+ 
+        console.log("params: " + params);
+        oReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        oReq.onreadystatechange = function () {
+          if (oReq.readyState == 4) {
+            if (oReq.status === 200) {
+              data = JSON.parse(this.responseText);
+              createUser.style.display = 'none';
+              var para = document.createElement("P");
+              var t = document.createTextNode("Confirm in your email. This is your new wallet file: \n\n" + this.responseText);
+              para.appendChild(t);    
+              document.body.appendChild(para);             
+             } else {
+              console.log("error", oReq.statusText);
+            }
+          } 
+        }
+        oReq.send(params);
+  }
+</script>
+

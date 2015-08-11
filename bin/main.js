@@ -14,7 +14,7 @@ var main = function() {
     var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
     var key = require('../lib/keygen');
     var request = require('request');
-  //  var upload = require('../lib/upload.js');
+    var upload = require('../lib/upload.js');
     var register = require('../lib/register');    
    
     switch(cmdArr[0]) {

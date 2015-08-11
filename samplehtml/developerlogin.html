@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="http://hacknet.blockapps.net/static/ethlightjs.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+<div id="devlogin"> 
+  <p id="login-intro"> Login to see user statistics for your app!</p>
+  <input type="text" name="app" id="app" required>   
+  <label for="app">Application</label>
+  <input type="text" name="email" id="email" required>
+  <label for="email">Email</label>
+  <input type="password" name="loginpass" id="loginpass" required>
+  <label for="loginpass">Password</label>
+  <button id="login-button" onclick="retrieveData()">Retrieve Data</button>
+</div>
+
+<script>  
+  function retrieveData() {
+        var oReq = new XMLHttpRequest();
+        oReq.open("POST", "http://hacknet.blockapps.net/eth/v1.0/developer", true);
+
+        var params = "app="+encodeURIComponent(app.value)
+                       +"&email="+encodeURIComponent(email.value)
+                       +"&loginpass=" + encodeURIComponent(loginpass.value);
+ 
+        oReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        oReq.onreadystatechange = function () {
+          if (oReq.readyState == 4) {
+            if (oReq.status === 200) {
+              devlogin.style.display = 'none';
+              var para = document.createElement("P");
+              var t = document.createTextNode("Retrieved login history:\n " + oReq.responseText);
+              para.appendChild(t);    
+              document.body.appendChild(para);             
+              
+             } else {
+              console.log("error: " +  oReq.statusText);
+            }
+          } 
+        }
+        oReq.send(params);
+  }
+</script>
+

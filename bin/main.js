@@ -1,4 +1,4 @@
-
+#! /usr/bin/env node
 
 var main = function() {
 
@@ -31,7 +31,9 @@ var main = function() {
             var dirPath = dir.map(function (t) { return 'contracts/' + t; });
             var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
-            compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t) });
+
+            if (cmd.argv.s !== undefined) { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,true) }); }
+            else { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,false) }); }
           } else { 
          // compile < filename > 
 

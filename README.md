@@ -3,39 +3,35 @@ Minimal commandline build and deploy tool for the blockapps api
 
 ## Installation
 
-``` $ npm install -g blockapps-js ```
+``` $ git clone https://github.com/blockapps/bloc.git
+    $ ./install.sh
+```
 
 ## Demo
 
 Initialize a new project:
 
-``` $ bloc project 
-    $ cd project && bloc build ```
-
-Run example: 
-``` $ block start ```
+``` $ bloc init ```
 
 ## Bloc Philosophy
 
 Integrate smart contract design on Ethereum as a lightweight component of your existing workflow.
 Easily write a WebApp that can move money in any way you like.
 
-## Commands in Docopt Style, inline comments
+## Commands
 ```
 bloc.
 
-Usage: 
-  bloc (directory_name)                         # initalize project
-  bloc newkey                                   # create private key
-  bloc compile [contract.sol]                   # compile solidity contract and create metadata locally
-  bloc upload [contract.sol]                    # upload solidity contract and create metadata on chain
-  bloc build (project_directory)                # bundle project into app.js
-  bloc start                                    # run a webserver for you app
-  bloc call (contractname) (methodname) <function_args> ... # call a function within a contract from the command line
-  bloc -h | --help
-  bloc --version
+Usage: /usr/local/bin/bloc <command> (options)
+
+Commands:
+  init      start a new project
+  compile   compile contracts in contract folder
+  upload    upload contracts to blockchain
+  genkey    generate a new private key and fill it at the faucet
+  register  register your app with BlockApps
 
 Options:
-  -h --help   Show this screen.
-  --version
+  -s, --scaffold  scaffold html / js / css from your contracts when compiling or
+                    uploading		    
 ```

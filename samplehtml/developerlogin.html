@@ -4,6 +4,7 @@
 
 <script src="http://hacknet.blockapps.net/static/ethlightjs.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="developerLogin.js"></script>
 
 <div id="devlogin"> 
   <p id="login-intro"> Login to see user statistics for your app!</p>
@@ -18,30 +19,20 @@
 
 <script>  
   function retrieveData() {
-        var oReq = new XMLHttpRequest();
-        oReq.open("POST", "http://hacknet.blockapps.net/eth/v1.0/developer", true);
 
-        var params = "app="+encodeURIComponent(app.value)
-                       +"&email="+encodeURIComponent(email.value)
-                       +"&loginpass=" + encodeURIComponent(loginpass.value);
- 
-        oReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        var developerObj = {
+          app : app.value,
+          email : email.value,
+          loginpass : loginpass.value
+        }
 
-        oReq.onreadystatechange = function () {
-          if (oReq.readyState == 4) {
-            if (oReq.status === 200) {
+        retrieveLoginData(developerObj,function(res) {
               devlogin.style.display = 'none';
               var para = document.createElement("P");
-              var t = document.createTextNode("Retrieved login history:\n " + oReq.responseText);
+              var t = document.createTextNode("Retrieved login history:\n " + res);
               para.appendChild(t);    
               document.body.appendChild(para);             
-              
-             } else {
-              console.log("error: " +  oReq.statusText);
-            }
-          } 
-        }
-        oReq.send(params);
+        });
   }
 </script>
 

@@ -41,21 +41,31 @@ var main = function() {
           break;
 
       case 'upload':
-          console.log("uploading sources");
-          var confURL = yamlConfig.readYaml('config.yaml').apiURL;
-          var dir = fs.readdirSync('contracts').filter(function(t) { 
-                var splitStr = t.split('.'); // maybe should use regex
-                return splitStr[splitStr.length-1] == 'sol';
-              }
-            );
+//          console.log("uploading sources");
+        
+//          var dir = fs.readdirSync('contracts').filter(function(t) { 
+//                var splitStr = t.split('.'); // maybe should use regex
+//                return splitStr[splitStr.length-1] == 'sol';
+//              }
+//            );
 
-          var dirPath = dir.map(function (t) { return 'contracts/' + t; });
-          var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
-   
+//          var dirPath = dir.map(function (t) { return 'contracts/' + t; });
+//          var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
+
+          if (cmdArr[1] === undefined) { console.log("contract name required"); break; }
+	  var confURL = yamlConfig.readYaml('config.yaml').apiURL;
+
+       	  var splitStr = cmdArr[1].split('.');
+
+	        if (splitStr[splitStr.length-1] != 'sol') { console.log("file is not .sol"); return; }
+
+          var solSrc = fs.readFileSync(cmdArr[1]).toString();
+        
+	
           prompt.start();
           prompt.get(requestPassword, function(err,result) {
             var store = key.readKeystore();
-            upload.upload(solSrc,confURL,store.exportPrivateKey(store.addresses[0],result.password));
+            upload.upload([solSrc],confURL,store.exportPrivateKey(store.addresses[0],result.password));
           });
 
           break;

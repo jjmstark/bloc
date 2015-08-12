@@ -57,7 +57,7 @@ var main = function() {
 
        	  var splitStr = cmdArr[1].split('.');
 
-	        if (splitStr[splitStr.length-1] != 'sol') { console.log("file is not .sol"); return; }
+	  if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
 
           var solSrc = fs.readFileSync(cmdArr[1]).toString();
         

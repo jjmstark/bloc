@@ -3,8 +3,9 @@ Minimal commandline build and deploy tool for the blockapps api
 
 ## Installation
 
-``` $ git clone https://github.com/blockapps/bloc.git
-    $ ./install.sh
+``` 
+$ git clone https://github.com/blockapps/bloc.git
+$ ./install.sh
 ```
 
 ## Demo

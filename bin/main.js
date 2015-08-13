@@ -31,9 +31,9 @@ var main = function() {
             var dirPath = dir.map(function (t) { return 'contracts/' + t; });
             var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
-
-            if (cmd.argv.s !== undefined) { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,true) }); }
-            else { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,false) }); }
+            var config = yamlConfig.readYaml('config.yaml');
+            if (cmd.argv.s !== undefined) { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,true,config.appName) }); }
+            else { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,false,config.appName) }); }
           } else { 
          // compile < filename > 
 
@@ -53,15 +53,13 @@ var main = function() {
 //          var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
           if (cmdArr[1] === undefined) { console.log("contract name required"); break; }
-	  var confURL = yamlConfig.readYaml('config.yaml').apiURL;
-
+	        var confURL = yamlConfig.readYaml('config.yaml').apiURL;
        	  var splitStr = cmdArr[1].split('.');
 
-	  if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
+	        if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
 
           var solSrc = fs.readFileSync(cmdArr[1]).toString();
         
-	
           prompt.start();
           prompt.get(requestPassword, function(err,result) {
             var store = key.readKeystore();

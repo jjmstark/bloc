@@ -32,8 +32,8 @@ var main = function() {
             var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
             var config = yamlConfig.readYaml('config.yaml');
-            if (cmd.argv.s !== undefined) { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,true,config.appName) }); }
-            else { compile.compileSol(solSrc,confURL+'/solc',function (t) { compile.writeContractJSON(t,false,config.appName) }); }
+            if (cmd.argv.s !== undefined) { compile.compileSol(solSrc,confURL+'/eth/v1.0/solc',function (t) { compile.writeContractJSON(t,true,config.appName) }); }
+            else { compile.compileSol(solSrc,confURL+'/eth/v1.0/solc',function (t) { compile.writeContractJSON(t,false,config.appName) }); }
           } else { 
          // compile < filename > 
 
@@ -56,7 +56,7 @@ var main = function() {
 	        var confURL = yamlConfig.readYaml('config.yaml').apiURL;
        	  var splitStr = cmdArr[1].split('.');
 
-	        if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
+	  if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
 
           var solSrc = fs.readFileSync(cmdArr[1]).toString();
         

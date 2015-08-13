@@ -72,7 +72,7 @@ var main = function() {
           var confURL = yamlConfig.readYaml('config.yaml').apiURL;
           prompt.start();
           prompt.get(createPassword, function (err,result) {
-            key.generateKey(result.password, confURL+'/faucet');
+            key.generateKey(result.password, confURL+'/eth/v1.0/faucet');
           });
 
           break;

@@ -18,27 +18,27 @@ var main = function() {
     var register = require('../lib/register');    
    
     switch(cmdArr[0]) {
-      case 'compile': 
-          console.log("compiling sources");
-          if (cmdArr[1] === undefined) {
-          // compile all files
-            var confURL = yamlConfig.readYaml('config.yaml').apiURL;
+    case 'compile': 
+        console.log("compiling sources");
+        if (cmdArr[1] === undefined) {
+            // compile all files
+            var config = yamlConfig.readYaml('config.yaml')
             var dir = fs.readdirSync('contracts').filter(function(t) { 
                 var splitStr = t.split('.'); // maybe should use regex
                 return splitStr[splitStr.length-1] == 'sol';
-              }
-            );
+            }
+                                                        );
             var dirPath = dir.map(function (t) { return 'contracts/' + t; });
             var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
-            var config = yamlConfig.readYaml('config.yaml');
-            if (cmd.argv.s !== undefined) { compile.compileSol(solSrc,confURL+'/eth/v1.0/solc',function (t) { compile.writeContractJSON(t,true,config.appName) }); }
-            else { compile.compileSol(solSrc,confURL+'/eth/v1.0/solc',function (t) { compile.writeContractJSON(t,false,config.appName) }); }
-          } else { 
-         // compile < filename > 
+            var scaffold = (cmd.argv.s !== undefined);
+            compile.compileSol(solSrc,config.apiURL,scaffold,config.appName);
+        }
+        else { 
+            // compile < filename > 
 
-          }
-          break;
+        }
+        break;
 
       case 'upload':
 //          console.log("uploading sources");

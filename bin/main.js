@@ -51,19 +51,21 @@ var main = function() {
 
 //          var dirPath = dir.map(function (t) { return 'contracts/' + t; });
 //          var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
-
-        if (cmdArr[1] === undefined) { console.log("contract name required"); break; }
+        var contractName = cmdArr[1];
+        if (contractName === undefined) {
+            console.log("contract name required");
+            break;
+        }
 	var config = yamlConfig.readYaml('config.yaml');
-       	var splitStr = cmdArr[1].split('.');
+        var store = key.readKeystore();
+        var address = store.addresses[0];
 
-	if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
-
-        var solSrc = fs.readFileSync(cmdArr[1]).toString();
-        
         prompt.start();
         prompt.get(requestPassword, function(err,result) {
-            var store = key.readKeystore();
-            upload.upload([solSrc],config.apiURL,config.appName,store.exportPrivateKey(store.addresses[0],result.password),scaffold);
+            upload.upload(
+                contractName, config.apiURL, config.appName, scaffold,
+                store.exportPrivateKey(address, result.password)
+            );
         });
 
         break;

@@ -17,6 +17,7 @@ var main = function() {
     var upload = require('../lib/upload.js');
     var register = require('../lib/register');    
    
+    var scaffold = (cmd.argv.s !== undefined);
     switch(cmdArr[0]) {
     case 'compile': 
         console.log("compiling sources");
@@ -31,7 +32,6 @@ var main = function() {
             var dirPath = dir.map(function (t) { return 'contracts/' + t; });
             var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
-            var scaffold = (cmd.argv.s !== undefined);
             compile.compileSol(solSrc,config.apiURL,scaffold,config.appName);
         }
         else { 
@@ -52,21 +52,21 @@ var main = function() {
 //          var dirPath = dir.map(function (t) { return 'contracts/' + t; });
 //          var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
 
-          if (cmdArr[1] === undefined) { console.log("contract name required"); break; }
-	        var confURL = yamlConfig.readYaml('config.yaml').apiURL;
-       	  var splitStr = cmdArr[1].split('.');
+        if (cmdArr[1] === undefined) { console.log("contract name required"); break; }
+	var config = yamlConfig.readYaml('config.yaml');
+       	var splitStr = cmdArr[1].split('.');
 
-	  if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
+	if (splitStr[splitStr.length-1] != 'sol') { console.log("incorrect extension, expecting '.sol'"); return; }
 
-          var solSrc = fs.readFileSync(cmdArr[1]).toString();
+        var solSrc = fs.readFileSync(cmdArr[1]).toString();
         
-          prompt.start();
-          prompt.get(requestPassword, function(err,result) {
+        prompt.start();
+        prompt.get(requestPassword, function(err,result) {
             var store = key.readKeystore();
-            upload.upload([solSrc],confURL,store.exportPrivateKey(store.addresses[0],result.password));
-          });
+            upload.upload([solSrc],config.apiURL,config.appName,store.exportPrivateKey(store.addresses[0],result.password),scaffold);
+        });
 
-          break;
+        break;
 
       case 'genkey':
           var confURL = yamlConfig.readYaml('config.yaml').apiURL;

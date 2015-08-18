@@ -15,9 +15,11 @@
   },
   "dependencies": {
     "bignumber.js": "^2.0.7",
+    "blockapps-js": "blockapps/blockapps-js",
     "enum": "^2.1.0",
     "ethereumjs-tx": "^0.5.9",
     "ethereumjs-util": "^1.3.6",
+    "ethlightjs": "file:ethlightjs",
     "js-yaml": "^3.3.1",
     "prompt": "^0.2.14",
     "request": "^2.60.0",

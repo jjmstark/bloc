@@ -4,8 +4,7 @@ Minimal commandline build and deploy tool for the blockapps api
 ## Installation
 
 ``` 
-$ git clone https://github.com/blockapps/bloc.git
-$ ./install.sh
+$ npm install -g blockapps/bloc
 ```
 
 ## Demo

@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-[*.{js,sol}]
-=======
 [*.{js,sol,template}]
->>>>>>> c528dd13dc3329a31a1d3c4174fc3d977d90e094
+
 charset = utf-8
 indent_style = space
 indent_size = 4

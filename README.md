@@ -1,4 +1,6 @@
 # bloc
+
+[![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Minimal commandline build and deploy tool for the blockapps api 
 
 ## Installation

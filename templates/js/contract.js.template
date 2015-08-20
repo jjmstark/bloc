@@ -1,0 +1,135 @@
+var Contract = require('Contract');
+var globalKeystore;
+var apiURL = '{{{confURL}}}';
+
+function submit{{contractName}}() {
+    var userObj = {
+        app: appCreateUser.value,
+        email: emailCreateUser.value,
+        loginpass: loginpassCreateUser.value,
+        address: addressCreateUser.value,
+        enckey: enckeyCreateUser.value
+     };
+    /*global function from registerUser.js */
+    submitUser(userObj, function (res) {
+        var data = JSON.parse(res);
+        createUser{{contractName}}Div.style.display = "none";
+        var para = document.createElement("P");
+        para.setAttribute("id","walletCreateMessage");
+        var t = document.createTextNode("Confirm in your email. This is your new wallet file: \n\n" + res);
+        para.appendChild(t);
+        document.body.appendChild(para);
+        console.log("wallet: " + data.encryptedWallet);
+        console.log("addresses: " + JSON.parse(data.encryptedWallet).addresses);
+        var faucetAddr = JSON.parse(data.encryptedWallet).addresses;
+        var oReq = new XMLHttpRequest();
+        oReq.open("POST", apiURL + "/eth/v1.0/faucet", true);
+        var params = "address=" + encodeURIComponent(faucetAddr);
+        oReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        oReq.onload = function () {
+            if (oReq.readyState == 4 && oReq.status == 200) {
+                console.log("faucet should have worked");
+            } else {
+                console.log("error");
+            }
+        }
+        console.log("sending faucet request");
+        oReq.send(params);
+        console.log("faucet request sent");
+    });
+};
+
+function showRegister{{contractName}}() {
+    keygen{{contractName}}Div.style.display = "table";
+        login{{contractName}}Div.style.display = "none";
+    }
+
+function showLogin{{contractName}}() {
+    createUser{{contractName}}Div.style.display = "none";
+    if (typeof walletCreateMessage !== "undefined") walletCreateMessage.style.display = "none";
+    keygen{{contractName}}Div.style.display = "none";
+    login{{contractName}}Div.style.display = "table";
+    wallet{{contractName}}Div.style.display="none";
+};
+
+function hideOnLoad{{contractName}}() {
+    createUser{{contractName}}Div.style.display = "none";
+    wallet{{contractName}}Div.style.display = "none";
+    login{{contractName}}Div.style.display = "none";
+    functions{{contractName}}Div.style.display = "none";
+    keygen{{contractName}}Div.style.display = "none";
+}
+
+function retrieve{{contractName}}() {
+    var userObj = {
+        app : appLogin.value,
+        email : emailLogin.value,
+        loginpass : loginpassLogin.value,
+        address : addressLogin.value
+    };
+    retrieveUser(userObj,function (keystore) {
+        login{{contractName}}Div.style.display = "none";
+        var para = document.createElement("P");
+        var t = document.createTextNode("Retrieved your wallet. Enter your password, and you can sign transactions: ");
+        para.appendChild(t);
+        var input = document.createElement("input");
+        var itemLabel = document.createElement("Label");
+        input.type = "password";
+        input.setAttribute("id","walletDecrypt");
+        itemLabel.setAttribute("for", "walletDecrypt");
+        itemLabel.innerHTML = "Enter Password: ";
+        para.appendChild(input);
+        document.body.appendChild(para);
+        walletaddress.value=keystore.addresses[0];
+        wallet{{contractName}}Div.style.display="table"
+        login{{contractName}}Div.style.display = "none";
+        globalKeystore = keystore;
+        functions{{contractName}}Div.style.display = "table";
+        toAccount = Contract({"address": "{{address}}", "symtab": {{{xAbiString}}} });
+    });
+}
+
+function genKeyUser() {
+    console.log("moving from keygen to create user");
+    createUser{{contractName}}Div.style.display = "table";
+    keygen{{contractName}}Div.style.display = "none";
+    genKey(keypass.value, function (keystore) {
+        addressCreateUser.value = keystore.addresses[0];
+        enckeyCreateUser.value = keystore.serialize();
+    });
+};
+
+
+function afterTX(result) {
+    var afterTXstring = "TX returned: " + ((result === undefined) ? "(nothing)":result) + "\n\n Contract storage state:\n\n";
+
+    function f() {
+        for (var svar in toAccount.get) {
+          afterTXstring += "  " + svar + " = " + toAccount.get[svar] + "\n";
+        }
+        document.getElementById("afterTXarea").textContent = afterTXstring;
+    }
+    toAccount.sync("{{{confURL}}}", f);
+}
+
+{{#funcs}}
+function call{{name}}() {
+        var args = {{{args}}};
+        var fArgs = {};
+        console.log("globalKeystore: " + JSON.stringify(globalKeystore));
+        console.log("privkey: " + globalKeystore.exportPrivateKey(walletaddress.value, walletDecrypt.value));
+    var fromAccount = Contract({"privkey": globalKeystore.exportPrivateKey(walletaddress.value,walletDecrypt.value) });
+    console.log("fromAccount: " + JSON.stringify(fromAccount));
+    args.forEach(function(arg) {
+        fArgs[arg] = document.getElementById("{{name}}" + arg).value
+    });
+    toAccount.call("{{{confURL}}}", afterTX, {
+        funcName: '{{name}}',
+        fromAccount: fromAccount,
+        value: 0,
+        gasPrice: 1,
+        gasLimit: 3141592
+    }, fArgs);
+}
+{{/funcs}}
+

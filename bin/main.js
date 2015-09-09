@@ -10,13 +10,16 @@ var main = function() {
     var fs = require('fs');
     var path = require('path');
     var prompt = require('prompt');
+    var promptSchema = require('../lib/prompt-schema.js');
     var createPassword = require('../lib/prompt-schema.js').createPassword;
     var requestPassword = require('../lib/prompt-schema.js').requestPassword;
+    var transfer = require('../lib/prompt-schema.js').transfer;
+    var confirmTransfer = require('../lib/prompt-schema.js').confirmTransfer;
     var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
     var key = require('../lib/keygen');
     var request = require('request');
     var upload = require('../lib/upload.js');
-    var register = require('../lib/register');
+    var register = require('../lib/register.js');
 
     var scaffold = (cmd.argv.s !== undefined);
     switch(cmdArr[0]) {
@@ -51,16 +54,6 @@ var main = function() {
         break;
 
       case 'upload':
-//          console.log("uploading sources");
-
-//          var dir = fs.readdirSync('contracts').filter(function(t) {
-//                var splitStr = t.split('.'); // maybe should use regex
-//                return splitStr[splitStr.length-1] == 'sol';
-//              }
-//            );
-
-//          var dirPath = dir.map(function (t) { return 'contracts/' + t; });
-//          var solSrc = dirPath.map(function (t) { console.log(t); return fs.readFileSync(t).toString() });
         var contractName = cmdArr[1];
         if (contractName === undefined) {
             console.log("contract name required");
@@ -95,13 +88,19 @@ var main = function() {
           break;
 
       case 'init':
-         // if (cmdArr[1] === undefined) { console.log("project name required"); break; }
-
          prompt.start();
          prompt.get(scaffoldApp, function(err,result) {
             sc.createDirScaffold(result.appName);
             yamlConfig.writeYaml(result.appName + "/config.yaml", result);
           });
+
+      case 'send':
+         prompt.start();
+         prompt.get(transfer, function(err,result) {
+           prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
+             
+           });
+         });
 
          break;
 

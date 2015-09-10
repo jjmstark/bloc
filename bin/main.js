@@ -1,5 +1,11 @@
 #! /usr/bin/env node
 
+
+var Promise = require('bluebird');
+var fs = require('fs');
+var path = require('path');
+var prompt = Promise.promisifyAll(require('prompt')); 
+
 var cmd = require('../lib/cmd.js');
 var key = require('../lib/keygen');
 var scaffold = require('../lib/scaffold.js');
@@ -9,13 +15,19 @@ var compile = require('../lib/compile.js');
 var upload = require('../lib/upload.js');
 var codegen = require('../lib/codegen.js');
 
+var promptSchema = require('../lib/prompt-schema.js');
+var requestPassword = require('../lib/prompt-schema.js').requestPassword;
+var registerPassword = require('../lib/prompt-schema.js').registerPassword;
+var createPassword = require('../lib/prompt-schema.js').createPassword;
+var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
+var transfer = require('../lib/prompt-schema.js').transfer;
+
 var api = require("blockapps-js");
 
 function main (){
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
-        // if (cmdArr[1] === undefined) { console.log("project name required"); break; }
-        var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
+
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
             scaffold(result.appName);
@@ -69,7 +81,6 @@ function main (){
         var store = key.readKeystore();
         var address = store.addresses[0];
 
-        var requestPassword = require('../lib/prompt-schema.js').requestPassword;
         prompt.start();
         prompt.getAsync(requestPassword).then(function(result) {
             var privkey = store.exportPrivateKey(address, result.password);
@@ -83,13 +94,11 @@ function main (){
         break;
 
     case 'genkey':
-        var createPassword = require('../lib/prompt-schema.js').createPassword;
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(key.generateKey);
         break;
 
     case 'register':
-        var registerPassword = require('../lib/prompt-schema.js').registerPassword;
         prompt.start();
         prompt.getAsync(registerPassword).get("password").then(function(password) {
             var loginObj = {
@@ -105,6 +114,15 @@ function main (){
             return api.routes.register(loginObj, appObj);
         }).tap(function() {
             console.log("registered, confirm via email")
+        });
+        break;
+
+    case 'send':
+        prompt.start();
+        prompt.get(transfer, function(err,result) {
+            prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
+             
+            });
         });
         break;
 

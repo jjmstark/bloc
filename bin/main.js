@@ -48,7 +48,7 @@ function main (){
         if (cmdArr[1] === undefined) {
             // compile all files
             var solSrcDir = path.normalize('./contracts');
-            var config = yamlConfig.readYaml('config.yaml')
+            var config = yamlConfig.readYaml('config.yaml');
             var srcFiles = fs.readdirSync(solSrcDir).filter(function(filename) {
                 return path.extname(filename) === '.sol';
             });
@@ -118,10 +118,16 @@ function main (){
         break;
 
     case 'send':
+        var config = yamlConfig.readYaml('config.yaml');
+        var transferObj = transfer;
+
+        transferObj.properties.gasLimit.default = config.transferGasLimit;
+        transferObj.properties.gasPrice.default = config.gasPrice;
+
         prompt.start();
-        prompt.get(transfer, function(err,result) {
+        prompt.get(transferObj, function(err,result) {
             prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
-             
+                            
             });
         });
         break;

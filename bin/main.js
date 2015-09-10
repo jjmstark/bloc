@@ -1,27 +1,35 @@
 #! /usr/bin/env node
 
-var main = function() {
+var cmd = require('../lib/cmd.js');
+var key = require('../lib/keygen');
+var scaffold = require('../lib/scaffold.js');
+var yamlConfig = require('../lib/yaml-config.js');
 
-    var sc = require('../lib/scaffold.js');
-    var cmd = require('../lib/cmd.js');
-    var yamlConfig = require('../lib/yaml-config.js');
+var compile = require('../lib/compile.js');
+var upload = require('../lib/upload.js');
+var codegen = require('../lib/codegen.js');
+
+var api = require("blockapps-js");
+
+function main (){
     var cmdArr = cmd.argv._;
-    var compile = require('../lib/compile.js');
-    var fs = require('fs');
-    var path = require('path');
-    var prompt = require('prompt');
-    var promptSchema = require('../lib/prompt-schema.js');
-    var createPassword = require('../lib/prompt-schema.js').createPassword;
-    var requestPassword = require('../lib/prompt-schema.js').requestPassword;
-    var transfer = require('../lib/prompt-schema.js').transfer;
-    var confirmTransfer = require('../lib/prompt-schema.js').confirmTransfer;
-    var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
-    var key = require('../lib/keygen');
-    var request = require('request');
-    var upload = require('../lib/upload.js');
-    var register = require('../lib/register.js');
+    if (cmdArr[0] == "init") {
+        // if (cmdArr[1] === undefined) { console.log("project name required"); break; }
+        var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
+        prompt.start();
+        prompt.getAsync(scaffoldApp).then(function(result) {
+            scaffold(result.appName);
+            yamlConfig.writeYaml(result.appName + "/config.yaml", result);
+        });
 
-    var scaffold = (cmd.argv.s !== undefined);
+        return;
+    }
+
+    var config = yamlConfig.readYaml('config.yaml');
+    api.query.serverURI = config.apiURL;
+
+    var doScaffold = (cmd.argv.s !== undefined);
+
     switch(cmdArr[0]) {
     case 'compile':
         console.log("compiling sources");
@@ -37,19 +45,17 @@ var main = function() {
                 return fs.readFileSync(path.join(solSrcDir, filename)).toString()
             });
 
-            compile.compileSol(solSrc,config.apiURL,scaffold,config.appName);
+            solObjs = compile(solSrc,config.appName);
         }
         else if (cmdArr[1] && path.parse(cmdArr[1]).ext === '.sol') {
             // compile < filename >
             console.log('compiling single file: ' + cmdArr[1]);
-            try {
-                console.log(cmdArr[1])
-                var config = yamlConfig.readYaml('config.yaml')
-                var contents = fs.readFileSync(cmdArr[1]);
-                compile.compileSol([contents], config.apiURL, scaffold, config.appName);
-            } catch (e) {
-                console.error(e);
-            }
+            var contents = fs.readFileSync(cmdArr[1]);
+            solObjs = compile([contents], config.appName);
+        }
+
+        if (doScaffold) {
+            Promise.each(solObjs,codegen.writeHTML.bind(null, config.appName));
         }
         break;
 
@@ -59,53 +65,51 @@ var main = function() {
             console.log("contract name required");
             break;
         }
-        var config = yamlConfig.readYaml('config.yaml');
+        
         var store = key.readKeystore();
         var address = store.addresses[0];
 
+        var requestPassword = require('../lib/prompt-schema.js').requestPassword;
         prompt.start();
-        prompt.get(requestPassword, function(err,result) {
-            upload.upload(
-                contractName, config.apiURL, config.appName, scaffold,
-                store.exportPrivateKey(address, result.password)
-            );
+        prompt.getAsync(requestPassword).then(function(result) {
+            var privkey = store.exportPrivateKey(address, result.password);
+            return upload(contractName, privkey);
+        }).then(function (solObjWAddr) {
+            if (doScaffold) {
+                codegen.writeJS(contractName, solObjWAddr);
+            }
         });
 
         break;
 
-      case 'genkey':
-          var confURL = yamlConfig.readYaml('config.yaml').apiURL;
-          prompt.start();
-          prompt.get(createPassword, function (err,result) {
-            key.generateKey(result.password, confURL+'/eth/v1.0/faucet');
-          });
+    case 'genkey':
+        var createPassword = require('../lib/prompt-schema.js').createPassword;
+        prompt.start();
+        prompt.getAsync(createPassword).get("password").then(key.generateKey);
+        break;
 
-          break;
+    case 'register':
+        var registerPassword = require('../lib/prompt-schema.js').registerPassword;
+        prompt.start();
+        prompt.getAsync(registerPassword).get("password").then(function(password) {
+            var loginObj = {
+                "email": config.email,
+                "app": config.appName,
+                "loginpass": password
+            };
+            var appObj = {
+                "developer": config.developer,
+                "appurl": config.appURL,
+                "repourl": config.repo
+            };
+            return api.routes.register(loginObj, appObj);
+        }).tap(function() {
+            console.log("registered, confirm via email")
+        });
+        break;
 
-      case 'register':
-          var config = yamlConfig.readYaml('config.yaml');
-          register.registerApp(config,function (res) { console.log(res + ": registered, confirm via email"); });
-          break;
-
-      case 'init':
-         prompt.start();
-         prompt.get(scaffoldApp, function(err,result) {
-            sc.createDirScaffold(result.appName);
-            yamlConfig.writeYaml(result.appName + "/config.yaml", result);
-          });
-
-      case 'send':
-         prompt.start();
-         prompt.get(transfer, function(err,result) {
-           prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
-             
-           });
-         });
-
-         break;
-
-      default:
-         console.log("unrecognized command");
+    default:
+        console.log("unrecognized command");
     }
 }
 

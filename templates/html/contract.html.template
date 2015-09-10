@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="http://{{staticServer}}/static/js/createUser.js"></script>
-    <script src="http://{{staticServer}}/static/js/userLogin.js"></script>
-    <script src="http://{{staticServer}}/static/ethlightjs.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-    <script src="http://{{staticServer}}/static/js/api.js"></script>
-    <script src="../js/{{contractName}}.js"></script>
+    <script src="{{&serverURI}}/static/js/createUser.js"></script>
+    <script src="{{&serverURI}}/static/js/userLogin.js"></script>
+    <script src="{{&serverURI}}/static/ethlightjs.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="{{&serverURI}}/static/js/api.js"></script>
+    <script src="../js/{{&contractName}}.js"></script>
   </head>
-  <body onload="hideOnLoad{{contractName}}()">
+  <body onload="hideOnLoad()">
     <div id="authButtonDiv">
-      <button onclick="showRegister{{contractName}}()">Register</button>
-      <button onclick="showLogin{{contractName}}()">Login</button>
+      <button onclick="showRegister()">Register</button>
+      <button onclick="showLogin()">Login</button>
     </div>
-    <div id="createUser{{contractName}}Div">
+    <div id="createUserDiv">
       <p id="user-intro"> Now, please register your wallet with us!</p>
       <input type="text" name="email" id="emailCreateUser" required />
       <label for="email">Email</label>
@@ -25,10 +25,10 @@
       <input type="text" name="address" id="addressCreateUser" readonly required />
       <label for="address">Address</label>
 
-      <input type="hidden" name="app" id="appCreateUser" value="{{appName}}" required />
-      <button id="user-button" onclick="submit{{contractName}}()">Register</button>
+      <input type="hidden" name="app" id="appCreateUser" value="{{&appName}}" required />
+      <button id="user-button" onclick="submit()">Register</button>
     </div>
-    <div id="login{{contractName}}Div">
+    <div id="loginDiv">
       <p id="login-intro"> If you are a user who has registered, please login now.</p>
       <input type="text" name="email" id="emailLogin" required />
       <label for="email">Email</label>
@@ -40,27 +40,27 @@
       <input type="text" name="address" id="addressLogin" required />
       <label for="address">Address</label>
 
-      <input type="hidden" name="app" id="appLogin" value="{{appName}}" required />
-      <button id="user-button" onclick="retrieve{{contractName}}()">Login!</button>
+      <input type="hidden" name="app" id="appLogin" value="{{&appName}}" required />
+      <button id="user-button" onclick="retrieve()">Login!</button>
     </div>
 
-    <div id="keygen{{contractName}}Div">
+    <div id="keygenDiv">
       <p id="key-intro"> First we will generate a key. Protect it with a high entropy password. The key will e sent to you in email, encrypted, after you verify your login.</p>
       <input type="password" name="keypass" id="keypass" />
       <label for="keypass">Enter a high entropy password</label>
       <button id="keygen-button" onclick="genKeyUser()">Generate key</button>
     </div>
-    <div id="wallet{{contractName}}Div">
+    <div id="walletDiv">
         <input name="walletaddress" id="walletaddress" readonly />
         <label for="walletaddress">Your Address</label>
     </div>
 
-    <div id="functions{{contractName}}Div">
+    <div id="functionsDiv">
 	    {{#funcs}}
-	    	<div id="{{name}}Div">
-			<button onclick="call{{name}}()">{{name}}</button>
+	    	<div id="{{&name}}Div">
+			<button onclick="callFunc('{{&name}}')">{{&name}}</button>
 			{{#args}}
-			<input type="text" name="{{argName}}" id="{{name}}{{argName}}" />
+			<input type="text" name="{{&argName}}" id="{{&name}}{{&argName}}" />
 			{{/args}}
 		</div>
 	    {{/funcs}}

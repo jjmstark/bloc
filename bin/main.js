@@ -134,7 +134,9 @@ function main (){
               var address = store.addresses[0];
       
               var privkeyFrom = store.exportPrivateKey(address, result.password);
-              var valueTX = Transaction({"value" : Int(result.value)}); 
+              var valueTX = Transaction({"value" : Int(result.value), 
+                                         "gasLimit" : Int(result.gasLimit),
+                                         "gasPrice" : Int(result.gasPrice)}); 
 
               var addressTo = result.to;
 

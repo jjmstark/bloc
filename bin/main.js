@@ -23,6 +23,8 @@ var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../lib/prompt-schema.js').transfer;
 
 var api = require("blockapps-js");
+var Transaction = api.ethbase.Transaction;
+var Int = api.ethbase.Int;
 
 function main (){
     var cmdArr = cmd.argv._;
@@ -127,7 +129,18 @@ function main (){
         prompt.start();
         prompt.get(transferObj, function(err,result) {
             prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
-                            
+
+              var store = key.readKeystore();
+              var address = store.addresses[0];
+      
+              var privkeyFrom = store.exportPrivateKey(address, result.password);
+              var valueTX = Transaction({"value" : Int(result.value)}); 
+
+              var addressTo = result.to;
+
+              valueTX(privkeyFrom, addressTo).then(function(txResult) {
+                 console.log("transaction result: " + txResult.message);
+              });                            
             });
         });
         break;

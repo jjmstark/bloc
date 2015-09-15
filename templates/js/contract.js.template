@@ -114,10 +114,11 @@ function callFunc(funcName) {
 
 function afterTX(result) {
     var afterTXstring = "TX returned: " +
-        ((result === undefined) ? "(nothing)":result) +
-        "\n\n Contract storage state:\n\n";
+        ((result === undefined) ? "(nothing)":result);
+
 
     Promise.props(contract.state).then(function(sVars) {
+        afterTXstring += "\n\n Contract storage state:\n\n";
         for (name in sVars) {
             var svar = sVars[name]
             if (typeof svar === "function") {
@@ -125,7 +126,14 @@ function afterTX(result) {
             }
             afterTXstring += "  " + name + " = " + svar + "\n";
         };
-    }).then(function() {
-        document.getElementById("afterTXarea").textContent = afterTXstring;
+    }).then(contract.account.balance.then(function(bal) {
+         afterTXstring += "\n Contract balance =  " + bal + "\n";
+       }))
+      .then(blockapps.ethbase.Account(globalKeystore.addresses[0]).balance.then(function(userBal) {
+         console.log("did this fail?");
+         afterTXstring += "\n your balance = " + userBal + "\n";
+       }))
+      .then(function() {
+       document.getElementById("afterTXarea").textContent = afterTXstring;
     });
 }

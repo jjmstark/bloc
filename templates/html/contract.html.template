@@ -60,8 +60,9 @@
 	    	<div id="{{&name}}Div">
 			<button onclick="callFunc('{{&name}}')">{{&name}}</button>
 			{{#args}}
-			<input type="text" name="{{&argName}}" id="{{&name}}{{&argName}}" />
+			<input type="text" name="{{&argName}}" placeholder="{{&argName}}" id="{{&name}}{{&argName}}" />
 			{{/args}}
+                        <input type="value" name="'{{&name}}'ValueField" placeholder="send value in Ether" id="'{{&name}}'ValueField" />
 		</div>
 	    {{/funcs}}
     </div>

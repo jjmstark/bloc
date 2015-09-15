@@ -95,17 +95,21 @@ function retrieve() {
 
 function callFunc(funcName) {
     console.log("globalKeystore: " + JSON.stringify(globalKeystore));
+    var eth = blockapps.ethbase.Units.unitSchema.ether;
+
     var privkey = globalKeystore.exportPrivateKey(
         walletaddress.value, document.getElementById("walletDecrypt").value);
     console.log("privkey: " + privkey);
 
     var args = [];
     var funcDivElts = document.getElementById(funcName + "Div").children;
-    for (var i = 1; i < funcDivElts.length; ++i) { // Skip the button
+    var len = funcDivElts.length;
+
+    for (var i = 1; i < len-1; ++i) { // Skip the button and the value text input
         args.push(funcDivElts[i].value);
     }
 
-    contract.state[funcName].apply(null,args).callFrom(privkey).then(afterTX);
+    contract.state[funcName].apply(null,args).txParams({value : funcDivElts[len-1].value * eth}).callFrom(privkey).then(afterTX);
 }
 
 function afterTX(result) {

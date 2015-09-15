@@ -24,6 +24,7 @@ var transfer = require('../lib/prompt-schema.js').transfer;
 
 var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
+var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 
 function main (){
@@ -134,7 +135,7 @@ function main (){
               var address = store.addresses[0];
       
               var privkeyFrom = store.exportPrivateKey(address, result.password);
-              var valueTX = Transaction({"value" : Int(result.value), 
+              var valueTX = Transaction({"value" : Int((parseInt(result.value) * units.stringToEthUnit(result.unit))), 
                                          "gasLimit" : Int(result.gasLimit),
                                          "gasPrice" : Int(result.gasPrice)}); 
 

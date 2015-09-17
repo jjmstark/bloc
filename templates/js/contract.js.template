@@ -3,6 +3,7 @@ var Promise = require("bluebird");
 var contract = blockapps.Solidity.attach({{{solObjWAddr}}});
 blockapps.query.serverURI = '{{{serverURI}}}';
 
+var eth = blockapps.ethbase.Units.unitSchema.ether;
 var globalKeystore;
 
 function submit() {
@@ -95,7 +96,7 @@ function retrieve() {
 
 function callFunc(funcName) {
     console.log("globalKeystore: " + JSON.stringify(globalKeystore));
-    var eth = blockapps.ethbase.Units.unitSchema.ether;
+
 
     var privkey = globalKeystore.exportPrivateKey(
         walletaddress.value, document.getElementById("walletDecrypt").value);
@@ -112,12 +113,11 @@ function callFunc(funcName) {
     contract.state[funcName].apply(null,args).txParams({value : funcDivElts[len-1].value * eth}).callFrom(privkey).then(afterTX);
 }
 
-function afterTX(result) {
+function storageAfterTX(result) {
     var afterTXstring = "TX returned: " +
         ((result === undefined) ? "(nothing)":result);
 
-
-    Promise.props(contract.state).then(function(sVars) {
+    return Promise.props(contract.state).then(function(sVars) {
         afterTXstring += "\n\n Contract storage state:\n\n";
         for (name in sVars) {
             var svar = sVars[name]
@@ -126,14 +126,35 @@ function afterTX(result) {
             }
             afterTXstring += "  " + name + " = " + svar + "\n";
         };
-    }).then(contract.account.balance.then(function(bal) {
-         afterTXstring += "\n Contract balance =  " + bal + "\n";
-       }))
-      .then(blockapps.ethbase.Account(globalKeystore.addresses[0]).balance.then(function(userBal) {
-         console.log("did this fail?");
-         afterTXstring += "\n your balance = " + userBal + "\n";
-       }))
-      .then(function() {
-       document.getElementById("afterTXarea").textContent = afterTXstring;
+      return afterTXstring;  
+    });
+} 
+
+function contractBalanceAfterTX(txString) {
+    return contract.account.balance.then(function(bal) {
+        return txString + "\n Contract balance =  " + (bal / eth) + " ether\n";
     });
 }
+
+function userBalanceAfterTX(txString) {
+    return blockapps.ethbase.Account(globalKeystore.addresses[0]).balance.then(function(userBal) {
+        return txString + "\n Your balance     =  " + (userBal / eth) + " ether\n";
+    });
+}
+
+function resetTextArea(txString)  {
+    document.getElementById("afterTXarea").textContent = txString;
+}
+
+function afterTX(result) {
+    storageAfterTX(result)
+      .then(function (txStr) { 
+          return contractBalanceAfterTX(txStr);
+        })
+      .then(function (txStr) { 
+          return userBalanceAfterTX(txStr);
+        })
+      .then(function (txStr) { 
+          resetTextArea(txStr);
+      });
+} 

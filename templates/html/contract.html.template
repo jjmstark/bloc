@@ -89,7 +89,7 @@
         </div>
 	     {{#funcs}}
 	     	<div id="{{&name}}Div">
-		  	<button class="btn" onclick="callFunc('{{&name}}')">{{&name}}</button>
+		  	<button class="btn col-sm-12" onclick="callFunc('{{&name}}')">{{&name}}</button>
 		  	{{#args}}
 		  	<input class="form-control col-sm-12" type="text" name="{{&argName}}" placeholder="{{&argName}}" id="{{&name}}{{&argName}}" />
 		  	{{/args}}

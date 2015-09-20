@@ -102,6 +102,7 @@
       <div id="walletPassword" class="col-md-3">
         <p>Retrieved your wallet. Enter your password, and you can sign transactions: 
         <input class="form-control" type="password" id="walletDecrypt"></p>
+        <button class="btn col-sm-12" onclick="showLogin()">Login As New User</button>
       </div>
       
     </div>

@@ -36,8 +36,9 @@ function submit() {
 
 function showRegister() {
     keygenDiv.style.display = "table";
-        loginDiv.style.display = "none";
-    }
+    loginDiv.style.display = "none";
+    hideAuthButtons();
+}
 
 function showLogin() {
     createUserDiv.style.display = "none";
@@ -45,6 +46,9 @@ function showLogin() {
     keygenDiv.style.display = "none";
     loginDiv.style.display = "table";
     walletDiv.style.display="none";
+    hideAuthButtons();
+    hideFunctions();
+
 };
 
 function hideOnLoad() {
@@ -53,6 +57,16 @@ function hideOnLoad() {
     loginDiv.style.display = "none";
     functionsDiv.style.display = "none";
     keygenDiv.style.display = "none";
+    walletPassword.style.display = "none";
+}
+
+function hideAuthButtons() {
+    authButtonDiv.style.display = "none";
+}
+
+function hideFunctions() {
+    functionsDiv.style.display = "none";
+    walletPassword.style.display = "none";
 }
 
 function genKeyUser() {
@@ -75,20 +89,10 @@ function retrieve() {
     };
     retrieveUser(userObj,function (keystore) {
         loginDiv.style.display = "none";
-        var para = document.createElement("P");
-        var t = document.createTextNode("Retrieved your wallet. Enter your password, and you can sign transactions: ");
-        para.appendChild(t);
-        var input = document.createElement("input");
-        var itemLabel = document.createElement("Label");
-        input.type = "password";
-        input.setAttribute("id","walletDecrypt");
-        itemLabel.setAttribute("for", "walletDecrypt");
-        itemLabel.innerHTML = "Enter Password: ";
-        para.appendChild(input);
-        document.body.appendChild(para);
         walletaddress.value=keystore.addresses[0];
-        walletDiv.style.display="table"
+        walletDiv.style.display="block"
         loginDiv.style.display = "none";
+        walletPassword.style.display = "block";
         globalKeystore = keystore;
         functionsDiv.style.display = "table";
     });

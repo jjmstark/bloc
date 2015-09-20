@@ -16,3 +16,4 @@ cabal.sandbox.config
 *.hp
 *.~
 node_modules/
+.DS_Store

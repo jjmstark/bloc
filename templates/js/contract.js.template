@@ -5,6 +5,7 @@ blockapps.query.serverURI = '{{{serverURI}}}';
 
 var eth = blockapps.ethbase.Units.unitSchema.ether;
 var globalKeystore;
+var developerKeystore = '{{{developerKeystore}}}';
 
 function submit() {
     var userObj = {
@@ -46,6 +47,7 @@ function showLogin() {
     keygenDiv.style.display = "none";
     loginDiv.style.display = "table";
     walletDiv.style.display="none";
+    developerLoginDiv.style.display="none";
     hideAuthButtons();
     hideFunctions();
 
@@ -96,6 +98,18 @@ function retrieve() {
         globalKeystore = keystore;
         functionsDiv.style.display = "table";
     });
+}
+
+function developerRetrieve() {
+    console.log("developer keystore: " + JSON.stringify(developerKeystore));
+    loginDiv.style.display="none";
+    walletaddress.value=JSON.parse(developerKeystore).addresses[0];
+    walletDiv.style.display="block"
+    loginDiv.style.display = "none";
+    walletPassword.style.display = "block";
+    globalKeystore = ethlightjs.keystore.deserialize(developerKeystore);
+    functionsDiv.style.display = "table";
+    hideAuthButtons();
 }
 
 function callFunc(funcName) {

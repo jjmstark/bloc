@@ -47,7 +47,6 @@ function showLogin() {
     keygenDiv.style.display = "none";
     loginDiv.style.display = "table";
     walletDiv.style.display="none";
-    developerLoginDiv.style.display="none";
     hideAuthButtons();
     hideFunctions();
 

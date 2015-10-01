@@ -5,6 +5,7 @@
     <script src="{{&serverURI}}/static/js/userLogin.js"></script>
     <script src="{{&serverURI}}/static/ethlightjs.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
     <script src="{{&serverURI}}/static/js/api.js"></script>
     <script src="../js/{{&contractName}}.js"></script>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
@@ -75,12 +76,19 @@
         <textarea class="form-control" id="afterTXarea" readonly="true" rows="14"></textarea>
       </div>
 
-      <div id="walletPassword" class="col-md-3">
-        <p>Retrieved your wallet. Enter your password, and you can sign transactions: 
-        <input class="form-control" type="password" id="walletDecrypt"></p>
+      <div id="walletPassword" >
         <button class="btn col-sm-12" onclick="showLogin()">Login As New User</button>
       </div>
-      
+
+      <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <p>Retrieved your wallet. Enter your password, and you can sign transactions: 
+            <input class="form-control col-sm-8" type="password" id="walletDecrypt"></p>
+            <button type="button" class="btn btn-primary col-sm-4" data-toggle="modal" data-target="#passwordModal">Sign!</button>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

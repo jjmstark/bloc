@@ -17,6 +17,7 @@
         <h1>Welcome To Your Dapp</h1>
         <button class="btn col-sm-12" onclick="showRegister()">Register</button>
         <button class="btn col-sm-12" onclick="showLogin()">Login</button>
+        <button class="btn col-sm-12" onclick="developerRetrieve()">Developer Login</button>
       </div>
 
       <div class="col-md-6 col-md-offset-3" id="createUserDiv">
@@ -51,7 +52,7 @@
       </div>
   
       <div class="col-md-6 col-md-offset-3" id="keygenDiv">
-        <p id="key-intro"> First we will generate a key. Protect it with a high entropy password. The key will e  sent to you in email, encrypted, after you verify your login.</p>
+        <p id="key-intro"> First we will generate a key. Protect it with a high entropy password. The key will be  sent to you in email, encrypted, after you verify your login.</p>
         <label for="keypass">Enter a high entropy password</label>
         <input class="form-control" type="password" name="keypass" id="keypass" />
         <button class="btn" id="keygen-button" onclick="genKeyUser()">Generate key</button>

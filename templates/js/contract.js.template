@@ -97,6 +97,7 @@ function retrieve() {
         walletPassword.style.display = "block";
         globalKeystore = keystore;
         functionsDiv.style.display = "table";
+        $('#passwordModal').modal('show')
     });
 }
 
@@ -110,6 +111,7 @@ function developerRetrieve() {
     globalKeystore = ethlightjs.keystore.deserialize(developerKeystore);
     functionsDiv.style.display = "table";
     hideAuthButtons();
+    $('#passwordModal').modal('show')
 }
 
 function callFunc(funcName) {

@@ -42,7 +42,7 @@ Now in your dApp directory run
 bloc register
 ```
 
-bloc register registers your app with the Blockapps.net server. Now generate a new private key and fill it with test-ether
+bloc register registers your app with the Blockapps api. Now generate a new private key and fill it with test-ether
 
 ```
 bloc genkey

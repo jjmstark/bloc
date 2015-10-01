@@ -4,28 +4,66 @@
 
 [![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc)
 
-Minimal commandline build and deploy tool for the blockapps api 
+Bloc is a small commandline tool that helps you build dApps for the blockapps api. It has 3 main functions
+* Scafolding your dApp code
+* Compiling smart contracts to be deployed
+* Deploying your smart contracts to the network so you can change the world
 
-## Installation
+##Installation
+Installation is currently done by cloning this repo
 
-``` 
-$ npm install -g blockapps/bloc
+```
+git clone https://github.com/blockapps/bloc.git
 ```
 
-## Demo
+Enter the bloc directory
 
-Initialize a new project:
+```
+cd bloc
+```
 
-``` $ bloc init ```
+Install bloc as a global package
 
-## Bloc Philosophy
+```
+npm install -g
+```
 
-Integrate smart contract design on Ethereum as a lightweight component of your existing workflow.
-Easily write a WebApp that can move money in any way you like.
+##Generate a new dApp
+
+```
+bloc init
+```
+
+bloc init builds a base structure for your dApp as well as set some default values for transacting. These can be edited in the config.yaml file in your dApp directory.
+
+Now in your dApp directory run
+
+```
+bloc register
+```
+
+bloc register registers your app with the Blockapps.net server. Now generate a new private key and fill it with test-ether
+
+```
+bloc genkey
+```
+
+Compile your smart contracts
+
+```
+bloc compile
+```
+
+Upload your smart contracts and scafold your dApp 
+
+```
+bloc upload -s
+```
 
 ## Commands
+
 ```
-bloc.
+bloc
 
 Usage: /usr/local/bin/bloc <command> (options)
 
@@ -38,5 +76,27 @@ Commands:
 
 Options:
   -s, --scaffold  scaffold html / js / css from your contracts when compiling or
-                    uploading		    
+                    uploading
+```
+
+### Structure of your dApps
+```
+/dApp
+  config.yaml
+  key.json
+  /contracts
+    Payout.sol
+    SimpleStorage.sol
+    SimpleMultiSig.sol
+  /css
+  /html
+    Payout.html
+    SimpleMultiSig.html
+    SimpleStorage.html
+  /js
+    Payout.sol
+    SimpleStorage.sol
+    SimpleMultiSig.sol
+  /meta
+  /routes
 ```

@@ -4,8 +4,8 @@
 
 [![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc)
 
-Bloc is a small commandline tool that helps you build dApps for the blockapps api. It has 3 main functions
-* Scafolding your dApp code
+Bloc is a small commandline tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). It has 3 main functions
+* Scafolding your blockchain app code
 * Compiling smart contracts to be deployed
 * Deploying your smart contracts to the network so you can change the world
 
@@ -28,15 +28,15 @@ Install bloc as a global package
 npm install -g
 ```
 
-##Generate a new dApp
+##Generate a new blockchain app
 
 ```
 bloc init
 ```
 
-bloc init builds a base structure for your dApp as well as set some default values for transacting. These can be edited in the config.yaml file in your dApp directory.
+bloc init builds a base structure for your blockchain app as well as set some default values for transacting. These can be edited in the config.yaml file in your app directory.
 
-Now in your dApp directory run
+Now in your app directory run
 
 ```
 bloc register
@@ -51,13 +51,13 @@ bloc genkey
 Compile your smart contracts
 
 ```
-bloc compile
+bloc compile -s
 ```
 
 Upload your smart contracts and scafold your dApp 
 
 ```
-bloc upload -s
+bloc upload <ContractName> -s
 ```
 
 ## Commands
@@ -100,3 +100,7 @@ Options:
   /meta
   /routes
 ```
+
+## Additional Resources
+bloc uses [blockapps-js](https://github.com/blockapps/blockapps-js) to interact with the blockchain
+The smart contracts that bloc uses are writen in a language similar to javascript called [Solidity](https://github.com/ethereum/wiki/wiki/The-Solidity-Programming-Language). A good place to start playing around with the language is the [online compiler](https://chriseth.github.io/browser-solidity/)

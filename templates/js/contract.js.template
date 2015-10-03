@@ -47,7 +47,6 @@ function showLogin() {
     keygenDiv.style.display = "none";
     loginDiv.style.display = "table";
     walletDiv.style.display="none";
-    developerLoginDiv.style.display="none";
     hideAuthButtons();
     hideFunctions();
 
@@ -97,6 +96,7 @@ function retrieve() {
         walletPassword.style.display = "block";
         globalKeystore = keystore;
         functionsDiv.style.display = "table";
+        $('#passwordModal').modal('show')
     });
 }
 
@@ -110,15 +110,19 @@ function developerRetrieve() {
     globalKeystore = ethlightjs.keystore.deserialize(developerKeystore);
     functionsDiv.style.display = "table";
     hideAuthButtons();
+    $('#passwordModal').modal('show')
 }
 
 function callFunc(funcName) {
     console.log("globalKeystore: " + JSON.stringify(globalKeystore));
 
-
-    var privkey = globalKeystore.exportPrivateKey(
-        walletaddress.value, document.getElementById("walletDecrypt").value);
-    console.log("privkey: " + privkey);
+    try {
+        var privkey = globalKeystore.exportPrivateKey(
+            walletaddress.value, document.getElementById("walletDecrypt").value);
+        console.log("privkey: " + privkey);
+    } catch (e) {
+        $('#passwordModal').modal('show')
+    }
 
     var args = [];
     var funcDivElts = document.getElementById(funcName + "Div").children;

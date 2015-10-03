@@ -5,6 +5,7 @@
     <script src="{{&serverURI}}/static/js/userLogin.js"></script>
     <script src="{{&serverURI}}/static/ethlightjs.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
     <script src="{{&serverURI}}/static/js/api.js"></script>
     <script src="../js/{{&contractName}}.js"></script>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
@@ -75,12 +76,30 @@
         <textarea class="form-control" id="afterTXarea" readonly="true" rows="14"></textarea>
       </div>
 
-      <div id="walletPassword" class="col-md-3">
-        <p>Retrieved your wallet. Enter your password, and you can sign transactions: 
-        <input class="form-control" type="password" id="walletDecrypt"></p>
+      <div class="col-md-3" id="walletPassword" >
         <button class="btn col-sm-12" onclick="showLogin()">Login As New User</button>
       </div>
-      
+
+      <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Wallet Password</h4>
+            </div>
+            <div class="modal-body row">
+              <p class="col-xs-12">Retrieved your wallet. Enter your password to sign transactions: 
+              </p>
+              <div class="col-xs-12">
+                <input class="form-control" type="password" id="walletDecrypt">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary col-sm-4" data-toggle="modal" data-target="#passwordModal">Sign!</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

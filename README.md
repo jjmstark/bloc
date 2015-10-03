@@ -34,9 +34,10 @@ npm install -g
 bloc init
 ```
 
+![bloc init](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_init.png)
+
 bloc init builds a base structure for your blockchain app as well as set some default values for transacting. These can be edited in the config.yaml file in your app directory.
 
-![bloc init](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_init.png)
 
 Now in your app directory run
 
@@ -44,11 +45,15 @@ Now in your app directory run
 bloc register
 ```
 
+![bloc register](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_register.png)
+
 bloc register registers your app with the Blockapps api. Now generate a new private key and fill it with test-ether
 
 ```
 bloc genkey
 ```
+
+![bloc genkey](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_genkey.png)
 
 Compile your smart contracts
 
@@ -56,11 +61,15 @@ Compile your smart contracts
 bloc compile -s
 ```
 
+![bloc compile](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_compile.png)
+
 Upload your smart contracts and scafold your dApp 
 
 ```
 bloc upload <ContractName> -s
 ```
+
+![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_upload.png)
 
 ## Commands
 

@@ -36,7 +36,7 @@ bloc init
 
 bloc init builds a base structure for your blockchain app as well as set some default values for transacting. These can be edited in the config.yaml file in your app directory.
 
-![bloc init](/../readme_img/bloc_init.png?raw=true)
+![bloc init](/../readme_img/bloc_init_inv.png?raw=true)
 
 Now in your app directory run
 
@@ -56,7 +56,7 @@ Compile your smart contracts
 bloc compile -s
 ```
 
-Upload your smart contracts and scafold your dApp 
+Upload your smart contracts and scaffold your dApp 
 
 ```
 bloc upload <ContractName> -s

@@ -4,9 +4,9 @@
 
 [![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc)
 
-Bloc is a small commandline tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). Bloc exists to help:
+Bloc is a small command line tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). Bloc makes it effortless to:
 * Compile and deploy smart contracts to the blockchain
-* Scaffold wiring those contracts to the front-end,so you can bring the blockchain to the world!
+* Automatically wire those contracts to the front-end, so you can bring the blockchain to the world!
 
 ##Installation
 Installation is currently done by cloning:
@@ -35,7 +35,7 @@ bloc init
 
 ![bloc init](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_init.png)
 
-bloc init builds a base structure for your blockchain app as well as sets some default parameters values for transacting. These can be edited in the config.yaml file in your app directory.
+bloc init builds a base structure for your blockchain app as well as sets some default parameters values for creating transactions. These can be edited in the config.yaml file in your app directory.
 
 
 Now in your app directory run
@@ -62,7 +62,7 @@ bloc compile -s
 
 ![bloc compile](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_compile.png)
 
-Upload your smart contracts and scaffold (`-s`) your dApp
+Upload a contract and scaffold (`-s`) your dApp
 
 ```
 bloc upload <ContractName> -s
@@ -113,4 +113,4 @@ Options:
 
 ## Additional Resources
 bloc uses [blockapps-js](https://github.com/blockapps/blockapps-js), our simple library for interfacing with the blockchain.
-Smart contracts that are written in javascript-like language called [Solidity](https://github.com/ethereum/wiki/wiki/The-Solidity-Programming-Language). A good place to start playing around with the Solidity is the [online compiler](https://chriseth.github.io/browser-solidity/)
+Smart contracts that are written in javascript-like language called [Solidity](https://github.com/ethereum/wiki/wiki/The-Solidity-Programming-Language). A good place to start playing around with Solidity is the [online compiler](https://chriseth.github.io/browser-solidity/).

@@ -3,7 +3,7 @@ var Promise = require("bluebird");
 var contract = blockapps.Solidity.attach({{{solObjWAddr}}});
 blockapps.query.serverURI = '{{{serverURI}}}';
 
-var eth = blockapps.ethbase.Units.unitSchema.ether;
+var Units = blockapps.ethbase.Units;
 var globalKeystore;
 var developerKeystore = '{{{developerKeystore}}}';
 
@@ -132,7 +132,9 @@ function callFunc(funcName) {
         args.push(funcDivElts[i].value);
     }
 
-    contract.state[funcName].apply(null,args).txParams({value : funcDivElts[len-1].value * eth}).callFrom(privkey).then(afterTX);
+    contract.state[funcName].apply(null,args).txParams({
+        value : Units.ethValue(funcDivElts[len-1].value).in("ether")
+    }).callFrom(privkey).then(afterTX);
 }
 
 function storageAfterTX(result) {
@@ -154,13 +156,15 @@ function storageAfterTX(result) {
 
 function contractBalanceAfterTX(txString) {
     return contract.account.balance.then(function(bal) {
-        return txString + "\n Contract balance =  " + (bal / eth) + " ether\n";
+        return txString + "\n Contract balance =  " +
+            Units.convertEth(bal).from("wei").to("ether") + " ether\n";
     });
 }
 
 function userBalanceAfterTX(txString) {
     return blockapps.ethbase.Account(globalKeystore.addresses[0]).balance.then(function(userBal) {
-        return txString + "\n Your balance     =  " + (userBal / eth) + " ether\n";
+        return txString + "\n Your balance     =  " +
+            Units.convertEth(userBal).from("wei").to("ether") + " ether\n";
     });
 }
 

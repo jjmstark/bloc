@@ -94,6 +94,7 @@ function main (){
             var privkey = store.exportPrivateKey(address, result.password);
             return upload(contractName, privkey);
         }).then(function (solObjWAddr) {
+            console.log("adding address to meta/" + contractName + ".json");
             if (doScaffold) {
                 codegen.writeJS(contractName, solObjWAddr);
             }

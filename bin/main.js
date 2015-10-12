@@ -40,7 +40,12 @@ function main (){
         return;
     }
 
-    var config = yamlConfig.readYaml('config.yaml');
+    try {
+        var config = yamlConfig.readYaml('config.yaml');
+    } catch (e){
+        throw 'Cannot open config.yaml - are you in the project directory?';
+    }
+    
     api.query.serverURI = config.apiURL;
 
     var doScaffold = (cmd.argv.s !== undefined);

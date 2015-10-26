@@ -95,8 +95,11 @@ function retrieve() {
         loginDiv.style.display = "none";
         walletPassword.style.display = "block";
         globalKeystore = keystore;
-        functionsDiv.style.display = "table";
-        $('#passwordModal').modal('show')
+        functionsDiv.style.display = "block";
+        $('#passwordModal').modal('show');
+        $('#passwordModal').on('shown.bs.modal', function () {
+            $('#walletDecrypt').focus();
+        });
     });
 }
 
@@ -108,9 +111,12 @@ function developerRetrieve() {
     loginDiv.style.display = "none";
     walletPassword.style.display = "block";
     globalKeystore = ethlightjs.keystore.deserialize(developerKeystore);
-    functionsDiv.style.display = "table";
+    functionsDiv.style.display = "block";
     hideAuthButtons();
     $('#passwordModal').modal('show')
+    $('#passwordModal').on('shown.bs.modal', function () {
+        $('#walletDecrypt').focus();
+    });
 }
 
 function callFunc(funcName) {

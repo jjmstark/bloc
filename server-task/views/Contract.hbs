@@ -101,5 +101,11 @@
 {{#if contractData.address }}
   <p> See the address here: {{{contractData.address }}} </p>
 {{else}}
-  <p> You still need to upload {{{ contractNameSol }}}! Use bloc upload {{{contractName}}} </p>
+  {{#if hasKey}}
+  <p> You still need to upload {{{ contractNameSol }}}! Use bloc upload {{{contractName}}}! </p>
+  {{else}}
+     {{# if contractExists }}
+        <p> You need to create a key with bloc genkey, then upload your contract! </p>
+     {{/if}}
+  {{/if}}
 {{/if}}

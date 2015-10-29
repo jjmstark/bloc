@@ -36,45 +36,73 @@ function contractLookup(contractName) {
                        }; 
             } 
      }
-  );
+  );        
 }
 
 function contractJSONLookup(contractObj) {
-    var prevContractObj = contractObj;
     var contractName = contractObj.contractName;
 
-    return fs.readFileAsync(path.join(__dirname, 'meta/'+prevContractObj.contractName+'.json')).then(
+    return fs.readFileAsync(path.join(__dirname, 'meta/'+contractName+'.json')).then(
         function(fileData, err) {
             if (err) { 
                console.log("contract json not found, err: " + err); 
-               return { 
-                          contractExists : false, 
-                          contractName : contractName,
-                          contractIsCompiled : false
-                      }; 
+               contractObj.contractIsCompiled = false;
+
+               return contractObj;                   
             }
             else { 
                console.log("contract compiled"); 
-               return { 
-                        contractExists : true, 
-                        contractName : contractName, 
-                        contractIsCompiled: true,
-                        contractData : fileData 
-                      };  
+               contractObj.contractIsCompiled = true;
+               contractObj.contractData = JSON.parse(fileData);
+            
+               return contractObj;
             }
  
         }
     );
 }
 
+function keyJSONLookup(contractObj) {
+    return fs.readFileAsync(path.join(__dirname, 'key.json')).then(
+        function(fileData, err) {
+            if (err) { 
+               console.log("key not found, err: " + err); 
+               contractObj.hasKey = false;
 
+               return contractObj;                   
+            }
+            else { 
+               console.log("key present"); 
+               contractObj.hasKey = true;
+               contractObj.developerKey = JSON.parse(fileData);
+            
+               return contractObj;
+            }
+ 
+        }
+    );
+}
+ 
 app.get('/contracts/:contractName', function (req, res) {
   var contractName = req.params.contractName;
- 
+  var contractNameSol = contractName + '.sol';
+
   contractLookup(contractName)
-    .then(
+    .catch( function(err) {
+        console.log("caught error: " + err);
+        res.render(  'Contract', 
+                     { contractExists : false,
+                       contractName : contractName,
+                       contractNameSol : contractNameSol }
+                  );
+        }
+    ).then(
         function (contractTemplateObj) {
           return contractJSONLookup(contractTemplateObj);
+        }
+    ).then(
+        function (contractTemplateObj) {
+          return keyJSONLookup(contractTemplateObj);
         }
     ).then(
         function (contractTemplateObj) {

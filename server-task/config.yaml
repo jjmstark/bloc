@@ -1,0 +1,9 @@
+appName: server-task
+developer: kjl
+email: kieren1@gmail.com
+appURL: google.com
+repo: ''
+apiURL: 'http://hacknet.blockapps.net'
+transferGasLimit: '21000'
+contractGasLimit: '10000000'
+gasPrice: '50000000000'

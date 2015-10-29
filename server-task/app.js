@@ -18,68 +18,59 @@ app.get('/', function (req, res) {
 function contractLookup(contractName) {
     var contractNameSol = contractName + '.sol';
     return fs.statAsync(path.join(__dirname, 'contracts/'+contractNameSol)).then(
-        function (res, err) {
-             if (err) { 
-               console.log("contract not found, err: " + err); 
-               return { 
-                          contractExists : false, 
-                          contractName : contractName, 
-                          contractNameSol : contractNameSol  
-                      }; 
-            }
-            else { 
-               console.log("contract found, checking if it has been compiled next"); 
-               return { 
-                          contractExists : true, 
-                          contractName : contractName,
-                          contractNameSol : contractNameSol
-                       }; 
-            } 
-     }
-  );        
+         function (res) {
+             console.log("contract found, checking if it has been compiled next"); 
+             return { contractExists : true, 
+                      contractName : contractName,
+                      contractNameSol : contractNameSol }; 
+         },
+         function (err) { 
+             console.log("contract not found, err: " + err); 
+             throw Error(
+                      JSON.stringify(
+                        {  contractExists : false, 
+                           contractName : contractName, 
+                           contractNameSol : contractNameSol }
+                      )
+                   ); 
+          } 
+     );        
 }
 
 function contractJSONLookup(contractObj) {
     var contractName = contractObj.contractName;
 
     return fs.readFileAsync(path.join(__dirname, 'meta/'+contractName+'.json')).then(
-        function(fileData, err) {
-            if (err) { 
-               console.log("contract json not found, err: " + err); 
-               contractObj.contractIsCompiled = false;
-
-               return contractObj;                   
-            }
-            else { 
-               console.log("contract compiled"); 
-               contractObj.contractIsCompiled = true;
-               contractObj.contractData = JSON.parse(fileData);
+        function(fileData) {
+             console.log("contract has been compiled"); 
+             contractObj.contractIsCompiled = true;
+             contractObj.contractData = JSON.parse(fileData);
             
-               return contractObj;
-            }
- 
-        }
+             return contractObj;
+        }, 
+        function (err) { 
+             console.log("contract has not been compiled: " + err); 
+             contractObj.contractIsCompiled = false;
+             throw Error(JSON.stringify(contractObj)); 
+        } 
     );
 }
 
 function keyJSONLookup(contractObj) {
     return fs.readFileAsync(path.join(__dirname, 'key.json')).then(
-        function(fileData, err) {
-            if (err) { 
-               console.log("key not found, err: " + err); 
-               contractObj.hasKey = false;
-
-               return contractObj;                   
-            }
-            else { 
-               console.log("key present"); 
-               contractObj.hasKey = true;
-               contractObj.developerKey = JSON.parse(fileData);
+        function(fileData) {
+            console.log("key present"); 
+            contractObj.hasKey = true;
+            contractObj.developerKey = JSON.parse(fileData);
             
-               return contractObj;
-            }
- 
-        }
+            return contractObj;
+        }, 
+        function (err) { 
+             console.log("key missing: " + err); 
+             contractObj.hasKey = false;
+             throw Error(JSON.stringify(contractObj)); 
+         } 
+
     );
 }
  
@@ -88,15 +79,7 @@ app.get('/contracts/:contractName', function (req, res) {
   var contractNameSol = contractName + '.sol';
 
   contractLookup(contractName)
-    .catch( function(err) {
-        console.log("caught error: " + err);
-        res.render(  'Contract', 
-                     { contractExists : false,
-                       contractName : contractName,
-                       contractNameSol : contractNameSol }
-                  );
-        }
-    ).then(
+   .then(
         function (contractTemplateObj) {
           return contractJSONLookup(contractTemplateObj);
         }
@@ -108,9 +91,13 @@ app.get('/contracts/:contractName', function (req, res) {
         function (contractTemplateObj) {
           res.render('Contract', contractTemplateObj);
         }
+    ).catch(function(err) {
+          console.log("short circuited with status: " + err);
+          res.render('Contract', JSON.parse(err.message));
+        }
     );
   
-//  res.render('Contract', contractObj);
+
 });
 
   var server = app.listen(3000, function () {

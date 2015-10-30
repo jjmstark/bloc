@@ -34,12 +34,12 @@
           <input class="form-control col-md-12" name="walletaddress" id="walletaddress" value="{{{walletAddress}}}" readonly />
 
         {{/if}}
-
+        
         </div>
 	     {{#funcs}}
 	     	<div id="{{&name}}Div">
 		  	<button class="btn col-sm-12" onclick="callFunc('{{&name}}')">{{&name}}</button>
-		  	{{#args}}Z
+		  	{{#args}}
 		  	<input class="form-control col-sm-12" type="text" name="{{&argName}}" placeholder="{{&argName}}" id="{{&name}}{{&argName}}" />
 		  	{{/args}}
         <input class="form-control col-sm-12" type="value" name="'{{&name}}'ValueField" placeholder="send value in Ether" id=" '{{&name}}'ValueField" />
@@ -69,5 +69,7 @@
         </div>
       </div>
     </div>
+<body onload="afterTX()">
 {{/if}}
+
 

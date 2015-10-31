@@ -1,7 +1,7 @@
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
-      <form action="/login">
+      <form action="/login" method="POST">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">Wallet Password</h4>
@@ -10,12 +10,12 @@
         <p class="col-xs-12">Retrieved your wallet. Enter your password to sign transactions:
         </p>
         <div class="col-xs-12">
-          <input class="form-control" type="password" id="walletDecrypt">
+          <input class="form-control" type="password" id="walletDecrypt" name="password">
         </div>
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary col-sm-4" data-toggle="modal" data-target="#passwordMod
-al">Siutton>
+al">Submit</button>
       </div>
       </form>
       </div>

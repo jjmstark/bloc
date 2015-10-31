@@ -125,7 +125,10 @@ app.get('/', function (req, res) {
 
 app.post('/login', function (req, res) {
   globalPassword = req.body.password;
-  res.send("set your wallet password, thanks");
+  console.log("password set globally");
+
+  backURL=req.header('Referer') || '/';
+  res.redirect(backURL);
 });
  
 app.get('/contracts/:contractName', function (req, res) {

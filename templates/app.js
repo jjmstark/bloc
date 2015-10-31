@@ -19,11 +19,7 @@ app.use('/css', express.static('css'));
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true })); 
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
-
-var globalPassword = '';
+var globalPassword = null;
 
 function contractLookup(contractName) {
     var contractNameSol = contractName + '.sol';
@@ -43,6 +39,7 @@ function contractLookup(contractName) {
                         {  contractExists : false, 
                            contractName : contractName, 
                            contractNameSol : contractNameSol,
+                           contractNotExistMessage : " doesn't exist yet. Maybe you should write it!",
                            serverURI : configFile.apiURL }
                       )
                    ); 
@@ -57,6 +54,8 @@ function contractJSONLookup(contractObj) {
         function(fileData) {
              console.log("contract has been compiled"); 
              contractObj.contractIsCompiled = true;
+             contractObj.contractIsCompiledMessage = " has been compiled!";
+
              contractObj.contractData = JSON.parse(fileData);
              contractObj.contractDataString = fileData;
 
@@ -73,11 +72,16 @@ function contractJSONLookup(contractObj) {
                            return {argName: arg};
                     })};
              });
+
+             if (typeof contractObj.contractData.address !== 'undefined')  
+                 contractObj.contractDataMessage = "contract has been uploaded with address: " + contractObj.contractData.address;
+
              return contractObj;
         }, 
         function (err) { 
              console.log("contract has not been compiled: " + err); 
              contractObj.contractIsCompiled = false;
+             contractObj.contractIsNotCompiledMessage = " has not yet been compiled! Compile it with bloc compile!";
              throw Error(JSON.stringify(contractObj)); 
         } 
     );
@@ -94,17 +98,30 @@ function keyJSONLookup(contractObj) {
             
             contractObj.developerKeystoreString = fileData;
             contractObj.globalKeystoreString = fileData;
+            contractObj.contractUploadMessage = " has not been uploaded yet. Upload it with bloc upload " + contractObj.contractNameSol;  
 
             return contractObj;
         }, 
         function (err) { 
              console.log("key missing: " + err); 
              contractObj.hasKey = false;
+             contractObj.generateKeyMessage = " You don't yet have a wallet. Use bloc genkey to create one. You need one to upload and run contracts!"
+
              throw Error(JSON.stringify(contractObj)); 
          } 
 
     );
 }
+
+app.get('/', function (req, res) {
+  res.render('Landing', 
+              { globalPassword : globalPassword,
+                isLoggedInMessage : "Welcome to BlockApps' landing page! You are logged in and can sign transactions",
+                isNotLoggedInMessage : "Welcome to BlockApps' landing page! You are not logged in, and need to do so to sign transactions",
+                title : "Welcome to BlockApps!" }       
+             );
+});
+
 
 app.post('/login', function (req, res) {
   globalPassword = req.body.password;
@@ -127,11 +144,21 @@ app.get('/contracts/:contractName', function (req, res) {
     ).then(
         function (contractTemplateObj) {
           contractTemplateObj.globalPassword = globalPassword;
+          contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
+          contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions. Those buttons won't work yet!";
+          contractTemplateObj.title = "Viewing " + contractTemplateObj.contractNameSol;
           res.render('Contract', contractTemplateObj);
         }
     ).catch(function(err) {
-          console.log("short circuited with status: " + err);
-          res.render('Contract', JSON.parse(err.message));
+          console.log("short circuited with status: " + err);          
+          contractTemplateObj = JSON.parse(err.message);
+          contractTemplateObj.globalPassword = globalPassword;
+          contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
+          contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions.";
+          if (contractTemplateObj.contractExists) contractTemplateObj.title = "Viewing " + contractNameSol;
+          else contractTemplateObj.title = "Viewing Non-Existent Contract ;)";
+
+          res.render('Contract', contractTemplateObj);
         }
     );
 });

@@ -8,48 +8,10 @@
 
 {{#if contractIsCompiled }}
       <div class="col-md-9" id="functionsDiv">
-        {{#if hasKey }}
-        
-        <div id="walletDiv">
-          <label for="walletaddress">Your Address</label>
-          <input class="form-control col-md-12" name="walletaddress" id="walletaddress" value="{{{walletAddress}}}" readonly />
-
-        {{/if}}
-        
-        </div>
-	     {{#funcs}}
-	     	<div id="{{&name}}Div">
-		  	<button class="btn col-sm-12" onclick="callFunc('{{&name}}')">{{&name}}</button>
-		  	{{#args}}
-		  	<input class="form-control col-sm-12" type="text" name="{{&argName}}" placeholder="{{&argName}}" id="{{&name}}{{&argName}}" />
-		  	{{/args}}
-        <input class="form-control col-sm-12" type="value" name="'{{&name}}'ValueField" placeholder="send value in Ether" id=" '{{&name}}'ValueField" />
-		    </div>
-	     {{/funcs}}
-        <textarea class="form-control" id="afterTXarea" readonly="true" rows="14"></textarea>
-      </div>
-
-      <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">Wallet Password</h4>
-            </div>
-            <div class="modal-body row">
-              <p class="col-xs-12">Retrieved your wallet. Enter your password to sign transactions: 
-              </p>
-              <div class="col-xs-12">
-                <input class="form-control" type="password" id="walletDecrypt">
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary col-sm-4" data-toggle="modal" data-target="#passwordModal">Sign!</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        {{>WalletDiv}}
+        {{>ContractFunctions}}
+        {{>WalletModal}}
+     </div>
 <body onload="afterTX()">
 {{/if}}
 

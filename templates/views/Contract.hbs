@@ -3,28 +3,8 @@
 {{>ContractJS}}
 </script>
 
-{{#if contractExists}}
-  {{#if contractIsCompiled }} 
-    <p> {{{contractNameSol}}} has been compiled! </p>
-  {{else}}
-    <p> {{{contractNameSol}}} not been compiled yet. Use bloc compile! </p>
-  {{/if}}
-{{else}}
-  <p> {{{contractNameSol}}} doesn't exist yet! Maybe you should write it. </p>
-{{/if}}
-
-{{#if contractData.address }}
-  <p> {{{contractNameSol}}}'s address is: {{{contractData.address }}} </p>
-{{else}}
-  {{#if hasKey}}
-  <p> You still need to upload {{{ contractNameSol }}}! Use bloc upload {{{contractName}}}! </p>
-  {{else}}
-     {{# if contractExists }}
-        <p> You need to create a key with bloc genkey, then upload your contract! </p>
-     {{/if}}
-  {{/if}}
-{{/if}}
-
+{{>DeveloperStatus}}
+{{>ContractStatus}}
 
 {{#if contractIsCompiled }}
       <div class="col-md-9" id="functionsDiv">

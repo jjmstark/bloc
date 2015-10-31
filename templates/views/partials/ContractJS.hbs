@@ -1,3 +1,7 @@
+<script src="{{&serverURI}}/static/ethlightjs.min.js"></script>
+<script src="{{&serverURI}}/static/js/api.js"></script>
+<script>
+
 var blockapps = require("blockapps-js");
 var Promise = require("bluebird");
 
@@ -87,3 +91,4 @@ function afterTX(result) {
           console.log("error caught: " + err); 
       });
 } 
+</script>

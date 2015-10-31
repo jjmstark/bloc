@@ -150,6 +150,9 @@ app.get('/contracts/:contractName', function (req, res) {
           contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
           contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions. Those buttons won't work yet!";
           contractTemplateObj.title = "Viewing " + contractTemplateObj.contractNameSol;
+          contractTemplateObj.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
+          contractTemplateObj.txFailedHandlerName = "txFailHandler";
+
           res.render('Contract', contractTemplateObj);
         }
     ).catch(function(err) {
@@ -160,6 +163,9 @@ app.get('/contracts/:contractName', function (req, res) {
           contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions.";
           if (contractTemplateObj.contractExists) contractTemplateObj.title = "Viewing " + contractNameSol;
           else contractTemplateObj.title = "Viewing Non-Existent Contract ;)";
+
+          contractTemplateObj.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
+          contractTemplateObj.txFailedHandlerName = "txFailHandler";
 
           res.render('Contract', contractTemplateObj);
         }

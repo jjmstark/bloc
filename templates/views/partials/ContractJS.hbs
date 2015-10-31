@@ -8,6 +8,8 @@ var Units = blockapps.ethbase.Units;
 var globalKeystore = {{{globalKeystoreString}}};
 var developerKeystore = {{{developerKeystoreString}}};
 
+{{{ txFailedHandlerCode }}}
+
 function callFunc(funcName) {
     var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore));
     try {
@@ -16,7 +18,8 @@ function callFunc(funcName) {
 
         console.log("privkey: " + privkey);
     } catch (e) {
-        $('#passwordModal').modal('show')
+        {{{ txFailedHandlerName }}}(e);
+//        $('#passwordModal').modal('show')
     }
 
     var args = [];

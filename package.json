@@ -27,6 +27,7 @@
     "express-handlebars": "^2.0.1",
     "express-session": "^1.12.1",
     "js-yaml": "^3.3.1",
+    "minimatch": "^3.0.0",
     "mkdirp": "^0.5.1",
     "morgan": "^1.6.1",
     "mustache": "^2.1.3",

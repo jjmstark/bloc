@@ -5,7 +5,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 
+var yaml = require('js-yaml');
 var path = require('path');
+var fs = require('fs');
 
 var home = require('./routes/home.js');
 var login = require('./routes/login.js');
@@ -13,8 +15,7 @@ var contract = require('./routes/contract.js');
 var examples = require('./routes/examples.js');
 
 var blocRootDir = path.normalize(path.join(__dirname, '..'));
-var yamlConfig = require(path.join(blocRootDir, 'lib', 'yaml-config.js'));
-var configFile = yamlConfig.readYaml('config.yaml');
+var configFile = yaml.safeLoad(fs.readFileSync('config.yaml'));
 
 var app = express();
 

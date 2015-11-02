@@ -1,12 +1,10 @@
 var path = require('path');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require("fs"));                                                                     
+var yaml = require('js-yaml');
 
-var blocRootDir = path.normalize(path.join(__dirname, '../..'));
 var projectDir = path.normalize(path.join(__dirname, '..'));
-var yamlConfig = require(path.join(blocRootDir, 'lib', 'yaml-config.js'));
-
-var configFile = yamlConfig.readYaml('config.yaml');
+var configFile = yaml.safeLoad(fs.readFileSync('config.yaml'));
 
 function contractLookup(contractName) {
     var contractNameSol = contractName + '.sol';

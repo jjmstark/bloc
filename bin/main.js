@@ -33,7 +33,7 @@ function main (){
 
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
-            scaffold(result.appName);
+            scaffold(result.appName, result.developer);
             yamlConfig.writeYaml(result.appName + "/config.yaml", result);
         });
 

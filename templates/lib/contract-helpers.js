@@ -72,7 +72,7 @@ function contractJSONLookup(contractObj) {
     );
 }
 
-function keyJSONLookup() {
+function keyJSONLookup(contractObj) {
    return fs.readFileAsync(path.join(projectDir, 'key.json')).then(
         function(fileData) {
             console.log("key present");
@@ -80,9 +80,9 @@ function keyJSONLookup() {
             contractObj.developerKeystore = JSON.parse(fileData);
             contractObj.globalKeystore = contractObj.developerKeystore;
             contractObj.walletAddress = contractObj.developerKeystore.addresses[0];
-
             contractObj.developerKeystoreString = fileData;
             contractObj.globalKeystoreString = fileData;
+            contractObj.contractUploadMessage = " has not been uploaded yet. Upload it with bloc upload " + contractObj.contractName;
 
             return contractObj;
         },

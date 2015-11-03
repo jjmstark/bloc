@@ -20,6 +20,16 @@ router.get('/', function (req, res) {
                     hasKey : keyObj.hasKey,
                     generateKeyMessage : "You need to generate a key with bloc genkey!" }
                )
+           },
+           function (err) { 
+               res.render('Landing',
+                  { globalPassword : req.session.globalPassword,
+                    isLoggedInMessage : "Welcome to BlockApps' landing page! You are logged in and can sign transactions",
+                    isNotLoggedInMessage : "Welcome to BlockApps' landing page! You are not logged in, and need to do so to sign transactions",
+                    title : "Welcome to BlockApps!",
+                    hasKeyMessage : "You've got a key already!", 
+                    generateKeyMessage : "You need to generate a key with bloc genkey!" }
+               )
            }
     );
 });

@@ -83,7 +83,7 @@ function keyJSONLookup(contractObj) {
 
             contractObj.developerKeystoreString = fileData;
             contractObj.globalKeystoreString = fileData;
-            contractObj.contractUploadMessage = " has not been uploaded yet. Upload it with bloc upload " + contractObj.contractNameSol;
+            contractObj.contractUploadMessage = " has not been uploaded yet. Upload it with bloc upload " + contractObj.contractName;
 
             return contractObj;
         },

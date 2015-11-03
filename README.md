@@ -39,15 +39,6 @@ bloc init builds a base structure for your blockchain app as well as sets some d
 
 
 Now in your app directory run
-
-```
-bloc register
-```
-
-![bloc register](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_register.png)
-
-bloc register registers your app with the Blockapps api. Now generate a new private key and fill it with test-ether
-
 ```
 bloc genkey
 ```
@@ -82,8 +73,8 @@ Commands:
   compile   compile contracts in contract folder
   upload    upload contracts to blockchain
   genkey    generate a new private key and fill it at the faucet
-  register  register your app with BlockApps
-
+  
+  
 Options:
   -s, --scaffold  scaffold html / js / css from your contracts when compiling or
                     uploading

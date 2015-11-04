@@ -1,6 +1,6 @@
 function retrieveLoginData(developerObj,callback) {
     var oReq = new XMLHttpRequest();
-    oReq.open("POST", "http://hacknet.blockapps.net/eth/v1.0/developer", true);
+    oReq.open("POST", "https://strato-dev.blockapps.net/eth/v1.0/developer", true);
 
     var params = "app="+encodeURIComponent(developerObj.app)
                +"&email="+encodeURIComponent(developerObj.email)

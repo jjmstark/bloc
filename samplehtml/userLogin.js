@@ -1,6 +1,6 @@
 function retrieveUser(userObj,callback) {
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", "http://hacknet.blockapps.net/eth/v1.0/login", true);
+        oReq.open("POST", "https://strato-dev.blockapps.net/eth/v1.0/login", true);
 
         var params = "app="+encodeURIComponent(userObj.app)
                        +"&email="+encodeURIComponent(userObj.email)

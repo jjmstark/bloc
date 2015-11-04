@@ -39,6 +39,8 @@ bloc init
 
 bloc init builds a base structure for your blockchain app as well as sets some default parameters values for creating transactions. These can be edited in the config.yaml file in your app directory.
 
+The config.yaml file also holds the app's "appURL".  This can be configured to point to an isolated test network, or the real Ethereum network.  You can change this link, which will allow you to build and test in a sandboxed environment, and later re-deploy on the real Ethereum blockchain.
+
 You will find the following files in your newly created app directory:
 
 ```
@@ -75,7 +77,7 @@ bloc genkey
 
 ![bloc genkey](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_genkey.png)
 
-This generates a new private key and fill it with test-ether.  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
+This generates a new private key and fill it with test-ether (note- free sample Ether is only available on the test network, of course).  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
 
 The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting https://strato1.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here &gt;
 

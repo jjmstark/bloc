@@ -1,9 +1,9 @@
 #! /usr/bin/env node
 
-
 var Promise = require('bluebird');
 var fs = require('fs');
 var path = require('path');
+var spawn = require('child_process').spawn;
 var prompt = Promise.promisifyAll(require('prompt')); 
 
 var cmd = require('../lib/cmd.js');
@@ -33,7 +33,7 @@ function main (){
 
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
-            scaffold(result.appName);
+            scaffold(result.appName, result.developer);
             yamlConfig.writeYaml(result.appName + "/config.yaml", result);
         });
 
@@ -154,6 +154,13 @@ function main (){
         });
         break;
 
+    case 'start':
+        var server = spawn('gulp');
+        server.stdout.on('data', function(data) {
+           console.log(data.toString("utf-8"));
+        });
+
+        break;
     default:
         console.log("unrecognized command");
     }

@@ -29,6 +29,8 @@ npm install -g
 
 ##Generate a new blockchain app
 
+You can use "bloc init" to create a sample app.
+
 ```
 bloc init
 ```

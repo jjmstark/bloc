@@ -77,7 +77,7 @@ bloc genkey
 
 This generates a new private key and fill it with test-ether.  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
 
-The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting https://strato1.blockapps.net/eth/v1.0/account?address=&lt;fill in your address here&gt;
+The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting https://strato1.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here&gt;
 
 ![balance before](https://cloud.githubusercontent.com/assets/5578200/10926491/c5b0bd02-824c-11e5-98d7-3a9e8275a11e.png)
 

@@ -125,20 +125,19 @@ Also, the newly created contract has been given its own address, which you can v
 ## Commands
 
 ```
-bloc
-
 Usage: bloc <command> (options)
 
 Commands:
-  init      start a new project
-  compile   compile contracts in contract folder
-  upload    upload contracts to blockchain
-  genkey    generate a new private key and fill it at the faucet
-  register  register your app with BlockApps
+  init               start a new project
+  compile            compile contracts in contract folder
+  upload [contract]  upload contract to blockchain
+  genkey             generate a new private key and fill it at the faucet
+  start              launch a webserver for your application
+  send               start prompt, transfer (amount*unit) to (address)
 
 Options:
-  -s, --scaffold  scaffold html / js / css from your contracts when compiling or
-                    uploading
+  -s, --scaffold     scaffold html / js / css from your contracts when compiling or
+                     uploading
 ```
 
 ## Additional Resources

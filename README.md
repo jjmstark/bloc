@@ -4,7 +4,7 @@
 
 [![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc)
 
-Bloc is a small command line tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). Bloc makes it effortless to:
+`bloc` is a small command line tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). Bloc makes it effortless to:
 * Compile and deploy smart contracts to the blockchain
 * Automatically wire those contracts to the front-end, so you can bring the blockchain to the world!
 
@@ -39,7 +39,7 @@ bloc init
 
 bloc init builds a base structure for your blockchain app as well as sets some default parameters values for creating transactions. These can be edited in the config.yaml file in your app directory.
 
-The config.yaml file also holds the app's "appURL".  This can be configured to point to an isolated test network, or the real Ethereum network.  You can change this link, which will allow you to build and test in a sandboxed environment, and later re-deploy on the real Ethereum blockchain.
+The config.yaml file also holds the app's "apiURL".  This can be configured to point to an isolated test network, or the real Ethereum network.  You can change this link, which will allow you to build and test in a sandboxed environment, and later re-deploy on the real Ethereum blockchain.
 
 You will find the following files in your newly created app directory:
 
@@ -63,7 +63,7 @@ An Ethereum app consists of three parts:
 
 -The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://ethereum.github.io/solidity/docs/home/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
 
--The "html", "js", and "css" directories are intended to hold a frontend for your app.
+-The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates that can be viewed from `bloc`'s embedded webserver.
 
 -Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at https://strato1.blockapps.net/help.
 

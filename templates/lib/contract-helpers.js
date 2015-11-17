@@ -73,26 +73,54 @@ function contractJSONLookup(contractObj) {
 }
 
 function keyJSONLookup(contractObj) {
-    return fs.readFileAsync(path.join(projectDir, 'key.json')).then(
+   return fs.readFileAsync(path.join(projectDir, 'key.json')).then(
         function(fileData) {
             console.log("key present");
             contractObj.hasKey = true;
             contractObj.developerKeystore = JSON.parse(fileData);
             contractObj.globalKeystore = contractObj.developerKeystore;
             contractObj.walletAddress = contractObj.developerKeystore.addresses[0];
-
             contractObj.developerKeystoreString = fileData;
             contractObj.globalKeystoreString = fileData;
-            contractObj.contractUploadMessage = " has not been uploaded yet. Upload it with bloc upload " + contractObj.contractNameSol;
+            contractObj.contractUploadMessage = " has not been uploaded yet. Upload it with bloc upload " + contractObj.contractName;
 
             return contractObj;
         },
         function (err) {
              console.log("key missing: " + err);
              contractObj.hasKey = false;
-             contractObj.generateKeyMessage = " You don't yet have a wallet. Use bloc genkey to create one. You need one to upload and run contracts!";
+             contractObj.generateKeyMessage = " You don't yet have a wallet. Use bloc genkey to create one. You ne\
+ed one to upload and run contracts!";
 
              throw Error(JSON.stringify(contractObj));
+         }
+
+    );
+}
+
+
+function keyLookup() {
+    return fs.readFileAsync(path.join(projectDir, 'key.json')).then(
+        function(fileData) {
+            console.log("key present");
+            var dataObj = {};
+            dataObj.hasKey = true;
+            dataObj.developerKeystore = JSON.parse(fileData);
+            dataObj.globalKeystore = dataObj.developerKeystore;
+            dataObj.walletAddress = dataObj.developerKeystore.addresses[0];
+
+            dataObj.developerKeystoreString = fileData;
+            dataObj.globalKeystoreString = fileData;
+
+            return dataObj;
+        },
+        function (err) {
+             var dataObj = {};
+             console.log("key missing: " + err);
+             dataObj.hasKey = false;
+             dataObj.generateKeyMessage = " You don't yet have a wallet. Use bloc genkey to create one. You need one to upload and run contracts!";
+
+             throw Error(JSON.stringify(dataObj));
          }
 
     );
@@ -101,5 +129,6 @@ function keyJSONLookup(contractObj) {
 module.exports  = {
   contractLookup : contractLookup,
   contractJSONLookup : contractJSONLookup,
-  keyJSONLookup : keyJSONLookup
+  keyJSONLookup : keyJSONLookup,
+  keyLookup : keyLookup
 };

@@ -155,7 +155,7 @@ function main (){
         break;
 
     case 'start':
-        var server = spawn('gulp');
+        var server = spawn('./node_modules/gulp/bin/gulp.js');
         server.stdout.on('data', function(data) {
            console.log(data.toString("utf-8"));
         });

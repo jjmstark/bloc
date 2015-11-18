@@ -65,7 +65,7 @@ An Ethereum app consists of three parts:
 
 -The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates that can be viewed from `bloc`'s embedded webserver.
 
--Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at https://strato1.blockapps.net/help.
+-Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at https://strato-dev.blockapps.net/help.
 
 ##Creating a Sample Account
 
@@ -79,7 +79,7 @@ bloc genkey
 
 This generates a new private key and fill it with test-ether (note- free sample Ether is only available on the test network, of course).  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
 
-The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting https://strato1.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here &gt;
+The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting https://strato-dev.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here &gt;
 
 ![balance before](https://cloud.githubusercontent.com/assets/5578200/10926491/c5b0bd02-824c-11e5-98d7-3a9e8275a11e.png)
 

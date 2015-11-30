@@ -40,6 +40,7 @@ app.use('/contracts', contract);
 app.use('/examples', examples);
 
 app.use('/css', express.static('css'));
+app.use('/images', express.static('images'));
 
 var server = app.listen(3000, function () {
   var host = server.address().address;

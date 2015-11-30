@@ -1,5 +1,5 @@
-
-<div id="contractStatus" class="container">
+<div id="contractStatus" class="col-md-2">
+<h5>Contract Status:</h5>
 {{#if contractExists}}
   {{#if contractIsCompiled }}
     <p id="contractIsCompiledMsg" class="contractStatusMessage"> {{{contractNameSol}}} {{{contractIsCompiledMessage}}} </p>
@@ -21,3 +21,4 @@
      {{/if}}
   {{/if}}
 {{/if}}
+</div>

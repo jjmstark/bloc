@@ -1,6 +1,12 @@
 #authButtonDiv {
   text-align: center;
 }
+.main__container {
+  padding-top: 7em;
+}
+.navbar-fixed-top {
+  background-color: #223765;
+}
 .bloc__logo {
   display: block;
   margin: 2em auto;
@@ -11,6 +17,10 @@
 }
 .input-group-btn .btn {
   margin-top: 0;
+}
+.nav > li > a > .nav__logo {
+  max-width: 30px;
+  display: inline-block;
 }
 .input-group {
   margin-bottom: 0.5em;

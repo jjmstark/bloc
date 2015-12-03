@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
 var prompt = Promise.promisifyAll(require('prompt')); 
+var assert = require('better-assert');
 
 var cmd = require('../lib/cmd.js');
 var key = require('../lib/keygen');
@@ -26,6 +27,7 @@ var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
+var ethValue = api.ethbase.Units.ethValue;
 
 function main (){
     var cmdArr = cmd.argv._;
@@ -127,6 +129,7 @@ function main (){
         break;
 
     case 'send':
+
         var config = yamlConfig.readYaml('config.yaml');
         var transferObj = transfer;
 
@@ -138,18 +141,20 @@ function main (){
             prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
 
               var store = key.readKeystore();
+
               var address = store.addresses[0];
       
               var privkeyFrom = store.exportPrivateKey(address, result.password);
-              var valueTX = Transaction({"value" : Int((parseInt(result.value) * units.stringToEthUnit(result.unit))), 
+
+              var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
                                          "gasLimit" : Int(result.gasLimit),
-                                         "gasPrice" : Int(result.gasPrice)}); 
+                                         "gasPrice" : Int(result.gasPrice)});
 
               var addressTo = result.to;
 
-              valueTX(privkeyFrom, addressTo).then(function(txResult) {
-                 console.log("transaction result: " + txResult.message);
-              });                            
+              valueTX.send(privkeyFrom, addressTo).then(function(txResult) {
+                console.log("transaction result: " + txResult.message);
+              });                 
             });
         });
         break;

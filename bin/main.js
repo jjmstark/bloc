@@ -1,10 +1,12 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
+'use strict';
 
 var Promise = require('bluebird');
 var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
-var prompt = Promise.promisifyAll(require('prompt')); 
+var prompt = Promise.promisifyAll(require('prompt'));
+var analytics = require('../lib/analytics.js');
 
 var cmd = require('../lib/cmd.js');
 var key = require('../lib/keygen');
@@ -27,10 +29,22 @@ var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 
+
+function checkAnalytics() {
+    if (analytics.insight.optOut === undefined) {
+      return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
+        main();
+      });
+    } else {
+        main();
+    }
+}
+
 function main (){
+
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
-
+        analytics.insight.trackEvent("init");
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
             scaffold(result.appName, result.developer);
@@ -52,6 +66,7 @@ function main (){
 
     switch(cmdArr[0]) {
     case 'compile':
+        analytics.insight.trackEvent("compile");
         console.log("compiling sources");
         if (cmdArr[1] === undefined) {
             // compile all files
@@ -65,7 +80,7 @@ function main (){
                 return fs.readFileSync(path.join(solSrcDir, filename)).toString()
             });
 
-            solObjs = compile(solSrc,config.appName);
+            var solObjs = compile(solSrc,config.appName);
         }
         else if (cmdArr[1] && path.parse(cmdArr[1]).ext === '.sol') {
             // compile < filename >
@@ -79,7 +94,8 @@ function main (){
         }
         break;
 
-      case 'upload':
+    case 'upload':
+        analytics.insight.trackEvent("upload");
         var contractName = cmdArr[1];
         if (contractName === undefined) {
             console.log("contract name required");
@@ -103,11 +119,13 @@ function main (){
         break;
 
     case 'genkey':
+        analytics.insight.trackEvent("genkey");
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(key.generateKey);
         break;
 
     case 'register':
+        analytics.insight.trackEvent("register");
         prompt.start();
         prompt.getAsync(registerPassword).get("password").then(function(password) {
             var loginObj = {
@@ -127,6 +145,7 @@ function main (){
         break;
 
     case 'send':
+        analytics.insight.trackEvent("send");
         var config = yamlConfig.readYaml('config.yaml');
         var transferObj = transfer;
 
@@ -155,6 +174,7 @@ function main (){
         break;
 
     case 'start':
+        analytics.insight.trackEvent("start");
         var server = spawn('./node_modules/gulp/bin/gulp.js');
         server.stdout.on('data', function(data) {
            console.log(data.toString("utf-8"));
@@ -167,5 +187,5 @@ function main (){
 }
 
 if (require.main === module) {
-    main();
+    checkAnalytics();
 }

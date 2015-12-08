@@ -5,7 +5,6 @@ var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
 var prompt = Promise.promisifyAll(require('prompt')); 
-var assert = require('better-assert');
 
 var cmd = require('../lib/cmd.js');
 var key = require('../lib/keygen');

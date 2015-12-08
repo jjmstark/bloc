@@ -32,6 +32,11 @@ function main (){
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
 
+        if(cmdArr.length > 1){
+            var name = cmdArr.slice(-1)[0];
+            scaffoldApp.properties.appName.default = name;
+        }
+
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
             scaffold(result.appName, result.developer);
@@ -51,13 +56,19 @@ function main (){
 
     var doScaffold = (cmd.argv.s !== undefined);
 
+    // in the case '-s' comes in the wrong order!
+    if (!(cmd.argv.s === true || cmd.argv.s === false) && cmdArr[1] === undefined){
+        cmdArr[1] = cmd.argv.s
+        cmd.argv.s = true
+    }
+
     switch(cmdArr[0]) {
     case 'compile':
-        console.log("compiling sources");
+        var solSrcDir = path.normalize('./contracts');
+        var config = yamlConfig.readYaml('config.yaml');
         if (cmdArr[1] === undefined) {
-            // compile all files
-            var solSrcDir = path.normalize('./contracts');
-            var config = yamlConfig.readYaml('config.yaml');
+            console.log("compiling all contracts");
+
             var srcFiles = fs.readdirSync(solSrcDir).filter(function(filename) {
                 return path.extname(filename) === '.sol';
             });
@@ -67,11 +78,12 @@ function main (){
             });
 
             solObjs = compile(solSrc,config.appName);
-        }
-        else if (cmdArr[1] && path.parse(cmdArr[1]).ext === '.sol') {
-            // compile < filename >
-            console.log('compiling single file: ' + cmdArr[1]);
-            var contents = fs.readFileSync(cmdArr[1]);
+        } else if(cmdArr[1]){
+            var fname = path.join(solSrcDir,
+                                  path.parse(cmdArr[1]).ext === '.sol' ? cmdArr[1] : cmdArr[1] + ".sol"
+                                 )
+            console.log('compiling single contract: ' + fname);
+            var contents = fs.readFileSync(fname).toString();
             solObjs = compile([contents], config.appName);
         }
 

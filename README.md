@@ -145,9 +145,10 @@ bloc start
 Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout
 
 Bloc will run through 3 contract status checks
-1. Does the contract exist in the project
-2. Has the contract been compiled
-3. Has the contract been uploaded to the network
+
+  1. Does the contract exist in the project
+  2. Has the contract been compiled
+  3. Has the contract been uploaded to the network
 
 This will be reflected in the application as well as at the terminal
 

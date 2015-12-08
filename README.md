@@ -44,32 +44,46 @@ The config.yaml file also holds the app's "apiURL".  This can be configured to p
 You will find the following files in your newly created app directory:
 
 ```
-/best_app_ever
-  config.yaml
+/app
   /contracts
+    Array.sol
     Payout.sol
-    SimpleStorage.sol
+    SimpleDataFeed.sol
     SimpleMultiSig.sol
+    SimpleStorage.sol
   /css
-    styles.css
-    bootstrap.min.css
   /html
   /js
+  /lib
   /meta
   /routes
+  /views
+  app.js
+  config.yaml
+  gulpfile.js
+  package.json
 ```
 
 An Ethereum app consists of three parts:
 
 -The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://ethereum.github.io/solidity/docs/home/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
 
--The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates that can be viewed from `bloc`'s embedded webserver.
+-The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates written with [handlebars](http://handlebarsjs.com/) that can be viewed from `bloc`'s embedded webserver.
+
+
 
 -Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at https://strato-dev.blockapps.net/help.
 
+
+
 ##Creating a Sample Account
 
-Now in your app directory run
+Now in your app directory run to download dependencies the app needs
+
+```
+npm install
+```
+Once this is finished run
 
 ```
 bloc genkey
@@ -120,6 +134,25 @@ Also, the newly created contract has been given its own address, which you can v
 
 ![contract info](https://cloud.githubusercontent.com/assets/5578200/10926827/8a4fcb42-824f-11e5-883b-b4704797cc02.png)
 
+## Running The Local Webserver
+
+Bloc ships with a node server. To get the server up and running
+
+```
+bloc start
+```
+
+Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout
+
+Bloc will run through 3 contract status checks
+
+  1. Does the contract exist in the project
+  2. Has the contract been compiled
+  3. Has the contract been uploaded to the network
+
+This will be reflected in the application as well as at the terminal
+
+![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_start.png)
 
 
 ## Commands

@@ -134,6 +134,24 @@ Also, the newly created contract has been given its own address, which you can v
 
 ![contract info](https://cloud.githubusercontent.com/assets/5578200/10926827/8a4fcb42-824f-11e5-883b-b4704797cc02.png)
 
+## Running The Local Webserver
+
+Bloc ships with a node server. To get the server up and running
+
+```
+bloc start
+```
+
+Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout
+
+Bloc will run through 3 contract status checks
+1) Does the contract exist in the project
+2) Has the contract been compiled
+3) Has the contract been uploaded to the network
+
+This will be reflected in the application as well as at the terminal
+
+![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_start.png)
 
 
 ## Commands

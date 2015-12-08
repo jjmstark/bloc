@@ -42,9 +42,9 @@ app.use('/examples', examples);
 app.use('/css', express.static('css'));
 app.use('/images', express.static('images'));
 
-var server = app.listen(3000, function () {
+var server = app.listen(3000, 'localhost', function () {
   var host = server.address().address;
   var port = server.address().port;
-
+  
   console.log('bloc is listening on http://%s:%s', host, port);
 });

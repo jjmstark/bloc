@@ -28,6 +28,7 @@ var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
+var ethValue = api.ethbase.Units.ethValue;
 
 
 function checkAnalytics() {
@@ -44,7 +45,14 @@ function main (){
 
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
+
         analytics.insight.trackEvent("init");
+
+        if(cmdArr.length > 1){
+            var name = cmdArr.slice(-1)[0];
+            scaffoldApp.properties.appName.default = name;
+        }
+
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
             scaffold(result.appName, result.developer);
@@ -64,14 +72,23 @@ function main (){
 
     var doScaffold = (cmd.argv.s !== undefined);
 
+    // in the case '-s' comes in the wrong order!
+    if (!(cmd.argv.s === true || cmd.argv.s === false) && cmdArr[1] === undefined){
+        cmdArr[1] = cmd.argv.s
+        cmd.argv.s = true
+    }
+
     switch(cmdArr[0]) {
+
     case 'compile':
+
         analytics.insight.trackEvent("compile");
-        console.log("compiling sources");
+
+        var solSrcDir = path.normalize('./contracts');
+        var config = yamlConfig.readYaml('config.yaml');
         if (cmdArr[1] === undefined) {
-            // compile all files
-            var solSrcDir = path.normalize('./contracts');
-            var config = yamlConfig.readYaml('config.yaml');
+            console.log("compiling all contracts");
+
             var srcFiles = fs.readdirSync(solSrcDir).filter(function(filename) {
                 return path.extname(filename) === '.sol';
             });
@@ -80,12 +97,13 @@ function main (){
                 return fs.readFileSync(path.join(solSrcDir, filename)).toString()
             });
 
-            var solObjs = compile(solSrc,config.appName);
-        }
-        else if (cmdArr[1] && path.parse(cmdArr[1]).ext === '.sol') {
-            // compile < filename >
-            console.log('compiling single file: ' + cmdArr[1]);
-            var contents = fs.readFileSync(cmdArr[1]);
+            solObjs = compile(solSrc,config.appName);
+        } else if(cmdArr[1]){
+            var fname = path.join(solSrcDir,
+                                  path.parse(cmdArr[1]).ext === '.sol' ? cmdArr[1] : cmdArr[1] + ".sol"
+                                 )
+            console.log('compiling single contract: ' + fname);
+            var contents = fs.readFileSync(fname).toString();
             solObjs = compile([contents], config.appName);
         }
 
@@ -145,7 +163,9 @@ function main (){
         break;
 
     case 'send':
+
         analytics.insight.trackEvent("send");
+
         var config = yamlConfig.readYaml('config.yaml');
         var transferObj = transfer;
 
@@ -157,18 +177,20 @@ function main (){
             prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
 
               var store = key.readKeystore();
+
               var address = store.addresses[0];
       
               var privkeyFrom = store.exportPrivateKey(address, result.password);
-              var valueTX = Transaction({"value" : Int((parseInt(result.value) * units.stringToEthUnit(result.unit))), 
+
+              var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
                                          "gasLimit" : Int(result.gasLimit),
-                                         "gasPrice" : Int(result.gasPrice)}); 
+                                         "gasPrice" : Int(result.gasPrice)});
 
               var addressTo = result.to;
 
-              valueTX(privkeyFrom, addressTo).then(function(txResult) {
-                 console.log("transaction result: " + txResult.message);
-              });                            
+              valueTX.send(privkeyFrom, addressTo).then(function(txResult) {
+                console.log("transaction result: " + txResult.message);
+              });                 
             });
         });
         break;

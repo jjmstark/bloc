@@ -68,9 +68,9 @@ An Ethereum app consists of three parts:
 
 -The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://ethereum.github.io/solidity/docs/home/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
 
--The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates written in  that can be viewed from `bloc`'s embedded webserver.
+-The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates written with [handlebars](http://handlebarsjs.com/) that can be viewed from `bloc`'s embedded webserver.
 
-http://handlebarsjs.com/
+
 
 -Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at https://strato-dev.blockapps.net/help.
 

@@ -46,6 +46,11 @@ You will find the following files in your newly created app directory:
 ```
 /app
   /contracts
+    Array.sol
+    Payout.sol
+    SimpleDataFeed.sol
+    SimpleMultiSig.sol
+    SimpleStorage.sol
   /css
   /html
   /js

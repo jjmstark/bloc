@@ -97,7 +97,7 @@ function main (){
                 return fs.readFileSync(path.join(solSrcDir, filename)).toString()
             });
 
-            solObjs = compile(solSrc,config.appName);
+            var solObjs = compile(solSrc,config.appName);
         } else if(cmdArr[1]){
             var fname = path.join(solSrcDir,
                                   path.parse(cmdArr[1]).ext === '.sol' ? cmdArr[1] : cmdArr[1] + ".sol"

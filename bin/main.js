@@ -53,12 +53,22 @@ function main (){
             scaffoldApp.properties.appName.default = name;
         }
 
+        var stat;
+
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
-            scaffold(result.appName, result.developer);
-            yamlConfig.writeYaml(result.appName + "/config.yaml", result);
-        });
+            try {
+                stat = fs.statSync(name);
+            } catch (e) {
+            }
 
+            if (stat !== undefined) {
+                console.log("project: " + name + " already exists");
+            } else {
+                scaffold(result.appName, result.developer);
+                yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
+            }
+        });
         return;
     }
 

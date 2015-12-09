@@ -53,12 +53,22 @@ function main (){
             scaffoldApp.properties.appName.default = name;
         }
 
+        var stat;
+
         prompt.start();
         prompt.getAsync(scaffoldApp).then(function(result) {
-            scaffold(result.appName, result.developer);
-            yamlConfig.writeYaml(result.appName + "/config.yaml", result);
-        });
+            try {
+                stat = fs.statSync(name);
+            } catch (e) {
+            }
 
+            if (stat !== undefined) {
+                console.log("project: " + name + " already exists");
+            } else {
+                scaffold(result.appName, result.developer);
+                yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
+            }
+        });
         return;
     }
 
@@ -97,7 +107,7 @@ function main (){
                 return fs.readFileSync(path.join(solSrcDir, filename)).toString()
             });
 
-            solObjs = compile(solSrc,config.appName);
+            var solObjs = compile(solSrc,config.appName);
         } else if(cmdArr[1]){
             var fname = path.join(solSrcDir,
                                   path.parse(cmdArr[1]).ext === '.sol' ? cmdArr[1] : cmdArr[1] + ".sol"

@@ -161,16 +161,13 @@ This will be reflected in the application as well as at the terminal
 Usage: bloc <command> (options)
 
 Commands:
-  init               start a new project
-  compile            compile contracts in contract folder
-  upload [contract]  upload contract to blockchain
-  genkey             generate a new private key and fill it at the faucet
-  start              launch a webserver for your application
-  send               start prompt, transfer (amount*unit) to (address)
-
-Options:
-  -s, --scaffold     scaffold html / js / css from your contracts when compiling or
-                     uploading
+  init [name]              start a new project
+  compile [contract] [-s]  compile contract in contract folder
+  upload contract [-s]     upload contract to blockchain
+  create                   create a new [project|module]
+  genkey                   generate a new private key and fill it at the faucet
+  send                     start prompt, transfer (amount*unit) to (address)
+  start                    start bloc as a webserver with live reload
 ```
 
 ## Additional Resources

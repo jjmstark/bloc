@@ -2,6 +2,7 @@ var mocha = require('mocha');
 var chai = require('chai');
 var rewire = require('rewire');
 var expect = chai.expect;
+var promise = require('bluebird');
 
 var keygen = rewire("../lib/keygen.js");
 
@@ -15,7 +16,23 @@ var fsMock = {
         }
 };
 
+var faucetMock = function (address) {
+    return new Promise(
+        function (resolve, reject) {
+            resolve({ 
+                method: 'POST',
+                uri: 'http://your-api-url.net', 
+                form: {
+                    address: address
+                }                    
+            });
+        }
+    );
+}
+
 keygen.__set__("fs", fsMock);
+keygen.__set__("faucet", faucetMock);
+
 
 describe('Key Generation', function() {
     describe('#generateKeyPreFaucet()', function () {
@@ -26,16 +43,21 @@ describe('Key Generation', function() {
 	    mockedKey = keygen.generateKeyPreFaucet(password);
         });
 
-	it('should create a key file with an address and a privkey', function () {
-            expect(mockedKey.addresses).not.to.be.empty;
-	    expect(mockedKey.encSeed).not.to.be.empty;
-	    expect(mockedKey.encPrivKeys).not.to.be.empty;
-	});
+	it('should create a key file with an address and a privkey. The address should be valid hex.', 
+            function () 
+            {
+                expect(mockedKey.addresses).not.to.be.empty;
+	        expect(mockedKey.encSeed).not.to.be.empty;
+	        expect(mockedKey.encPrivKeys).not.to.be.empty;
 
-    	it('should successfully encrypt and decrypt with the right password', function () {
+                expect(mockedKey.addresses[0]).to.match(/^[0-9A-F]+/i);
+       	    });
+
+    	it('should successfully encrypt and decrypt with the right password. The key should be valid hex.', function () {
             var exported = mockedKey.exportPrivateKey(mockedKey.addresses[0], password);
 	    
 	    expect(exported).not.to.be.undefined;
+            expect(exported).to.match(/^[0-9A-F]+/i);
 	});
 
         it('should throw an exception if the password is incorrect', function () {
@@ -60,9 +82,17 @@ describe('Key Generation', function() {
             expect(mockedKeyFile.path).to.match(/key.json/);
 	});
 
-    	it.skip('should POST to the faucet', function () {
+    	it('should POST to the faucet', function () {
 	    return keygen.generateKey(password).then(function(result) {
-	        console.log("result: " + JSON.stringify(result));
+                expect(result.form.address).to.not.be.undefined;
+	    }, function (err) {
+		console.log("err: " + JSON.stringify(err));
+	    });
+	});
+
+    	it('should have an address POST param', function () {
+	    return keygen.generateKey(password).then(function(result) {
+                expect(result.method).to.equal('POST');
 	    }, function (err) {
 		console.log("err: " + JSON.stringify(err));
 	    });
@@ -99,8 +129,12 @@ describe('Multi Key Generation', function() {
 	    });
 	});
 
-        it.skip('should throw an exception if the password is incorrect', function () {
-             expect(false).to.be(true);
+        it('should throw an exception if the password is incorrect', function () {
+            expect(
+                function () { 
+                    mockedKeyArray[0].exportPrivateKey(mockedKeyArray[0].addresses[0], 'not the password');
+                }).to.throw('Invalid Password');
+
 	});
     });
     
@@ -122,7 +156,7 @@ describe('Multi Key Generation', function() {
 	    });
 	});
 
-    	it.skip('should POST to the faucet', function () {
+    	it.skip('should POST repeatedly to the faucet', function () {
             expect(false).to.be(true);
 	});
    });

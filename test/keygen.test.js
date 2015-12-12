@@ -28,7 +28,7 @@ describe('Key Generation', function() {
 
 	it('should create a key file with an address and a privkey', function () {
             expect(mockedKey.addresses).not.to.be.empty;
-	    expect(mockedKey.encMasterPriv).not.to.be.empty;
+	    expect(mockedKey.encSeed).not.to.be.empty;
 	    expect(mockedKey.encPrivKeys).not.to.be.empty;
 	});
 
@@ -39,7 +39,10 @@ describe('Key Generation', function() {
 	});
 
         it('should throw an exception if the password is incorrect', function () {
-            expect(mockedKey.exportPrivateKey(mockedKey.addresses[0], 'not the password')).to.throw(Error);
+            expect(
+                function () { 
+                    mockedKey.exportPrivateKey(mockedKey.addresses[0], 'not the password');
+                }).to.throw('Invalid Password');
 	});
     });
     
@@ -83,7 +86,7 @@ describe('Multi Key Generation', function() {
 	    var i;
 	    mockedKeyArray.map(function(store) {  
                 expect(store.addresses).not.to.be.empty;
-       	        expect(store.encMasterPriv).not.to.be.empty;
+       	        expect(store.encSeed).not.to.be.empty;
 		expect(store.encPrivKeys).not.to.be.empty;
 	    });
 	});
@@ -114,7 +117,6 @@ describe('Multi Key Generation', function() {
 	    mockedKeyFileArray = keygen.writeKeysToDisk(mockedKeyArray);
 	});
 	it('should create key files matching key*.json', function () {
-	    console.log("mockedKeyFileArray: " + mockedKeyFileArray);
 	    mockedKeyFileArray.map(function(fileMock) { 
 		expect(fileMock.path).to.match(/key\d*.json/);
 	    });

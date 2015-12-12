@@ -2,7 +2,7 @@
 // Example usage of helpers: Name Registry
 // Create the contract, register the key 123, set the value 456
 
-var ethlightjs = require('ethlightjs')
+var ethlightjs = require('eth-lightwallet')
 var txutils = ethlightjs.txutils
 var helpers = ethlightjs.helpers
 

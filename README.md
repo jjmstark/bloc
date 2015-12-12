@@ -2,7 +2,7 @@
 
 [![BlockApps logo](http://blockapps.net/img/logo_cropped.png)](http://blockapps.net)
 
-[![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc)
+[![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc) [![npm version](https://badge.fury.io/js/blockapps-bloc.svg)](https://badge.fury.io/js/blockapps-bloc)
 
 `bloc` is a small command line tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). Bloc makes it effortless to:
 * Compile and deploy smart contracts to the blockchain
@@ -82,7 +82,6 @@ Now in your app directory run to download dependencies the app needs
 
 ```
 npm install
-
 ```
 Once this is finished run
 
@@ -109,7 +108,7 @@ Getting a contract live on the blockchain is a two step process
 To compile your smart contracts
 
 ```
-bloc compile -s
+bloc compile (-s)
 ```
 
 ![bloc compile](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_compile.png)
@@ -119,7 +118,7 @@ If there are any bugs in your contract code, this is where you will be allowed t
 Upload a contract and scaffold (`-s`) your dApp
 
 ```
-bloc upload <ContractName> -s
+bloc upload <ContractName> (-s)
 ```
 
 ![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_upload.png)
@@ -135,6 +134,27 @@ Also, the newly created contract has been given its own address, which you can v
 
 ![contract info](https://cloud.githubusercontent.com/assets/5578200/10926827/8a4fcb42-824f-11e5-883b-b4704797cc02.png)
 
+## Running The Local Webserver
+
+Bloc ships with a node server. To get the server up and running
+
+```
+bloc start
+```
+
+Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout. Note
+that the local webserver relies on dynamically generated templates, founds in the views folder, so it is not
+necessary to compile and upload with the '-s' option to view and run your contracts.
+
+Bloc will run through 3 contract status checks
+
+  1. Does the contract exist in the project
+  2. Has the contract been compiled
+  3. Has the contract been uploaded to the network
+
+This will be reflected in the application as well as at the terminal
+
+![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_start.png)
 
 
 ## Commands
@@ -143,16 +163,13 @@ Also, the newly created contract has been given its own address, which you can v
 Usage: bloc <command> (options)
 
 Commands:
-  init               start a new project
-  compile            compile contracts in contract folder
-  upload [contract]  upload contract to blockchain
-  genkey             generate a new private key and fill it at the faucet
-  start              launch a webserver for your application
-  send               start prompt, transfer (amount*unit) to (address)
-
-Options:
-  -s, --scaffold     scaffold html / js / css from your contracts when compiling or
-                     uploading
+  init [name]              start a new project
+  compile [contract] [-s]  compile contract in contract folder
+  upload contract [-s]     upload contract to blockchain
+  create                   create a new [project|module]
+  genkey                   generate a new private key and fill it at the faucet
+  send                     start prompt, transfer (amount*unit) to (address)
+  start                    start bloc as a webserver with live reload
 ```
 
 ## Additional Resources

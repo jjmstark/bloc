@@ -36,10 +36,12 @@
     "prompt": "^0.2.14",
     "readdirp": "^2.0.0",
     "request": "^2.60.0",
+    "rewire": "^2.5.1",
     "through2": "^2.0.0",
     "yargs": "^3.18.0"
   },
   "devDependencies": {
+    "chai": "^3.4.1",
     "mocha": "^2.2.5"
   },
   "author": "Kieren James-Lubin",

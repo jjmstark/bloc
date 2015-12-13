@@ -156,8 +156,15 @@ describe('Multi Key Generation', function() {
 	    });
 	});
 
-    	it.skip('should POST repeatedly to the faucet', function () {
-            expect(false).to.be(true);
-	});
+    	it('should POST repeatedly to the faucet', function () {
+	    return keygen.generateKeys(password,numKeys).then(function(resultArray) {
+                resultArray.map(function(result) { 
+                   expect(result.method).to.equal('POST');
+                   expect(result.form.address).to.not.be.undefined;
+                });
+	    }, function (err) {
+		console.log("err: " + err);
+	    });
+        });  
    });
 });

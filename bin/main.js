@@ -153,7 +153,7 @@ function main (){
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(function(password) {
             if (numKeys === undefined) key.generateKey(password);
-	    else key.generateKeysPreFaucet(password,numKeys);  // <---- need to use faucet
+	    else key.generateKeys(password,numKeys); 
 	});
         break;
 

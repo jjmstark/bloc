@@ -42,7 +42,9 @@
   },
   "devDependencies": {
     "chai": "^3.4.1",
-    "mocha": "^2.2.5"
+    "event-stream": "^3.3.2",
+    "mocha": "^2.2.5",
+    "traverse": "^0.6.6"
   },
   "author": "Kieren James-Lubin",
   "license": "MIT",

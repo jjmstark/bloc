@@ -4,7 +4,12 @@ var fs = Promise.promisifyAll(require("fs"));
 var yaml = require('js-yaml');
 
 var projectDir = path.normalize(path.join(__dirname, '..'));
-var configFile = yaml.safeLoad(fs.readFileSync('config.yaml'));
+// var configFile = yaml.safeLoad(fs.readFileSync('config.yaml')); // <---- depracate this soon
+
+/* for streaming functionality */
+var readdirp = require('readdirp');
+var minimatch = require("minimatch");
+var through = require('through2');
 
 function contractLookup(contractName) {
     var contractNameSol = contractName + '.sol';
@@ -126,9 +131,71 @@ function keyLookup() {
     );
 }
 
+function keysLookup() {
+    return readdirp( { root: path.join(projectDir), fileFilter: 'key*.+(json)'})
+        .on('warn', function (err) { console.error('warning: ', err); })
+        .on('error', function (err) { console.error('error: ', err); })
+        .on('end', function (err) { console.log('looked up keys successfully!'); });
+}
+
+/* all stream based now */
+
+/* 
+  global state is just a flattened view of the file system, and is represented as: 
+
+  { 
+    fileName1: fileDataJSON1
+    fileName2: fileDataJSON2
+  }
+*/
+
+function lookupAllJsonStream() {
+    return readdirp( { root: path.join(projectDir), fileFilter: function (path) {
+                return minimatch(path,'*.+(json)');
+            }
+        })
+        .on('warn', function (err) { console.error('warning: ', err); })
+        .on('error', function (err) { console.error('error: ', err); })
+        .on('end', function (err) { console.log('looked up all json successfully!'); });
+}
+
+function lookupKeysStream() {
+    return readdirp( { root: path.join(projectDir), fileFilter: 'key*.+(json)'})
+        .on('warn', function (err) { console.error('warning: ', err); })
+        .on('error', function (err) { console.error('error: ', err); })
+        .on('end', function (err) { console.log('looked up keys successfully!'); });
+}
+
+function lookupContractMetaStream() {
+    return readdirp( { root: path.join(projectDir), fileFilter: '*.+(json)', directoryFilter: 'meta'})
+        .on('warn', function (err) { console.error('warning: ', err); })
+        .on('error', function (err) { console.error('error: ', err); })
+        .on('end', function (err) { console.log('looked up contracts successfully!'); });
+}
+
+function lookupConfigStream() {
+    return readdirp( { root: path.join(projectDir), fileFilter: 'config.yaml'})
+        .on('warn', function (err) { console.error('warning: ', err); })
+        .on('error', function (err) { console.error('error: ', err); })
+        .on('end', function (err) { console.log('looked up config successfully!'); });
+}
+
+function filterContractNameStream(contractName) {
+
+}
+
+function filterKeysStream() {
+
+}
+
 module.exports  = {
   contractLookup : contractLookup,
   contractJSONLookup : contractJSONLookup,
   keyJSONLookup : keyJSONLookup,
-  keyLookup : keyLookup
+  keyLookup : keyLookup,
+  lookupAllJsonStream : lookupAllJsonStream,
+  lookupKeysStream : lookupKeysStream,
+  lookupConfigStream : lookupConfigStream,
+  filterContractNameStream :   filterContractNameStream,
+  filterKeysStream :  filterKeysStream
 };

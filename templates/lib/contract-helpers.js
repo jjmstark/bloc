@@ -144,8 +144,8 @@ function keysLookup() {
   global state is just a flattened view of the file system, and is represented as: 
 
   { 
-    fileName1: fileDataJSON1
-    fileName2: fileDataJSON2
+    fileName1: fileDataString1
+    fileName2: fileDataString2
   }
 */
 
@@ -181,7 +181,7 @@ function lookupConfigStream() {
 }
 
 function filterContractNameStream(contractName) {
-
+    
 }
 
 function filterKeysStream() {

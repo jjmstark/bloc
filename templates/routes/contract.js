@@ -1,51 +1,37 @@
 var express = require('express');
-var contractHelpers = require('../lib/contract-helpers.js');
+var helper = require('../lib/contract-helpers.js');
 var router = express.Router();
 
+require('marko/node-require').install();
+var contractTemplate = require('marko').load(require.resolve('../components/contracts/template.marko'));
+
 router.get('/:contractName', function (req, res) {
-  var contractLookup = contractHelpers.contractLookup;
-  var contractJSONLookup = contractHelpers.contractJSONLookup;
-  var keyJSONLookup = contractHelpers.keyJSONLookup;
-
   var contractName = req.params.contractName;
-  var contractNameSol = contractName + '.sol';
-  var globalPassword = req.session.globalPassword;
 
-  contractLookup(contractName)
-   .then(
-        function (contractTemplateObj) {
-          return contractJSONLookup(contractTemplateObj);
-        }
-    ).then(
-        function (contractTemplateObj) {
-          return keyJSONLookup(contractTemplateObj);
-        }
-    ).then(
-        function (contractTemplateObj) {
-          contractTemplateObj.globalPassword = globalPassword;
-          contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
-          contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions. Those buttons won't work yet!";
-          contractTemplateObj.title = "Viewing " + contractTemplateObj.contractNameSol;
-          contractTemplateObj.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
-          contractTemplateObj.txFailedHandlerName = "txFailHandler";
+  var contractNameStream =  helper.contractsStream()
+     .pipe( helper.collect() )
+     .pipe( es.map(function (data,cb) {
+                      var contractData = {};
+                      contractData.contracts = data;
+                      cb(null,contractData);
+                   }));
 
-          res.render('Contract', contractTemplateObj);
-        }
-    ).catch(function(err) {
-          console.log("short circuited with status: " + err);
-          contractTemplateObj = JSON.parse(err.message);
-          contractTemplateObj.globalPassword = globalPassword;
-          contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
-          contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions.";
-          if (contractTemplateObj.contractExists) contractTemplateObj.title = "Viewing " + contractNameSol;
-          else contractTemplateObj.title = "Viewing Non-Existent Contract ;)";
+  var contractMetaStream =  helper.contractsMetaStream()
+     .pipe( es.map(function (data,cb) {
+                      var contractData = {};
+                      contractData.contractMeta = data;
+                      /* filter */
+                      if (contractData.contractMeta.name == contractName) cb(null,contractData);
+                      else cb();                      
+                   }));
 
-          contractTemplateObj.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
-          contractTemplateObj.txFailedHandlerName = "txFailHandler";
+  var configStream = helper.configStream()
+     
 
-          res.render('Contract', contractTemplateObj);
-        }
-    );
+   helper.fuseStream([contractNameStream,contractMetaStream,configStream])
+       .on('data', function (data) {
+                      contractTemplate.render(data, res);
+                   });
 });
 
 module.exports = router;

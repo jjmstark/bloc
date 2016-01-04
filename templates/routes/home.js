@@ -1,37 +1,39 @@
 var express = require('express');
 var router = express.Router();
 var helper = require('../lib/contract-helpers.js');
+var es = require('event-stream');
 
+require('marko/node-require').install();
+var homeTemplate = require('marko').load(require.resolve('../home.marko'));
 
 // assuming existence of global session
 
 router.get('/', function (req, res) {
   console.log(req.session);
   if (typeof req.session.globalPassword == null) req.session.globalPassword = null;
- 
-  helper.keyLookup()
-    .then( function (keyObj) { 
-               res.render('Landing',
-                  { globalPassword : req.session.globalPassword,
-                    isLoggedInMessage : "Welcome to BlockApps' landing page! You are logged in and can sign transactions",
-                    isNotLoggedInMessage : "Welcome to BlockApps' landing page! You are not logged in, and need to do so to sign transactions",
-                    title : "Welcome to BlockApps!",
-                    hasKeyMessage : "You've got a key already!", 
-                    hasKey : keyObj.hasKey,
-                    generateKeyMessage : "You need to generate a key with bloc genkey!" }
-               )
-           },
-           function (err) { 
-               res.render('Landing',
-                  { globalPassword : req.session.globalPassword,
-                    isLoggedInMessage : "Welcome to BlockApps' landing page! You are logged in and can sign transactions",
-                    isNotLoggedInMessage : "Welcome to BlockApps' landing page! You are not logged in, and need to do so to sign transactions",
-                    title : "Welcome to BlockApps!",
-                    hasKeyMessage : "You've got a key already!", 
-                    generateKeyMessage : "You need to generate a key with bloc genkey!" }
-               )
-           }
-    );
+
+  var contractNameStream =  helper.contractsStream()
+     .pipe(helper.collect())
+     .pipe( es.map(function (data,cb) {
+                      var contractData = {};
+                      contractData.contracts = data;
+                      cb(null,contractData);
+                   }));
+
+  var contractMetaStream =  helper.contractsMetaStream()
+     .pipe(helper.collect())
+     .pipe( es.map(function (data,cb) {
+                      var contractData = {};
+                      contractData.contractMeta = data;
+                      cb(null,contractData);
+                   }));
+
+   helper.fuseStream([contractNameStream,contractMetaStream])
+       .on('data', function (data) {
+                      console.log('data in fuseStream: ' + JSON.stringify(data));
+                      homeTemplate.render(data, res);
+                   });
+
 });
 
 module.exports = router;

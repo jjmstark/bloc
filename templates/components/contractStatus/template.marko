@@ -1,4 +1,9 @@
-<p> will this appear in contractStatus </p>
-<div for="cs in data.contractMeta" style="border: 1px solid black; padding: 10px; margin-bottom: 1em;">
-    <h2>${cs.name} compiled </h2>
 
+<div for="cs in data.contractMeta" style="border: 1px solid black; padding: 10px; margin-bottom: 1em;">
+    <p>${cs.name} Status </p>
+    <ul class="nav nav-pills">
+    <li class="active"><a href="#">Compiled</a> </li>
+    <li class="active" if="notEmpty(cs.address)"><a href="#"> <font color="black"> Uploaded with address: <b> $cs.address </b> </font> </a></li>
+    <li else> <a href="#"> Not yet uploaded! Upload with <b> bloc upload ${cs.name} </b> </a> </div>
+    </ul>
+</div>

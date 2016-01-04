@@ -5,25 +5,29 @@
 var blockapps = require("blockapps-js");
 var Promise = require("bluebird");
 
-var contract = blockapps.Solidity.attach({{{contractDataString}}});
+var globalKeystore;
+var globalPassword = '$data.globalPassword';
+
+var contract = blockapps.Solidity.attach( ${JSON.stringify(data.contractMeta)} );
 blockapps.query.serverURI = '$data.apiURL';
 
 var Units = blockapps.ethbase.Units;
-var globalKeystore = {{{globalKeystoreString}}};
-var developerKeystore = {{{developerKeystoreString}}};
 
-{{{ txFailedHandlerCode }}}
+${data.txFailedHandlerCode};
 
 function callFunc(funcName) {
-    var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore));
-    try {
-        var privkey = usableKeystore.exportPrivateKey(
-            walletaddress.value, '{{{globalPassword}}}');
+    if (typeof ethlightjs === 'undefined') {
+        ethlightjs = lightwallet;
+    }
 
+    var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore[0]));
+
+    try {
+        var privkey = usableKeystore.exportPrivateKey(usableKeystore.addresses[0], globalPassword);
         console.log("privkey: " + privkey);
     } catch (e) {
-        {{{ txFailedHandlerName }}}(e);
-//        $('#passwordModal').modal('show')
+        console.log("failed with: " + e);
+        ${data.txFailedHandlerName}(e);
     }
 
     var args = [];
@@ -67,7 +71,7 @@ function contractBalanceAfterTX(txString) {
 }
 
 function userBalanceAfterTX(txString) {
-    return blockapps.ethbase.Account(globalKeystore.addresses[0]).balance.then(function(userBal) {
+    return blockapps.ethbase.Account(globalKeystore[0].addresses[0]).balance.then(function(userBal) {
         return txString + "\n Your balance     =  " +
             Units.convertEth(userBal).from("wei").to("ether") + " ether\n";
     });

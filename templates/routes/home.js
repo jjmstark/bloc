@@ -4,7 +4,7 @@ var helper = require('../lib/contract-helpers.js');
 var es = require('event-stream');
 
 require('marko/node-require').install();
-var homeTemplate = require('marko').load(require.resolve('../home.marko'));
+var homeTemplate = require('marko').load(require.resolve('../components/home/home.marko'));
 
 // assuming existence of global session
 
@@ -30,7 +30,6 @@ router.get('/', function (req, res) {
 
    helper.fuseStream([contractNameStream,contractMetaStream])
        .on('data', function (data) {
-                      console.log('data in fuseStream: ' + JSON.stringify(data));
                       homeTemplate.render(data, res);
                    });
 

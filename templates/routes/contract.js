@@ -25,11 +25,23 @@ router.get('/:contractName', function (req, res) {
                       else cb();                      
                    }));
 
-  var configStream = helper.configStream()
-     
+  var configStream = helper.configStream();
 
-   helper.fuseStream([contractNameStream,contractMetaStream,configStream])
+  var keysStream = helper.keysStream()
+      .pipe( helper.collect() )
+      .pipe( es.map(function (data,cb) {
+                      var keyData = {};
+                      keyData.keys = data;
+
+                      cb(null,keyData);
+                   }));
+
+   helper.fuseStream([contractNameStream,contractMetaStream,configStream, keysStream])
        .on('data', function (data) {
+                      console.log('data: ' + JSON.stringify(data));
+                      data.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
+                      data.txFailedHandlerName = "txFailHandler";
+                      data.globalPassword = req.session.globalPassword;
                       contractTemplate.render(data, res);
                    });
 });

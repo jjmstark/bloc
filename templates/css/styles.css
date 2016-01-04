@@ -28,6 +28,14 @@
 #walletDiv {
   margin-bottom: 0.5em;
 }
+
 textarea {
   margin-top: 0.5em;
 }
+
+#globalKeystore {
+  max-width: 50 px;
+  border:none;
+  background:#fff;
+}
+

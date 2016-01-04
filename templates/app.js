@@ -13,6 +13,7 @@ var home = require('./routes/home.js');
 var login = require('./routes/login.js');
 var contract = require('./routes/contract.js');
 var examples = require('./routes/examples.js');
+var keys = require('./routes/keys.js');
 
 var blocRootDir = path.normalize(path.join(__dirname, '..'));
 var configFile = yaml.safeLoad(fs.readFileSync('config.yaml'));
@@ -38,6 +39,7 @@ app.use('/', home);
 app.use('/login', login);
 app.use('/contracts', contract);
 app.use('/examples', examples);
+app.use('/keys', keys);
 
 app.use('/css', express.static('css'));
 app.use('/images', express.static('images'));

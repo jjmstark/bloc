@@ -1,3 +1,5 @@
+<script src="${data.apiURL}/static/js/ethlightjs.min.js"></script>
+
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -22,19 +24,51 @@
 </div>
 
 <script>
+
 $('#submitPassButton').on('click',function(e){
     e.preventDefault();
     globalPassword = walletDecrypt.value;
     console.log('globalPassword: ' + globalPassword);
 
-    $.ajax({
-        type     : "POST",
-        url      : "/login",
-        data     : { password: $(this).value },
-        success  : function(data) {
-           alert("successfully logged in!");
-        }
-    });
+    console.log("keyModal: " + "${data.apiURL}")
+
+    if (typeof ethlightjs === 'undefined') {
+        ethlightjs = lightwallet;
+    }
+
+    var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore[0]));
+    console.log('usableKeystore: ' + JSON.stringify(usableKeystore))
+
+    var success = true;
+
+    try {
+
+      var privkey = usableKeystore.exportPrivateKey(usableKeystore.addresses[0], globalPassword);
+      console.log("privkey: " + privkey);
+
+    } catch (e) {
+
+        success = false;
+        console.log("failed with: " + e);
+        ${data.txFailedHandlerName}(e);
+
+    }
+
+    if(success){
+        $.ajax({
+          type     : "POST",
+          url      : "/login",
+          data     : { password: $(this).value },
+          success  : function(data) {
+             alert("successfully logged in!");
+          }
+      });
+    } else {
+      console.log("the password is wrong")
+        // update DIV with "wrong password"
+    }
+
+
 });
 
 </script>

@@ -15,6 +15,11 @@ var developerKeystore = {{{developerKeystoreString}}};
 {{{ txFailedHandlerCode }}}
 
 function callFunc(funcName) {
+
+    if (typeof ethlightjs === 'undefined') {
+        ethlightjs = lightwallet;
+    }
+
     var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore));
     try {
         var privkey = usableKeystore.exportPrivateKey(

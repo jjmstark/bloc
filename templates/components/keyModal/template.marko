@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button id="submitPassButton" type="submit" class="btn btn-primary col-sm-4" data-toggle="modal" data-target="#passwordModal">Submit</button>
+        <button id="submitPassButton" class="btn btn-primary col-sm-4" data-target="#passwordModal">Submit</button>
       </div>
       </form>
     </div>
@@ -24,6 +24,8 @@
 </div>
 
 <script>
+
+
 
 $('#submitPassButton').on('click',function(e){
     e.preventDefault();
@@ -55,6 +57,9 @@ $('#submitPassButton').on('click',function(e){
     }
 
     if(success){
+
+        $("#passwordModal").modal()
+
         $.ajax({
           type     : "POST",
           url      : "/login",
@@ -62,6 +67,7 @@ $('#submitPassButton').on('click',function(e){
           success  : function(data) {
              alert("successfully logged in!");
           }
+          
       });
     } else {
       console.log("the password is wrong")

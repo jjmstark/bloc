@@ -58,7 +58,7 @@ $('#submitPassButton').on('click',function(e){
 
     if(success){
 
-        $("#passwordModal").modal()
+        $("#passwordModal").modal('hide')
 
         $.ajax({
           type     : "POST",
@@ -67,7 +67,7 @@ $('#submitPassButton').on('click',function(e){
           success  : function(data) {
              alert("successfully logged in!");
           }
-          
+
       });
     } else {
       console.log("the password is wrong")

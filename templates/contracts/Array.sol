@@ -7,7 +7,7 @@ contract Array {
   uint currentStake;
   uint sumStake;
   
-  function Ponzi() {
+  function Stake() {
     currentStake = 100;  /* the number doesn't really matter, payout computed by ratio anyway */
     sumStake = 0;
     numStakeHolders = 0;

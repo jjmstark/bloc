@@ -10,11 +10,17 @@
             globalPassword="${data.globalPassword}" />
 
 <body>
-  <contractStatus contractMeta ="${data.contractMeta}"/>
-  <loginStatus globalPassword="${data.globalPassword}"/>
-  <div class="col-md-9" id="functionsDiv">
-     <contractFunctionsCall contractMeta="${data.contractMeta}">
-  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9" id="functionsDiv">
+        <contractFunctionsCall contractMeta="${data.contractMeta}">
+      </div>
+      <div class="col-md-3">
+        <contractStatus contractMeta ="${data.contractMeta}"/>
+        <loginStatus globalPassword="${data.globalPassword}"/>
+      </div>
+    </div> <!-- end row-->
+  </div> <!-- end container -->
 
 </body>
 <script>

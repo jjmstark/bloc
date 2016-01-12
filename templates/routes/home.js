@@ -30,6 +30,10 @@ router.get('/', function (req, res) {
 
    helper.fuseStream([contractNameStream,contractMetaStream])
        .on('data', function (data) {
+                      data.contractNames = [];
+                      data.contracts.forEach(function(value, index){
+                        data.contractNames.push(value.slice(0,-4));
+                      });
                       homeTemplate.render(data, res);
                    });
 

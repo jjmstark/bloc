@@ -16,7 +16,7 @@ var getContents = function(file, cb) {
 };
 
 var getPath = function(file, cb) {
-    cb(null,file.path);
+    cb(null,file.relative);
 };
 
 function contractNameStream(contractName) {

@@ -3,7 +3,9 @@
     <p>${cs.name} Status </p>
     <ul class="nav nav-pills">
     <li class="active"><a href="#">Compiled</a> </li>
-    <li class="active" if="notEmpty(cs.address)"><a href="#"> <font color="black"> Uploaded with address: <b> $cs.address </b> </font> </a></li>
+    <li class="active" if="notEmpty(cs.address)">
+      <a href="#">Uploaded with address: <span class="upload-address">$cs.address</span></a>
+    </li>
     <li else> <a href="#"> Not yet uploaded! Upload with <b> bloc upload ${cs.name} </b> </a> </div>
     </ul>
 </div>

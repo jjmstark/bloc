@@ -108,7 +108,7 @@ Getting a contract live on the blockchain is a two step process
 To compile your smart contracts
 
 ```
-bloc compile -s
+bloc compile (-s)
 ```
 
 ![bloc compile](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_compile.png)
@@ -118,7 +118,7 @@ If there are any bugs in your contract code, this is where you will be allowed t
 Upload a contract and scaffold (`-s`) your dApp
 
 ```
-bloc upload <ContractName> -s
+bloc upload <ContractName> (-s)
 ```
 
 ![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_upload.png)
@@ -142,7 +142,9 @@ Bloc ships with a node server. To get the server up and running
 bloc start
 ```
 
-Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout
+Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout. Note
+that the local webserver relies on dynamically generated templates, founds in the views folder, so it is not
+necessary to compile and upload with the '-s' option to view and run your contracts.
 
 Bloc will run through 3 contract status checks
 

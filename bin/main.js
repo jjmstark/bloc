@@ -148,8 +148,13 @@ function main (){
 
     case 'genkey':
         analytics.insight.trackEvent("genkey");
+	var numKeys = cmdArr[1];
+
         prompt.start();
-        prompt.getAsync(createPassword).get("password").then(key.generateKey);
+        prompt.getAsync(createPassword).get("password").then(function(password) {
+            if (numKeys === undefined) key.generateKey(password);
+	    else key.generateKeys(password,numKeys); 
+	});
         break;
 
     case 'register':

@@ -24,6 +24,7 @@ var createPassword = require('../lib/prompt-schema.js').createPassword;
 var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../lib/prompt-schema.js').transfer;
 
+var icon = require('../lib/icon.js').blocIcon;
 var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
@@ -45,6 +46,7 @@ function main (){
 
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
+        console.log(icon());
 
         analytics.insight.trackEvent("init");
 

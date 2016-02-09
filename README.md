@@ -9,10 +9,9 @@
 * Automatically wire those contracts to the front-end, so you can bring the blockchain to the world!
 
 ##Installation
-Installation is currently done by cloning:
 
 ```
-git clone https://github.com/blockapps/bloc.git
+npm install blockapps-bloc
 ```
 
 Enter the bloc directory:
@@ -66,13 +65,13 @@ You will find the following files in your newly created app directory:
 
 An Ethereum app consists of three parts:
 
--The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://ethereum.github.io/solidity/docs/home/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
+-The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://solidity.readthedocs.org/en/latest/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
 
 -The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates written with [handlebars](http://handlebarsjs.com/) that can be viewed from `bloc`'s embedded webserver.
 
 
 
--Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at https://strato-dev.blockapps.net/help.
+-Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at http://strato-dev2.blockapps.net/help.
 
 
 
@@ -93,7 +92,7 @@ bloc genkey
 
 This generates a new private key and fill it with test-ether (note- free sample Ether is only available on the test network, of course).  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
 
-The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting https://strato-dev.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here &gt;
+The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting http://strato-dev2.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here &gt;
 
 ![balance before](https://cloud.githubusercontent.com/assets/5578200/10926491/c5b0bd02-824c-11e5-98d7-3a9e8275a11e.png)
 

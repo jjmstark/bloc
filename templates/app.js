@@ -41,7 +41,7 @@ app.use('/contracts', contract);
 app.use('/examples', examples);
 app.use('/keys', keys);
 
-app.use('/css', express.static('css'));
+app.use('/static', express.static('static'));
 app.use('/images', express.static('images'));
 
 var server = app.listen(3000, 'localhost', function () {

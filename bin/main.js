@@ -96,7 +96,7 @@ function main (){
 
         analytics.insight.trackEvent("compile");
 
-        var solSrcDir = path.normalize('./contracts');
+        var solSrcDir = path.normalize('./app/contracts');
         var config = yamlConfig.readYaml('config.yaml');
         if (cmdArr[1] === undefined) {
             console.log("compiling all contracts");
@@ -140,7 +140,7 @@ function main (){
             var privkey = store.exportPrivateKey(address, result.password);
             return upload(contractName, privkey);
         }).then(function (solObjWAddr) {
-            console.log("adding address to meta/" + contractName + ".json");
+            console.log("adding address to app/meta/" + contractName + ".json");
             if (doScaffold) {
                 codegen.writeJS(contractName, solObjWAddr);
             }

@@ -20,19 +20,19 @@ var getPath = function(file, cb) {
 };
 
 function contractNameStream(contractName) {
-    return vinylFs.src( [ './meta/' + contractName + '.json' ] )
+    return vinylFs.src( [ './app/meta/' + contractName + '.json' ] )
       .pipe( map(getContents) );
 }
 
 /* all contract names, just checking for their presence */
 function contractsStream() {
-    return vinylFs.src( [ './contracts/*.sol' ] )
+    return vinylFs.src( [ './app/contracts/*.sol' ] )
       .pipe( map(getPath) );  
 }
 
 /* emits all contract metadata as json */
 function contractsMetaStream() { 
-    return vinylFs.src( [ './meta/*.json' ] )
+    return vinylFs.src( [ './app/meta/*.json' ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))

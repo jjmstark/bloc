@@ -24,6 +24,7 @@ var createPassword = require('../lib/prompt-schema.js').createPassword;
 var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../lib/prompt-schema.js').transfer;
 
+var icon = require('../lib/icon.js').blocIcon;
 var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
@@ -45,6 +46,7 @@ function main (){
 
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
+        console.log(icon());
 
         analytics.insight.trackEvent("init");
 
@@ -94,7 +96,7 @@ function main (){
 
         analytics.insight.trackEvent("compile");
 
-        var solSrcDir = path.normalize('./contracts');
+        var solSrcDir = path.normalize('./app/contracts');
         var config = yamlConfig.readYaml('config.yaml');
         if (cmdArr[1] === undefined) {
             console.log("compiling all contracts");
@@ -138,7 +140,7 @@ function main (){
             var privkey = store.exportPrivateKey(address, result.password);
             return upload(contractName, privkey);
         }).then(function (solObjWAddr) {
-            console.log("adding address to meta/" + contractName + ".json");
+            console.log("adding address to app/meta/" + contractName + ".json");
             if (doScaffold) {
                 codegen.writeJS(contractName, solObjWAddr);
             }

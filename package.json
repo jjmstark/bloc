@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bignumber.js": "^2.0.7",
-    "blockapps-js": "blockapps/blockapps-js",
+    "blockapps-js": "kejace/blockapps-js",
     "bluebird": "^2.9.34",
     "body-parser": "^1.14.1",
     "chalk": "^1.1.1",

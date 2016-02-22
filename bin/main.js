@@ -80,7 +80,7 @@ function main (){
         throw 'Cannot open config.yaml - are you in the project directory?';
     }
     
-    api.query.serverURI = config.apiURL;
+    api.setProfile("strato-dev", config.apiURL);
 
     var doScaffold = (cmd.argv.s !== undefined);
 

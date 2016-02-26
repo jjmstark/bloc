@@ -1,8 +1,7 @@
 
 <div "class=container" id="functionsContainer"  >   
   <div for="contract in data.contractMeta">
-    <div for="(symbol,symbolObj) in contract.symTab">
-      <div if="symbolObj.jsType == 'Function'">
+    <div for="(symbol,symbolObj) in contract.xabi.funcs">
         <div id="${symbol}Div">
            <button style="background-color: #223765; color: white" class="btn col-sm-12" onclick="callFunc('${symbol}')">${symbol}</button>          
              <input class="form-control col-sm-12" type="text" name="${argName}" placeholder="${argName}" id="${symbol}${argName}" for="argName in symbolObj.functionArgs" />                                                                               

@@ -14,7 +14,7 @@
     "url": "https://github.com/blockapps/bloc"
   },
   "dependencies": {
-    "blockapps-js": "2.3.0",
+    "blockapps-js": "/home/ryanr/blockapps/blockapps-js",
     "bluebird": "^2.9.34",
     "body-parser": "^1.14.1",
     "chalk": "^1.1.1",

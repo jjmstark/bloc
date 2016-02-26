@@ -1,5 +1,5 @@
 <script src="${data.apiURL}/static/js/ethlightjs.min.js"></script>
-<script src="${data.apiURL}/static/js/api.js"></script>
+<script src="${data.apiURL}/static/js/blockapps.js"></script>
 <script>
 
 var blockapps = require("blockapps-js");
@@ -9,7 +9,7 @@ var globalKeystore;
 var globalPassword = '$data.globalPassword';
 
 var contract = blockapps.Solidity.attach( ${JSON.stringify(data.contractMeta)} );
-blockapps.query.serverURI = '$data.apiURL';
+blockapps.setProfile("strato-dev", '$data.apiURL');
 
 var Units = blockapps.ethbase.Units;
 

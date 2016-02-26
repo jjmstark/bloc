@@ -1,7 +1,7 @@
 var blockapps = require("blockapps-js");
 var Promise = require("bluebird");
 var contract = blockapps.Solidity.attach({{{solObjWAddr}}});
-blockapps.query.serverURI = '{{{serverURI}}}';
+blockapps.setProfile("strato-dev", '{{{serverURI}}}');
 
 var Units = blockapps.ethbase.Units;
 var globalKeystore;

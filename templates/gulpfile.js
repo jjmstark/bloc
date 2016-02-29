@@ -14,7 +14,7 @@ gulp.task('default', function () {
     lr.listen(35729);
 
     gulp.watch('server/**/*', function(){
-      var fileName = require('path').relative('3000', event.path);
+      var fileName = require('path').relative('3001', event.path);
       lr.changed({
         body: {
           files: [fileName]

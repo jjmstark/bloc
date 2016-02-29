@@ -43,7 +43,7 @@ app.use('/keys', keys);
 app.use('/static', express.static('app/static'));
 app.use('/images', express.static('images'));
 
-var server = app.listen(3000, 'localhost', function () {
+var server = app.listen(3001, 'localhost', function () {
   var host = server.address().address;
   var port = server.address().port;
   

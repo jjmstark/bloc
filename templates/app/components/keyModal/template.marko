@@ -1,4 +1,5 @@
 <script src="${data.apiURL}/static/js/ethlightjs.min.js"></script>
+<script src="${data.apiURL}/static/js/blockapps-min.js"></script>
 
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
   <div class="modal-dialog modal-sm">
@@ -9,10 +10,10 @@
           <h4 class="modal-title">Keystore Password</h4>
       </div>
       <div class="modal-body row">
-        <p class="col-xs-12">Retrieved your key. Enter your password to sign transactions:
+        <p class="col-xs-12">Enter your password to sign transactions:
         </p>
         <div class="col-xs-12">
-          <input class="form-control" type="password" id="walletDecrypt" name="password">
+          <input class="form-control" type="password" id="privkeyPassword" name="password">
         </div>
       </div>
       <div class="modal-footer">
@@ -29,20 +30,24 @@
 
 $('#submitPassButton').on('click',function(e){
     e.preventDefault();
-    globalPassword = walletDecrypt.value;
+    globalPassword = privkeyPassword.value;
 
-    if (typeof ethlightjs === 'undefined') {
-        ethlightjs = lightwallet;
-    }
-
-    var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore[0]));
     var success = true;
-
     try {
+        var privkey;
+        if (globalKeystore) {
+            if (typeof ethlightjs === 'undefined') {
+                ethlightjs = lightwallet;
+            }
 
-      var privkey = usableKeystore.exportPrivateKey(usableKeystore.addresses[0], globalPassword);
-
-    } catch (e) {
+            var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore[0]));
+            privkey = usableKeystore.exportPrivateKey(usableKeystore.addresses[0], globalPassword);
+        }
+        else {
+            privkey = require("blockapps-js").ethbase.Crypto.PrivateKey.fromMnemonic(globalPassword);
+        }
+    }
+    catch (e) {
 
         success = false;
         console.log("failed with: " + e);

@@ -30,6 +30,7 @@ var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
+var PrivateKey = api.ethbase.Crypto.PrivateKey;
 
 
 function checkAnalytics() {
@@ -132,12 +133,17 @@ function main (){
             break;
         }
         
-        var store = key.readKeystore();
-        var address = store.addresses[0];
-
         prompt.start();
-        prompt.getAsync(requestPassword).then(function(result) {
-            var privkey = store.exportPrivateKey(address, result.password);
+        prompt.getAsync(requestPassword).get("password").then(function(password) {
+            var store = key.readKeystore();
+            var privkey;
+            if (store) {
+                var address = store.addresses[0];
+                privkey = store.exportPrivateKey(address, password);
+            }
+            else {
+                privkey = PrivateKey.fromMnemonic(password).toString();
+            }
             return upload(contractName, privkey);
         }).then(function (solObjWAddr) {
             console.log("adding address to app/meta/" + contractName + ".json");
@@ -154,8 +160,21 @@ function main (){
 
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(function(password) {
-            if (numKeys === undefined) key.generateKey(password);
-	    else key.generateKeys(password,numKeys); 
+            if (password) {
+                if (numKeys === undefined) key.generateKey(password);
+	        else key.generateKeys(password,numKeys);
+            }
+            else {
+                for (var i = 0; i < (numKeys || 1); ++i) {
+                    var key = PrivateKey();
+                    var addr = key.toAddress();
+                    api.routes.faucet(addr).then(function() {
+                        console.log("Your address is: " + addr);
+                        console.log("Your password is: " + key.toMnemonic());
+                        console.log("This information is not stored!  If you forget it, it cannot be recovered.");
+                    });
+                }
+            }
 	});
         break;
 
@@ -193,11 +212,17 @@ function main (){
         prompt.get(transferObj, function(err,result) {
             prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
 
-              var store = key.readKeystore();
-
-              var address = store.addresses[0];
-      
-              var privkeyFrom = store.exportPrivateKey(address, result.password);
+                var store = key.readKeystore();
+                var address;
+                var privkeyFrom;
+                if (store) {
+                    address = store.addresses[0];
+                    privkeyFrom = store.exportPrivateKey(address, result.password);
+                }
+                else {
+                    privkeyFrom = PrivateKey.fromMnemonic(result.password);
+                    address = privkeyFrom.toAddress();
+                }
 
               var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
                                          "gasLimit" : Int(result.gasLimit),

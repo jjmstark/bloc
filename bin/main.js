@@ -23,6 +23,7 @@ var registerPassword = require('../lib/prompt-schema.js').registerPassword;
 var createPassword = require('../lib/prompt-schema.js').createPassword;
 var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../lib/prompt-schema.js').transfer;
+var helper = require('../lib/contract-helpers.js');
 
 var icon = require('../lib/icon.js').blocIcon;
 var api = require("blockapps-js");
@@ -31,6 +32,7 @@ var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 
+var lw = require('eth-lightwallet');
 
 function checkAnalytics() {
     if (analytics.insight.optOut === undefined) {
@@ -124,17 +126,32 @@ function main (){
             console.log("contract name required");
             break;
         }
-        
-        var store = key.readKeystore();
-        var address = store.addresses[0];
 
-        prompt.start();
-        prompt.getAsync(requestPassword).then(function(result) {
-            var privkey = store.exportPrivateKey(address, result.password);
-            return upload(contractName, privkey);
-        }).then(function (solObjWAddr) {
-            console.log("adding address to app/meta/" + contractName + ".json");
-        });
+        var userName = cmd.argv.u;
+        var address = cmd.argv.a;
+
+        var keyStream;
+        if (address === undefined) { 
+            keyStream = helper.userKeysStream(userName);
+        } else { 
+            keyStream = helper.userKeysAddressStream(userName,address);
+        }
+
+        keyStream
+          .pipe(helper.collect())
+          .on('data', function (data) { 
+              var store = lw.keystore.deserialize(JSON.stringify(data[0]));
+              var address = store.addresses[0];
+
+              console.log("address: " + address);
+              prompt.start();
+              prompt.getAsync(requestPassword).then(function(result) {
+                  var privkey = store.exportPrivateKey(address, result.password);
+                  return upload(contractName, privkey);
+              }).then(function (solObjWAddr) {
+                console.log("adding address to app/meta/" + contractName + ".json");
+              });      
+          })
 
         break;
 

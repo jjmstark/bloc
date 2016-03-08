@@ -68,6 +68,10 @@ function main (){
                 console.log("project: " + name + " already exists");
             } else {
                 scaffold(result.appName, result.developer);
+                result.transferGasLimit = 21000;
+                result.contractGasLimit = 10000000;
+                result.gasPrice = 50000000000;
+
                 yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
             }
         });
@@ -81,14 +85,6 @@ function main (){
     }
     
     api.query.serverURI = config.apiURL;
-
-    var doScaffold = (cmd.argv.s !== undefined);
-
-    // in the case '-s' comes in the wrong order!
-    if (!(cmd.argv.s === true || cmd.argv.s === false) && cmdArr[1] === undefined){
-        cmdArr[1] = cmd.argv.s
-        cmd.argv.s = true
-    }
 
     switch(cmdArr[0]) {
 
@@ -119,9 +115,6 @@ function main (){
             solObjs = compile([contents], config.appName);
         }
 
-        if (doScaffold) {
-            Promise.each(solObjs,codegen.writeHTML.bind(null, config.appName));
-        }
         break;
 
     case 'upload':
@@ -141,21 +134,18 @@ function main (){
             return upload(contractName, privkey);
         }).then(function (solObjWAddr) {
             console.log("adding address to app/meta/" + contractName + ".json");
-            if (doScaffold) {
-                codegen.writeJS(contractName, solObjWAddr);
-            }
         });
 
         break;
 
     case 'genkey':
         analytics.insight.trackEvent("genkey");
-	var numKeys = cmdArr[1];
+	var userName = cmdArr[1];
 
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(function(password) {
-            if (numKeys === undefined) key.generateKey(password);
-	    else key.generateKeys(password,numKeys); 
+            if (userName === undefined) key.generateKey(password,'admin');
+	    else key.generateKey(password,userName); 
 	});
         break;
 

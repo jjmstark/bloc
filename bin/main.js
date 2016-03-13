@@ -149,7 +149,7 @@ function main (){
                   var privkey = store.exportPrivateKey(address, result.password);
                   return upload(contractName, privkey);
               }).then(function (solObjWAddr) {
-                console.log("adding address to app/meta/" + contractName + ".json");
+                console.log("creating metadata for " +  contractName);
               });      
           })
 

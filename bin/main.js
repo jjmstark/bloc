@@ -221,7 +221,7 @@ function main (){
 
     case 'start':
         analytics.insight.trackEvent("start");
-        var server = spawn('./node_modules/gulp/bin/gulp.js');
+        var server = spawn('node', [ 'app.js' ]);
         server.stdout.on('data', function(data) {
            console.log(data.toString("utf-8"));
         });

@@ -25,6 +25,7 @@
     "eth-lightwallet": "kejace/eth-lightwallet",
     "ethereumjs-tx": "kejace/ethereumjs-tx",
     "ethereumjs-util": "kejace/ethereumjs-util",
+    "event-stream": "^3.3.2",
     "express": "^4.13.3",
     "express-handlebars": "^2.0.1",
     "express-session": "^1.12.1",

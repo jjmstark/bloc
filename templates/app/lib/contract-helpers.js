@@ -2,13 +2,13 @@ var path = require('path');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require("fs"));                                                                     
 var yaml = require('js-yaml');
-
+var readdirp = require('readdirp');
 
 var vinylFs  = require( 'vinyl-fs' ),
     map      = require( 'map-stream' );
     stream = require('stream');  
     es = require('event-stream');
-    merge = require('deepmerge')
+    merge = require('deepmerge');
 
 /* utility */
 var getContents = function(file, cb) {
@@ -19,20 +19,44 @@ var getPath = function(file, cb) {
     cb(null,file.relative);
 };
 
+var getDir = function(file, cb) {
+    cb(null,file.cwd);    
+};
+
 function contractNameStream(contractName) {
-    return vinylFs.src( [ './app/meta/' + contractName + '.json' ] )
+    return vinylFs.src( [ path.join('app', 'meta', contractName + '.json') ] )
       .pipe( map(getContents) );
 }
 
+function userNameStream() {
+   return vinylFs.src( [ path.join('app', 'users','*') ] )
+      .pipe( map(getPath) );
+}
 /* all contract names, just checking for their presence */
 function contractsStream() {
-    return vinylFs.src( [ './app/contracts/*.sol' ] )
+    return vinylFs.src( [ path.join('app', 'contracts', '*.sol') ] )
       .pipe( map(getPath) );  
 }
 
+function contractDirsStream() { 
+   return readdirp({root: path.join('app','meta'), depth: 1});
+}
+
+function contractAddressesStream(name) {
+  return vinylFs.src( [ path.join('app', 'meta', name, '*.json') ] )
+      .pipe( map(getPath) );  
+}
+
+function contractsMetaAddressStream(name,address) { 
+    return vinylFs.src( [ path.join('app', 'meta', name, address + '.json') ] )
+      .pipe( map(getContents) )
+      .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
 /* emits all contract metadata as json */
 function contractsMetaStream() { 
-    return vinylFs.src( [ './app/meta/*.json' ] )
+    return vinylFs.src( [ path.join('meta', '*.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))
@@ -48,9 +72,26 @@ function configStream() {
        }));
 }
 
-/* emits all the keys as JSON */ 
-function keysStream() {
-  return vinylFs.src( [ './key*.json' ] )
+/* emit user keys */
+function userKeysStream(user) {
+    return vinylFs.src( [ path.join('app', 'users', user, '*.json') ] )
+      .pipe( map(getContents) )
+      .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
+
+function userKeysAddressStream(user,address) {
+ return vinylFs.src( [ path.join('app', 'users', user, address + '.json') ] )
+      .pipe( map(getContents) )
+      .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
+
+/* emit all keys */
+function allKeysStream() {
+  return vinylFs.src( [ path.join('app', 'users','**','*','*.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))
@@ -128,11 +169,17 @@ function fuseStream() {
 }
 
 module.exports  = {
-  keysStream :  keysStream,
   contractNameStream : contractNameStream,
   contractsStream : contractsStream,
   contractsMetaStream : contractsMetaStream,
+  contractDirsStream : contractDirsStream,
+  contractAddressesStream : contractAddressesStream,
+  contractsMetaAddressStream : contractsMetaAddressStream,
   configStream : configStream,
   collect : collect,
-  fuseStream : fuseStream
+  fuseStream : fuseStream,
+  userNameStream : userNameStream,
+  userKeysStream : userKeysStream,
+  userKeysAddressStream : userKeysAddressStream,
+  allKeysStream : allKeysStream
 };

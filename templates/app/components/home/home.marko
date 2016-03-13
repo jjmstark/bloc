@@ -5,12 +5,13 @@
   <div class="container">
     <h1>Inspect your Contracts!</h1>
     <div class="row">
-      <div for="contract in data.contractNames">
-        <ul class="lead">
-          <li>
-            <a href="/contracts/${contract}">${contract}</a>
-          </li>
-        </ul>
+      <div for="(contractName,contractList) in data">
+          <b> ${contractName} </b>
+          <ul class="lead">
+            <li for="contract in contractList">
+              <a href="/contracts/${contractName}/${contract}"> ${contract}</a>
+            </li>
+          </ul>
       </div>
     </div>
   </div>

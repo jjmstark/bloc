@@ -1,49 +1,184 @@
 var express = require('express');
 var helper = require('../lib/contract-helpers.js');
 var router = express.Router();
+var Promise = require('bluebird');
+var Solidity = require('blockapps-js').Solidity;
+var api = require('blockapps-js');
+var cors = require('cors');
+var traverse = require('traverse');
+
+var apiURI = 'http://strato-dev2.blockapps.net';
+
+api.query.serverURI =  process.env.API || apiURI;
+
 
 require('marko/node-require').install();
+
+var homeTemplate = require('marko').load(require.resolve('../components/home/home.marko'));
 var contractTemplate = require('marko').load(require.resolve('../components/contracts/template.marko'));
 
-router.get('/:contractName', function (req, res) {
+/* accept header used */
+
+router.get('/', cors(), function(req, res) {
+    helper.contractDirsStream()
+	.pipe( helper.collect() )
+	.pipe( es.map(function (data,cb) {
+            var directoryTree = {};
+
+	    data.map(function (item) {
+                var entries = item.path.split('/');
+
+                if (directoryTree[entries[0]] === undefined) { 
+                    directoryTree[entries[0]] = [];
+                }
+
+                directoryTree[entries[0]].push(entries[1])
+	    });
+
+	    cb(null,directoryTree);
+        }))				   
+       .on('data', function (data) {
+                      res.format({
+                          html: function() {
+/*                              console.log("data: " + JSON.stringify(data));
+                              obj = {};
+                              obj.contractNames = data;
+
+                              data.contractNames = [];
+                              data.forEach(function(value, index){
+                                  data.contractNames.push(value.slice(0,-4));
+                              });
+*/
+                              homeTemplate.render(data, res);
+                          },
+
+                          json: function() {
+                              res.send(JSON.stringify(data));
+                          } 
+                      })
+       })
+});
+
+router.get('/:contractName', cors(), function (req, res) {
+    var contractName = req.params.contractName;
+    helper.contractAddressesStream(contractName)
+      .pipe( helper.collect() )
+      .pipe( es.map(function (data,cb) {
+	    var names = data.map(function (item) {
+	             return item.split('.')[0];
+	    });
+
+	    cb(null,JSON.stringify(names));
+       }))
+      .pipe(res)
+});
+
+/*
+router.get('/:contractName/:contractAddress', cors(), function (req, res) {
+    var contractName = req.params.contractName;
+    var contractAddress = req.params.contractAddress;
+
+    helper.contractsMetaAddressStream(contractName,contractAddress)
+      .pipe( helper.collect() )
+      .pipe( es.map(function (data,cb) {
+	    cb(null,JSON.stringify(data));
+       }))
+
+      .pipe(res)
+});
+*/
+/* accept header not used, explicit extension expected */
+
+router.get('/:contractName/:contractAddress\.:extension?', function (req, res) {
   var contractName = req.params.contractName;
+  var extension = req.params.extension;
+  var contractAddress = req.params.contractAddress;
 
-  var contractNameStream =  helper.contractsStream()
-     .pipe( helper.collect() )
-     .pipe( es.map(function (data,cb) {
-                      var contractData = {};
-                      contractData.contracts = data;
-                      cb(null,contractData);
-                   }));
+  console.log('extension was matched: ' + extension);
 
-  var contractMetaStream =  helper.contractsMetaStream()
-     .pipe( es.map(function (data,cb) {
-                      var contractData = {};
-                      contractData.contractMeta = data;
-                      /* filter */
-                      if (contractData.contractMeta.name == contractName) cb(null,contractData);
-                      else cb();                      
-                   }));
+  var contractMetaAddressStream = helper.contractsMetaAddressStream(contractName,contractAddress)
+      .pipe( helper.collect() )
+      .pipe( es.map(function (data,cb) {
+            var contractData = {};
+            contractData.contractMeta = data[0];
+
+            console.log("contractData: " + JSON.stringify(contractData));
+	    cb(null,contractData);
+       }))
 
   var configStream = helper.configStream();
 
-  var keysStream = helper.keysStream()
-      .pipe( helper.collect() )
-      .pipe( es.map(function (data,cb) {
-                      var keyData = {};
-                      keyData.keys = data;
-
-                      cb(null,keyData);
-                   }));
-
-   helper.fuseStream([contractNameStream,contractMetaStream,configStream, keysStream])
+  helper.fuseStream([configStream,contractMetaAddressStream])
        .on('data', function (data) {
-                      console.log('data: ' + JSON.stringify(data));
-                      data.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
-                      data.txFailedHandlerName = "txFailHandler";
-                      data.globalPassword = req.session.globalPassword;
-                      contractTemplate.render(data, res);
-                   });
+                      if (extension === 'html') { 
+                          data.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
+                          data.txFailedHandlerName = "txFailHandler";
+                          contractTemplate.render(data, res); 
+                      } else { res.send(JSON.stringify(data.contractMeta)); }
+          });
+});
+
+
+router.get('/:contractName/:contractAddress/functions', cors(), function (req, res) {
+    var contractName = req.params.contractName;
+    var contractAddress = req.params.contractAddress;
+
+    helper.contractsMetaAddressStream(contractName,contractAddress)
+        .pipe( es.map(function (data,cb) {	    
+            if (data.name == contractName) {
+		var sym = data.symTab;
+		var funcs = Object.keys(sym).filter(function (item) {
+                    return (sym[item].jsType == 'Function');
+		});
+                cb(null,JSON.stringify(funcs));
+	    }
+            else cb();                      
+          }))
+        .pipe(res)
+});
+
+router.get('/:contractName/:contractAddress/symbols', cors(), function (req, res) {
+    var contractName = req.params.contractName;
+    var contractAddress = req.params.contractAddress;
+
+    helper.contractsMetaAddressStream(contractName,contractAddress)
+        .pipe( es.map(function (data,cb) {	    
+            if (data.name == contractName) {
+		var sym = data.symTab;
+		var funcs = Object.keys(sym).filter(function (item) {
+                    return (sym[item].jsType !== 'Function');
+		});
+                cb(null,JSON.stringify(funcs));
+	    }
+            else cb();                      
+          }))
+        .pipe(res)
+});
+
+router.get('/:contractName/:contractAddress/state', cors(), function (req, res) {
+    var contractName = req.params.contractName;
+    var contractAddress = req.params.contractAddress;
+    
+    helper.contractsMetaAddressStream(contractName,contractAddress)
+      .pipe( es.map(function (data,cb) {
+	          if (data.name == contractName) cb(null,data);
+                  else cb();                      
+        }))
+
+      .on('data', function(data) {
+	    var contract = Solidity.attach(data);
+	    return Promise.props(contract.state).then(function(sVars) {
+
+                var parsed = traverse(sVars).forEach(function (x) { 
+                    if (Buffer.isBuffer(x)) { 
+                        this.update(x.toString());
+                    }
+                });
+             
+		res.send(parsed);
+	    });
+	});
+
 });
 
 module.exports = router;

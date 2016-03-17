@@ -41,6 +41,7 @@ function userChangeHandler(user) {
 function keyChangeHandler(address) {
   globalAddress = address;
   $('#passwordModal').modal('show');
+  afterTX();
 }
 
 function loadHandler() {

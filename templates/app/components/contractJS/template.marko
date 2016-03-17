@@ -13,6 +13,47 @@ var Units = blockapps.ethbase.Units;
 
 ${data.txFailedHandlerCode};
 
+function callFunc(funcName) {
+    var args = {};
+    var funcDivElts = document.getElementById(funcName + "Div").children;
+    var len = funcDivElts.length;
+
+    Object.keys(funcDivElts).map(function (key, i) {
+       console.log('key: ' + key + ' value: ' + funcDivElts[key].value + ' name: ' + funcDivElts[key].name);
+       console.log('i: ' + i);
+       console.log('comparison: ' + (key === funcDivElts[key].name));
+       if ((key === funcDivElts[key].name) && (key !== (funcName+'ValueField'))) { args[key] = funcDivElts[key].value; }
+    });
+
+    var contractAddress = contract.account.address.toString();
+    
+    console.log('args: ' + JSON.stringify(args));
+    console.log('contract name: ' + contract.name);
+    console.log('contract address: ' + contractAddress);
+
+    var invokeContractObj =
+    {
+      password: globalPassword,
+      method: funcName,
+      args: args,
+      value: funcDivElts[len-1].value
+    };
+
+    console.log("invokeContractObj: " + JSON.stringify(invokeContractObj));
+    
+    $.ajax({
+        method: "POST",
+        headers: {
+            "content-type": "application/json"
+	},
+        url: "/users/" + globalUser + "/" + globalAddress + "/contract/" + contract.name + "/" + contractAddress + "/call",
+        data: JSON.stringify(invokeContractObj),
+      })
+      .done(function (res) {
+        afterTX();
+    });
+}
+
 function storageAfterTX(result) {
     var afterTXstring = "TX returned: " +
         ((result === undefined) ? "(nothing)":result);
@@ -37,14 +78,14 @@ function contractBalanceAfterTX(txString) {
     });
 }
 
-/*
+
 function userBalanceAfterTX(txString) {
-    return blockapps.ethbase.Account(globalKeystore[0].addresses[0]).balance.then(function(userBal) {
+    return blockapps.ethbase.Account(globalAddress).balance.then(function(userBal) {
         return txString + "\n Your balance     =  " +
             Units.convertEth(userBal).from("wei").to("ether") + " ether\n";
     });
 }
-*/
+
 
 function resetTextArea(txString)  {
     document.getElementById("afterTXarea").textContent = txString;
@@ -55,9 +96,13 @@ function afterTX(result) {
       .then(function (txStr) { 
           return contractBalanceAfterTX(txStr);
         })
+      .then(function (txStr) {
+	  return userBalanceAfterTX(txStr);
+        })
       .then(function (txStr) { 
           resetTextArea(txStr);
-      }).catch(function (err) {
+        })
+      .catch(function (err) {
           console.log("error caught: " + err); 
       });
 } 

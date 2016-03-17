@@ -12,13 +12,18 @@ var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs')); 
 var mkdirp = Promise.promisifyAll(require('mkdirp'));
 
+var path = require('path');
+
 var api = require('blockapps-js');
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');
 
 var jsonParser = bodyParser.json();
 
-var apiURI = 'http://strato-dev2.blockapps.net';
+var yaml = require('js-yaml');
+
+var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
+var apiURI = config.apiURL;
 
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
@@ -65,18 +70,20 @@ router.get('/:user', cors(), function(req, res) {
 router.post('/:user', cors(), function(req, res) {
 
   var user = req.params.user;
-  var path = './users/' + user + '/';
+  var thePath = path.join('app', 'users', user);
 
-  if(req.body.faucet === '1'){
+  console.log("thePath: " + thePath);
+    
+  if (req.body.faucet === '1'){
     var seed = lw.keystore.generateRandomSeed();
     var password = req.body.password;
 
     var store = new lw.keystore(seed, password);
     store.generateNewAddress(password);
 
-    var fileName = path + store.addresses[0] + '.json';
-    
-    mkdirp(path, function (err) { 
+    var fileName = path.join(thePath, store.addresses[0] + '.json');
+      
+    mkdirp(thePath, function (err) { 
         if (err) { console.err(err); res.send(err); }
         else { 
             fs.writeFile(fileName, store.serialize(), function() { 
@@ -86,7 +93,8 @@ router.post('/:user', cors(), function(req, res) {
     });
    
     api.query.serverURI =  process.env.API || apiURI;
-    console.log("hitting faucet for " + store.addresses[0])
+    console.log("hitting faucet for " + store.addresses[0]);
+      
     api.routes.faucet(store.addresses[0]).then(function(result) {
                 res.send(store.addresses[0]);
       });
@@ -95,12 +103,12 @@ router.post('/:user', cors(), function(req, res) {
   } else if(req.body.remove === '1'){
     var newAddress = req.body.address;
 
-    var fileName = path + newAddress + '.json';
+    var fileName = path.join(thePath, newAddress + '.json');
     console.log("REMOVING: name: " + user + "  address = " + req.body.address)
 
     del([fileName]).then(function(paths){
       console.log('Deleted files and folders:\n', paths.join('\n'));
-        fs.rmdir(path, function(err, files){
+        fs.rmdir(thePath, function(err, files){
             console.log("user " + user + " gone beacuse empty: "+err);
       });
     });
@@ -110,12 +118,12 @@ router.post('/:user', cors(), function(req, res) {
 
     var newAddress = req.body.address;
 
-    var fileName = path + newAddress + '.json';
+    var fileName = path.join(thePath, newAddress + '.json');
     
-    mkdirp(path, function (err) { 
+    mkdirp(thePath, function (err) { 
         if (err) { console.err(err); res.send(err); }
         else { 
-            fs.writeFile(fileName, "{\"addresses\":[\""+newAddress+"\"]}", function() { 
+            fs.writeFile(fileName, JSON.stringify({ "addresses":[ newAddress ] }), function() { 
                 res.send(newAddress);
             });
         }
@@ -182,9 +190,10 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
     var src = req.body.src;
 
     var found = false;
-    var path = './users/' + user + '/contracts/';
-    var contractPath = './contracts/';
-    var metaPath = './meta/';
+    var userContractPath = path.join('app', 'users', user, 'contracts');
+    var contractPath = path.join('app', 'contracts');			
+    var metaPath = path.join('app','meta');
+    
     console.log("+++++++++++++++++++++++++++++++++++++");
     console.log(req.body.password);
     console.log(req.body);
@@ -205,7 +214,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 
 		  var contractCreationTx = Solidity(src)
 		      .then(function(solObj) {
-			  mkdirp(path + '/' + solObj.name, function (err) { 
+			  mkdirp(userContractPath + '/' + solObj.name, function (err) { 
                               if (err) { console.err(err); res.send(err); }
                               else { // console.log("returning solObj: " + JSON.stringify(solObj)); 
                                      return solObj; }
@@ -245,7 +254,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 		      })
 
 		      .then(function(solObj) {
-                          var fileName = path + '/' + solObj.name + '/' +  solObj.address + '.json';
+                          var fileName = userContractPath + '/' + solObj.name + '/' +  solObj.address + '.json';
 			  fs.writeFile(fileName, JSON.stringify(solObj));
 			  
 			  res.send(solObj.address);
@@ -288,8 +297,8 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 	
     var found = false;
 
-    var path = './users/' + user + '/contracts/' + contractName + '/';
-    var metaPath = './meta/' + contractName + '/';
+    var userContractPath = path.join('app', 'users', user, 'contracts', contractName);
+    var metaPath = path.join('app', 'meta', contractName);
 
     console.log('args: ' + JSON.stringify(args));
     console.log('method: ' + method);
@@ -313,7 +322,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 	}))
 
 	.on('data', function(privkeyFrom) {
-	    var fileName = metaPath+'/'+contractAddress+'.json';
+	    var fileName = path.join(metaPath,contractAddress+'.json');
 	    
 	    fs.readFile(fileName, function (err,data) {
                 console.log("err: " + err);
@@ -321,11 +330,6 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                 var contractJson = JSON.parse(data);
 		var contract = Solidity.attach(JSON.parse(data));
 
-
-//                console.log("contract.state: " + JSON.stringify(contract.state));
-                console.log("contract address from json: " + contractJson.address);
-                console.log("contract address after attach: " + contract.address);
- 
                 contract.address = contractJson.address;
 
                 console.log("contract.state: " + JSON.stringify(contract.state));
@@ -334,11 +338,15 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 		    params.value = units.convertEth(value).from("ether").to("wei" );
 		    console.log("params.value: " + params.value);
 		}
-		contract.state[method](args).txParams(params).callFrom(privkeyFrom)
-		   .then(function (txResult) {
-		      console.log("txResult: " + txResult);
-                      res.send("transaction returned: " + txResult);
-		   });
+
+		try {
+		    contract.state[method](args)
+		       .txParams(params).callFrom(privkeyFrom)
+		       .then(function (txResult) {
+		           console.log("txResult: " + txResult);
+                           res.send("transaction returned: " + txResult);
+		       });
+	        } catch (e) { res.send('method call failed'); }
             });
 	})
 

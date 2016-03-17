@@ -2,6 +2,7 @@
 <html lang="en">
 <header />
 
+<keyModal />
 <contractJS apiURL="${data.apiURL}"
             contractMeta="${data.contractMeta}"
             txFailedHandlerName="${data.txFailedHandlerName}"
@@ -10,6 +11,9 @@
 
 <body>
   <div class="container">
+    <div class="row">
+      <selectUser />
+    </div>
     <div class="row">
       <div class="col-md-9" id="functionsDiv">
         <contractFunctionsCall contractMeta="${data.contractMeta}">

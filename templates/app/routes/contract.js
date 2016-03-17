@@ -6,11 +6,14 @@ var Solidity = require('blockapps-js').Solidity;
 var api = require('blockapps-js');
 var cors = require('cors');
 var traverse = require('traverse');
+var fs = require('fs');
 
-var apiURI = 'http://strato-dev2.blockapps.net';
+var yaml = require('js-yaml');
+
+var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
+var apiURI = config.apiURL;
 
 api.query.serverURI =  process.env.API || apiURI;
-
 
 require('marko/node-require').install();
 
@@ -40,15 +43,6 @@ router.get('/', cors(), function(req, res) {
        .on('data', function (data) {
                       res.format({
                           html: function() {
-/*                              console.log("data: " + JSON.stringify(data));
-                              obj = {};
-                              obj.contractNames = data;
-
-                              data.contractNames = [];
-                              data.forEach(function(value, index){
-                                  data.contractNames.push(value.slice(0,-4));
-                              });
-*/
                               homeTemplate.render(data, res);
                           },
 
@@ -73,20 +67,6 @@ router.get('/:contractName', cors(), function (req, res) {
       .pipe(res)
 });
 
-/*
-router.get('/:contractName/:contractAddress', cors(), function (req, res) {
-    var contractName = req.params.contractName;
-    var contractAddress = req.params.contractAddress;
-
-    helper.contractsMetaAddressStream(contractName,contractAddress)
-      .pipe( helper.collect() )
-      .pipe( es.map(function (data,cb) {
-	    cb(null,JSON.stringify(data));
-       }))
-
-      .pipe(res)
-});
-*/
 /* accept header not used, explicit extension expected */
 
 router.get('/:contractName/:contractAddress\.:extension?', function (req, res) {

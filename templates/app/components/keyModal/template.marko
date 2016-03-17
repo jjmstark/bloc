@@ -1,4 +1,3 @@
-<script src="${data.apiURL}/static/js/ethlightjs.min.js"></script>
 
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
   <div class="modal-dialog modal-sm">
@@ -25,50 +24,11 @@
 
 <script>
 
-
-
 $('#submitPassButton').on('click',function(e){
     e.preventDefault();
     globalPassword = walletDecrypt.value;
-
-    if (typeof ethlightjs === 'undefined') {
-        ethlightjs = lightwallet;
-    }
-
-    var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore[0]));
-    var success = true;
-
-    try {
-
-      var privkey = usableKeystore.exportPrivateKey(usableKeystore.addresses[0], globalPassword);
-
-    } catch (e) {
-
-        success = false;
-        console.log("failed with: " + e);
-        ${data.txFailedHandlerName}(e);
-
-    }
-
-    if(success){
-
-        $("#passwordModal").modal('hide')
-
-        $.ajax({
-          type     : "POST",
-          url      : "/login",
-          data     : { password: $(this).value },
-          success  : function(data) {
-             alert("successfully logged in!");
-          }
-
-      });
-    } else {
-      console.log("the password is wrong")
-        // TODO update DIV with "wrong password"
-    }
-
-
+    console.log("globalPassword set to: " + globalPassword);
+    $('#passwordModal').modal('hide');
 });
 
 </script>

@@ -50,12 +50,12 @@ function callFunc(funcName) {
         data: JSON.stringify(invokeContractObj),
       })
       .done(function (res) {
-        afterTX();
+        afterTX(res);
     });
 }
 
 function storageAfterTX(result) {
-    var afterTXstring = "TX returned: " +
+    var afterTXstring = "Last return value, if it was a transaction: \n  " +
         ((result === undefined) ? "(nothing)":result);
 
     return Promise.props(contract.state).then(function(sVars) {

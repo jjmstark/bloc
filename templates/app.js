@@ -49,6 +49,10 @@ var port = process.env.PORT || 8000;
 var host = process.env.HOST || 'localhost';
 
 http.listen(port, host, function () {
+// var server = app.listen(3001, 'localhost', function () {
+//   var host = server.address().address;
+//   var port = server.address().port;
+  
   console.log('bloc is listening on http://%s:%s', host, port);
 });
 

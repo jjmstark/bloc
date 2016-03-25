@@ -31,6 +31,7 @@ var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
+var PrivateKey = api.ethbase.Crypto.PrivateKey;
 
 var lw = require('eth-lightwallet');
 
@@ -86,7 +87,7 @@ function main (){
         throw 'Cannot open config.yaml - are you in the project directory?';
     }
     
-    api.query.serverURI = config.apiURL;
+    api.setProfile("strato-dev", config.apiURL);
 
     switch(cmdArr[0]) {
 
@@ -152,18 +153,55 @@ function main (){
                 console.log("creating metadata for " +  contractName);
               });      
           })
+        
+        // prompt.start();
+        // prompt.getAsync(requestPassword).get("password").then(function(password) {
+        //     var store = key.readKeystore();
+        //     var privkey;
+        //     if (store) {
+        //         var address = store.addresses[0];
+        //         privkey = store.exportPrivateKey(address, password);
+        //     }
+        //     else {
+        //         privkey = PrivateKey.fromMnemonic(password).toString();
+        //     }
+        //     return upload(contractName, privkey);
+        // }).then(function (solObjWAddr) {
+        //     console.log("adding address to app/meta/" + contractName + ".json");
+        //     if (doScaffold) {
+        //         codegen.writeJS(contractName, solObjWAddr);
+        //     }
+        // });
 
         break;
 
     case 'genkey':
         analytics.insight.trackEvent("genkey");
-	var userName = cmdArr[1];
+	    var userName = cmdArr[1];
 
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(function(password) {
-            if (userName === undefined) key.generateKey(password,'admin');
+
+        if (userName === undefined) key.generateKey(password,'admin');
 	    else key.generateKey(password,userName); 
-	});
+
+         //    if (password) {
+         //        if (numKeys === undefined) key.generateKey(password);
+	        // else key.generateKeys(password,numKeys);
+         //    }
+         //    else {
+         //        for (var i = 0; i < (numKeys || 1); ++i) {
+         //            var key = PrivateKey();
+         //            var addr = key.toAddress();
+         //            api.routes.faucet(addr).then(function() {
+         //                console.log("Your address is: " + addr);
+         //                console.log("Your password is: " + key.toMnemonic());
+         //                console.log("This information is not stored!  If you forget it, it cannot be recovered.");
+         //            });
+         //        }
+         //    }
+
+	    });
         break;
 
     case 'register':
@@ -200,11 +238,17 @@ function main (){
         prompt.get(transferObj, function(err,result) {
             prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
 
-              var store = key.readKeystore();
-
-              var address = store.addresses[0];
-      
-              var privkeyFrom = store.exportPrivateKey(address, result.password);
+                var store = key.readKeystore();
+                var address;
+                var privkeyFrom;
+                if (store) {
+                    address = store.addresses[0];
+                    privkeyFrom = store.exportPrivateKey(address, result.password);
+                }
+                else {
+                    privkeyFrom = PrivateKey.fromMnemonic(result.password);
+                    address = privkeyFrom.toAddress();
+                }
 
               var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
                                          "gasLimit" : Int(result.gasLimit),

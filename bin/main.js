@@ -24,13 +24,14 @@ var createPassword = require('../lib/prompt-schema.js').createPassword;
 var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../lib/prompt-schema.js').transfer;
 var helper = require('../lib/contract-helpers.js');
-
 var icon = require('../lib/icon.js').blocIcon;
+
 var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
+var stratoVersion = "1.1"
 
 var lw = require('eth-lightwallet');
 
@@ -85,8 +86,8 @@ function main (){
     } catch (e){
         throw 'Cannot open config.yaml - are you in the project directory?';
     }
-    
-    api.query.serverURI = config.apiURL;
+   
+    api.setProfile("strato-dev", config.apiURL, stratoVersion);
 
     switch(cmdArr[0]) {
 
@@ -96,27 +97,29 @@ function main (){
 
         var solSrcDir = path.normalize('./app/contracts');
         var config = yamlConfig.readYaml('config.yaml');
-        if (cmdArr[1] === undefined) {
-            console.log("compiling all contracts");
 
-            var srcFiles = fs.readdirSync(solSrcDir).filter(function(filename) {
-                return path.extname(filename) === '.sol';
-            });
-            var solSrc = srcFiles.map(function (filename) {
-                console.log(path.join(solSrcDir, filename));
-                return fs.readFileSync(path.join(solSrcDir, filename)).toString()
-            });
+        var solSrcFiles;
+        if (cmdArr[1]) {
+          var fname = path.join(solSrcDir, path.parse(cmdArr[1]).ext === '.sol' ?
+                                           cmdArr[1] : cmdArr[1] + ".sol");
+          console.log('compiling single contract: ' + fname);
+          solSrcFiles = [fname];
+        }
+        else {
+          console.log("compiling all contracts");
 
-            var solObjs = compile(solSrc,config.appName);
-        } else if(cmdArr[1]){
-            var fname = path.join(solSrcDir,
-                                  path.parse(cmdArr[1]).ext === '.sol' ? cmdArr[1] : cmdArr[1] + ".sol"
-                                 )
-            console.log('compiling single contract: ' + fname);
-            var contents = fs.readFileSync(fname).toString();
-            solObjs = compile([contents], config.appName);
+          solSrcFiles = fs.readdirSync(solSrcDir).
+            filter(function(filename) {
+              return path.extname(filename) === '.sol';
+            })
         }
 
+        Promise.all(solSrcFiles).
+          map(function (filename) {
+            console.log(path.join(solSrcDir, filename));
+            return fs.readFileSync(path.join(solSrcDir, filename)).toString()
+          }).  
+          map(compile);
         break;
 
     case 'upload':
@@ -147,8 +150,10 @@ function main (){
               prompt.start();
               prompt.getAsync(requestPassword).then(function(result) {
                   var privkey = store.exportPrivateKey(address, result.password);
-                  return upload(contractName, privkey);
-              }).then(function (solObjWAddr) {
+                  return [contractName, privkey];
+              }).
+              spread(upload).
+              then(function (solObjWAddr) {
                 console.log("creating metadata for " +  contractName);
               });      
           })

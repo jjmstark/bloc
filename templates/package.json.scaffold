@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "blockapps-bloc": "^0.9.5",
-    "blockapps-js": "kejace/blockapps-js",
+    "blockapps-js": "blockapps/blockapps-js#v2.3.0",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",
     "cookie-parser": "^1.4.0",

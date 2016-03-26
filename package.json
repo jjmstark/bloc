@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bignumber.js": "^2.0.7",
-    "blockapps-js": "kejace/blockapps-js",
+    "blockapps-js": "blockapps/blockapps-js#v2.3.0",
     "bluebird": "^2.9.34",
     "body-parser": "^1.14.1",
     "chalk": "^1.1.1",
@@ -23,8 +23,6 @@
     "deepmerge": "^0.2.10",
     "enum": "^2.1.0",
     "eth-lightwallet": "kejace/eth-lightwallet",
-    "ethereumjs-tx": "kejace/ethereumjs-tx",
-    "ethereumjs-util": "kejace/ethereumjs-util",
     "event-stream": "^3.3.2",
     "express": "^4.13.3",
     "express-handlebars": "^2.0.1",

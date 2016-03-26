@@ -1,6 +1,7 @@
+<!--
 <script src="${data.apiURL}/static/js/ethlightjs.min.js"></script>
 <script src="${data.apiURL}/static/js/blockapps-min.js"></script>
-
+-->
 
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="passwordModal">
   <div class="modal-dialog modal-sm">
@@ -30,7 +31,8 @@
 $('#submitPassButton').on('click',function(e){
     e.preventDefault();
 
-    globalPassword = walletDecrypt.value;
+    //globalPassword = walletDecrypt.value;
+    globalPassword = privkeyPassword.value;
     console.log("globalPassword set to: " + globalPassword);
     $('#passwordModal').modal('hide');
 

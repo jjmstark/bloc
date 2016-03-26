@@ -310,12 +310,12 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         }))
 
         .pipe(es.map(function(data, cb) {
-	    var privkeyFrom;
-	    try { 
+	         var privkeyFrom;
+	         try { 
                 var store = new lw.keystore.deserialize(JSON.stringify(data));
                 privkeyFrom = store.exportPrivateKey(address, password);
             } catch (e) {
-		res.send("address not found or password incorrect");
+		          res.send("address not found or password incorrect");
             }
 
 	    cb(null, privkeyFrom);
@@ -327,27 +327,29 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 	    fs.readFile(fileName, function (err,data) {
                 console.log("err: " + err);
                 console.log("contract: " + data);
+
                 var contractJson = JSON.parse(data);
-		var contract = Solidity.attach(JSON.parse(data));
+		            var contract = Solidity.attach(JSON.parse(data));
 
                 contract.address = contractJson.address;
 
-                console.log("contract.state: " + JSON.stringify(contract.state));
-		var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
-		if (value != undefined) {
-		    params.value = units.convertEth(value).from("ether").to("wei" );
-		    console.log("params.value: " + params.value);
-		}
+            		var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
 
-		try {
-		    contract.state[method](args)
-		       .txParams(params).callFrom(privkeyFrom)
-		       .then(function (txResult) {
-		           console.log("txResult: " + txResult);
-                           res.send("transaction returned: " + txResult);
-		       });
-	        } catch (e) { res.send('method call failed'); }
-            });
+            		if (value != undefined) {
+            		    params.value = units.convertEth(value).from("ether").to("wei" );
+            		    console.log("params.value: " + params.value);
+            		}
+
+            		try {
+                    console.log("trying to invoke contract")
+            		    contract.state[method](args)
+            		       .txParams(params).callFrom(privkeyFrom)
+            		       .then(function (txResult) {
+            		          console.log("txResult: " + txResult);
+                          res.send("transaction returned: " + txResult);
+            		       });
+            	      } catch (e) { res.send('method call failed'); }
+      });
 	})
 
 	.on('end', function () {

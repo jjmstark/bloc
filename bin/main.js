@@ -33,6 +33,8 @@ var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 var PrivateKey = api.ethbase.Crypto.PrivateKey;
 
+var stratoVersion = "1.1"
+
 var lw = require('eth-lightwallet');
 
 function checkAnalytics() {
@@ -87,7 +89,8 @@ function main (){
         throw 'Cannot open config.yaml - are you in the project directory?';
     }
     
-    api.setProfile("strato-dev", config.apiURL);
+    //api.setProfile("strato-dev", config.apiURL);
+    api.setProfile("strato-dev", config.apiURL, stratoVersion);
 
     switch(cmdArr[0]) {
 
@@ -234,33 +237,48 @@ function main (){
         transferObj.properties.gasLimit.default = config.transferGasLimit;
         transferObj.properties.gasPrice.default = config.gasPrice;
 
-        prompt.start();
-        prompt.get(transferObj, function(err,result) {
-            prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
+        var userName = cmd.argv.u;
+        var address = cmd.argv.a;
 
-                var store = key.readKeystore();
-                var address;
-                var privkeyFrom;
-                if (store) {
-                    address = store.addresses[0];
-                    privkeyFrom = store.exportPrivateKey(address, result.password);
-                }
-                else {
-                    privkeyFrom = PrivateKey.fromMnemonic(result.password);
-                    address = privkeyFrom.toAddress();
-                }
+        var keyStream;
+        if (address === undefined) { 
+            keyStream = helper.userKeysStream(userName);
+        } else { 
+            keyStream = helper.userKeysAddressStream(userName,address);
+        }
 
-              var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
-                                         "gasLimit" : Int(result.gasLimit),
-                                         "gasPrice" : Int(result.gasPrice)});
+        keyStream
+          .pipe(helper.collect())
+          .on('data', function (data) { 
+              var store = lw.keystore.deserialize(JSON.stringify(data[0]));
 
-              var addressTo = result.to;
+              prompt.start();
+              prompt.get(transferObj, function(err,result) {
+                  prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
 
-              valueTX.send(privkeyFrom, addressTo).then(function(txResult) {
-                console.log("transaction result: " + txResult.message);
-              });                 
+                    var address;
+                    var privkeyFrom;
+                    if (store) {
+                        address = store.addresses[0];
+                        privkeyFrom = store.exportPrivateKey(address, result.password);
+                    }
+                    else {
+                        privkeyFrom = PrivateKey.fromMnemonic(result.password);
+                        address = privkeyFrom.toAddress();
+                    }
+
+                    var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
+                                               "gasLimit" : Int(result.gasLimit),
+                                               "gasPrice" : Int(result.gasPrice)});
+
+                    var addressTo = result.to;
+
+                    valueTX.send(privkeyFrom, addressTo).then(function(txResult) {
+                      console.log("transaction result: " + txResult.message);
+                    });                 
+                  });
+              });
             });
-        });
         break;
 
     case 'start':

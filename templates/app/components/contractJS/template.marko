@@ -19,27 +19,6 @@ function callFunc(funcName) {
 
     var args = {};
 
-//   var privkey;
-//   try {
-//       if (globalKeystore) {
-//           if (typeof ethlightjs === 'undefined') {
-//               ethlightjs = lightwallet;
-//           }
-
-//           var usableKeystore = ethlightjs.keystore.deserialize(JSON.stringify(globalKeystore[0]));
-//           privkey = usableKeystore.exportPrivateKey(usableKeystore.addresses[0], globalPassword);
-//       }
-//       else {
-//           privkey = PrivateKey.fromMnemonic(globalPassword);
-//       }
-//   } catch (e) {
-//       console.log("failed with: " + e);
-//       ${data.txFailedHandlerName}(e);
-//   }
-//   console.log("privkey: " + privkey);
-
-//   var args = [];
-
     var funcDivElts = document.getElementById(funcName + "Div").children;
     var len = funcDivElts.length;
 
@@ -70,7 +49,7 @@ function callFunc(funcName) {
         method: "POST",
         headers: {
             "content-type": "application/json"
-	},
+	    },
         url: "/users/" + globalUser + "/" + globalAddress + "/contract/" + contract.name + "/" + contractAddress + "/call",
         data: JSON.stringify(invokeContractObj),
       })
@@ -105,18 +84,7 @@ function contractBalanceAfterTX(txString) {
 
 
 function userBalanceAfterTX(txString) {
-
     return blockapps.ethbase.Account(globalAddress).balance.then(function(userBal) {
-
-//    var address;
-//    if (globalKeystore) {
-//        address = globalKeystore[0].addresses[0];
-//    }
-//    else {
-//        address = PrivateKey.fromMnemonic(globalPassword).toAddress();
-//    }
-//    return blockapps.ethbase.Account(address).balance.then(function(userBal) {
-
         return txString + "\n Your balance     =  " +
             Units.convertEth(userBal).from("wei").to("ether") + " ether\n";
     });

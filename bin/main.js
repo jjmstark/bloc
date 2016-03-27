@@ -7,6 +7,7 @@ var path = require('path');
 var spawn = require('child_process').spawn;
 var prompt = Promise.promisifyAll(require('prompt'));
 var analytics = require('../lib/analytics.js');
+var request = require('request');
 
 var cmd = require('../lib/cmd.js');
 var key = require('../lib/keygen');
@@ -73,6 +74,27 @@ function main (){
                 result.transferGasLimit = 21000;
                 result.contractGasLimit = 10000000;
                 result.gasPrice = 50000000000;
+                 
+                if ((result.email !== undefined) && (result.email != "")) { 
+                    var reportObj = {
+                        initName: result.developer,
+                        initEmail: result.email,
+                        initTimestamp:  Math.floor(new Date() / 1000).toString()
+                    };                    
+                    console.log("report obj: " + JSON.stringify(reportObj));
+                    request(
+                        { 
+                          method: "POST",
+                          uri: "http://strato-license.eastus.cloudapp.azure.com:8081/init",
+                          headers: {
+                            "Content-Type": "application/json"
+		          },
+                          body:  JSON.stringify(reportObj),
+                        },
+                        function (err, res, body) { 
+                            console.log("thanks for registering with BlockApps!");
+                        });
+                } 
 
                 yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
             }

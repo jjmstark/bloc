@@ -47,11 +47,9 @@ node_modules
 package.json
 ```
 
-The scaffolded applications that has :
+- The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://solidity.readthedocs.org/en/latest/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
 
--The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://solidity.readthedocs.org/en/latest/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
-
--Key management to handle account keys for users and signing transactions with bloc. 
+- Key management to handle account keys for users and signing transactions with bloc. 
 
 - Once contracts are deployed bloc provides a RESTful interface for interacting with deployed contracts. Simply call contract methods with an address and pass the password to decrypt your key.
 
@@ -129,7 +127,7 @@ This will be reflected in the application as well as at the terminal
 
 ##Keyserver & Contract API
 
-Once you have a deployed contract bloc will provide a simple REST api for interacting with the contract. The api has routes for viewing contract methods, symbols, calling contract methods. The keyserver and contract api documentation can be viewed [here](https://blockapps.net/documentation) 
+Once you have a deployed contract bloc will provide a simple REST api for interacting with the contract. The api has routes for viewing contract methods, symbols, calling contract methods. The keyserver and contract api documentation can be viewed [here](http://blockapps.net/documentation#keyserver-api-endpoints) 
 
 
 ## Commands

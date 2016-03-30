@@ -5,11 +5,12 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "bower install"
+    "postinstall": "node_modules/bower/bin/bower install"
   },
   "author": "kjl",
   "license": "ISC",
   "dependencies": {
+    "bower" : "^1.7.7", 
     "blockapps-js": "kejace/blockapps-js",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",

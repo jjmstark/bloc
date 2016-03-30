@@ -1,6 +1,6 @@
 {
   "name": "blockapps-bloc",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "A minimal build and deploy tool for the BlockApps API",
   "main": "bin/main.js",
   "bin": {

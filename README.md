@@ -4,9 +4,10 @@
 
 [![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc) [![npm version](https://badge.fury.io/js/blockapps-bloc.svg)](https://badge.fury.io/js/blockapps-bloc)
 
-`bloc` is a small command line tool that helps you build blockchain applications on the Ethereum network with the [blockapps api](https://blockapps.net). Bloc makes it effortless to:
-* Compile and deploy smart contracts to the blockchain
-* Automatically wire those contracts to the front-end, so you can bring the blockchain to the world!
+`bloc` makes building applications for the Ethereum blockchain as easy. Bloc uses the [blockapps api](https://blockapps.net) and provides: 
+* Application scaffoldig and generated UI based on smart contracts methods to test interactions
+* Generated Smart Contract APIs to make working with Ethereum smart contracts easy in any language
+* Ethereum Account key management
 
 ##Installation
 
@@ -14,27 +15,13 @@
 npm install blockapps-bloc
 ```
 
-Enter the bloc directory:
-
-```
-cd bloc
-```
-
-Install bloc as a global package:
-
-```
-npm install -g
-```
-
 ##Generate a new blockchain app
 
-You can use "bloc init" to create a sample app.
+You can use `bloc init` to create a sample app.
 
 ```
 bloc init
 ```
-
-![bloc init](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_init.png)
 
 bloc init builds a base structure for your blockchain app as well as sets some default parameters values for creating transactions. These can be edited in the config.yaml file in your app directory.
 
@@ -44,34 +31,29 @@ You will find the following files in your newly created app directory:
 
 ```
 /app
+  /components
   /contracts
-    Array.sol
-    Payout.sol
-    SimpleDataFeed.sol
-    SimpleMultiSig.sol
-    SimpleStorage.sol
-  /css
-  /html
-  /js
   /lib
   /meta
   /routes
-  /views
-  app.js
-  config.yaml
-  gulpfile.js
-  package.json
+  /static
+  /users
+app.js
+bower.json
+config.yaml
+gulpfile.js
+marko-taglib.json
+node_modules
+package.json
 ```
 
-An Ethereum app consists of three parts:
+The scaffolded applications that has :
 
 -The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://solidity.readthedocs.org/en/latest/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
 
--The "html", "js", and "css" directories are intended to hold a frontend for your app. The "views" directory contains reusable templates written with [handlebars](http://handlebarsjs.com/) that can be viewed from `bloc`'s embedded webserver.
+-Key management to handle account keys for users and signing transactions with bloc. 
 
-
-
--Finally, we provide a REST API that will allow you to "glue" your frontend to the code you run in the blockchain.  This API is described at http://strato-dev2.blockapps.net/help.
+- Once contracts are deployed bloc provides a RESTful interface for interacting with deployed contracts. Simply call contract methods with an address and pass the password to decrypt your key.
 
 
 
@@ -88,9 +70,7 @@ Once this is finished run
 bloc genkey
 ```
 
-![bloc genkey](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_genkey.png)
-
-This generates a new private key and fill it with test-ether (note- free sample Ether is only available on the test network, of course).  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
+This generates a new user with name `admin` as well as a private key and fill it with test-ether (note- free sample Ether is only available on the test network, of course).  You can view the address information in the newly created key.json file.  Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file hidden.
 
 The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting http://strato-dev2.blockapps.net/eth/v1.0/account?address= &lt; fill in your address here &gt;
 
@@ -107,29 +87,23 @@ Getting a contract live on the blockchain is a two step process
 To compile your smart contracts
 
 ```
-bloc compile (-s)
+bloc compile 
 ```
-
-![bloc compile](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_compile.png)
 
 If there are any bugs in your contract code, this is where you will be allowed to fix them.
 
-Upload a contract and scaffold (`-s`) your dApp
+Upload a contract 
 
 ```
-bloc upload <ContractName> (-s)
+bloc upload <ContractName>
 ```
-
-![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_upload.png)
-
-Note that during these steps, javascript scaffolding code has been autogenerated in the "js" directory.  You can use this to connect to your newly uploaded contract.
 
 You will now see that Ether has been deducted from your account
 
 ![balance after](https://cloud.githubusercontent.com/assets/5578200/10926727/d91cc032-824e-11e5-928d-58574a94afbf.png)
 
 
-Also, the newly created contract has been given its own address, which you can view in the data in the "meta" folder.  Viewing contract information, including compiled bytecode for your Solidity contract can be done using the same URL that you use to view your own account information.
+Also, the newly created contract has been given its own address, which you can view in the data in the "user" folder.  Viewing contract information, including compiled bytecode for your Solidity contract can be done using the same URL that you use to view your own account information.
 
 ![contract info](https://cloud.githubusercontent.com/assets/5578200/10926827/8a4fcb42-824f-11e5-883b-b4704797cc02.png)
 
@@ -142,8 +116,7 @@ bloc start
 ```
 
 Now you can visit one of the contracts in your application, for example localhost:3000/contracts/payout. Note
-that the local webserver relies on dynamically generated templates, founds in the views folder, so it is not
-necessary to compile and upload with the '-s' option to view and run your contracts.
+that the local webserver relies on dynamically generated templates, founds in the `app/components` directory.
 
 Bloc will run through 3 contract status checks
 
@@ -153,7 +126,10 @@ Bloc will run through 3 contract status checks
 
 This will be reflected in the application as well as at the terminal
 
-![bloc upload](https://raw.githubusercontent.com/blockapps/bloc/readme-images/readme_img/bloc_start.png)
+
+##Keyserver & Contract API
+
+Once you have a deployed contract bloc will provide a simple REST api for interacting with the contract. The api has routes for viewing contract methods, symbols, calling contract methods. The keyserver and contract api documentation can be viewed [here](https://blockapps.net/documentation) 
 
 
 ## Commands
@@ -163,10 +139,10 @@ Usage: bloc <command> (options)
 
 Commands:
   init [name]              start a new project
-  compile [contract] [-s]  compile contract in contract folder
-  upload contract [-s]     upload contract to blockchain
+  compile [contract]       compile contract in contract folder
+  upload contract          upload contract to blockchain
   create                   create a new [project|module]
-  genkey                   generate a new private key and fill it at the faucet
+  genkey [name]            generate a new user and private key and fill it at the faucet. If a user exists a second key will be made
   send                     start prompt, transfer (amount*unit) to (address)
   start                    start bloc as a webserver with live reload
 ```

@@ -204,7 +204,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                       else cb();
                    }))
       .on('data', function (data) {
-              console.log("data is " + data.addresses[0])
+              console.log("data is: " + data.addresses[0])
               api.query.serverURI =  process.env.API || apiURI;               
               found = true; 
              
@@ -212,52 +212,52 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                   var store = new lw.keystore.deserialize(JSON.stringify(data));
                   var privkeyFrom = store.exportPrivateKey(address, password);
 
-		  var contractCreationTx = Solidity(src)
-		      .then(function(solObj) {
-			  mkdirp(userContractPath + '/' + solObj.name, function (err) { 
+		              var contractCreationTx = Solidity(src)
+		                .then(function(solObj) {
+			                        mkdirp(userContractPath + '/' + solObj.name, function (err) { 
+                                if (err) { console.err(err); res.send(err); }
+                                else {  console.log("success contractCreationTx, returning solObj: " + JSON.stringify(solObj)); 
+                                     return solObj; }
+		                           });
+
+			             return solObj;
+		              })
+
+		              .then(function(solObj) {
+			               mkdirp(metaPath + '/' + solObj.name, function (err) { 
                               if (err) { console.err(err); res.send(err); }
-                              else { // console.log("returning solObj: " + JSON.stringify(solObj)); 
+                              else {  console.log("success metaCreationTx, returning solObj: " + JSON.stringify(solObj)); 
                                      return solObj; }
 		          });
 
-			  return solObj;
-		       })
-
-		       .then(function(solObj) {
-			  mkdirp(metaPath + '/' + solObj.name, function (err) { 
-                              if (err) { console.err(err); res.send(err); }
-                              else { // econsole.log("returning solObj: " + JSON.stringify(solObj)); 
-                                     return solObj; }
-		          });
-
-			  return solObj;
+			       return solObj;
 		       })
 		  
 		      .then(function(solObj) {
-			  return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
-			})
+			       return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
+			     })
 
-	              .then(function(txResult)  {
-			  var metaWithAddress = txResult[1];
-			  metaWithAddress.address = txResult[0].account.address.toString();
-			  console.log("txResult[0]: " + JSON.stringify(txResult[0]));
-//			  console.log("txResult[1]: " + JSON.stringify(txResult[1]));
+	         .then(function(txResult)  {
+    			  var metaWithAddress = txResult[1];
+    			  metaWithAddress.address = txResult[0].account.address.toString();
+    			  console.log("txResult[0]: " + JSON.stringify(txResult[0]));
+//          console.log("txResult[1]: " + JSON.stringify(txResult[1]));
                                                           
-			  return metaWithAddress;
+			     return metaWithAddress;
 		      })
 		      .then(function(solObj) {
                           var fileName = metaPath + '/' + solObj.name + '/' + solObj.address + '.json';
                           console.log("synchronously committing metadata to disk");
-			  fs.writeFileSync(fileName, JSON.stringify(solObj));
+			                    fs.writeFileSync(fileName, JSON.stringify(solObj));
 			  
-			  return solObj;
+			                    return solObj;
 		      })
 
 		      .then(function(solObj) {
                           var fileName = userContractPath + '/' + solObj.name + '/' +  solObj.address + '.json';
-			  fs.writeFile(fileName, JSON.stringify(solObj));
+			                    fs.writeFile(fileName, JSON.stringify(solObj));
 			  
-			  res.send(solObj.address);
+			                    res.send(solObj.address);
 		      });
 		  			   	 
 //                 res.send("contract creation in progress");

@@ -90,7 +90,7 @@ function main (){
     }
     
     //api.setProfile("strato-dev", config.apiURL);
-    api.setProfile("strato-dev", config.apiURL, stratoVersion);
+    api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
 
     switch(cmdArr[0]) {
 
@@ -109,12 +109,12 @@ function main (){
           solSrcFiles = [fname];
         }
         else {
-          console.log("compiling all contracts");
+          console.log("compiling all contracts no longer supported!");
 
-          solSrcFiles = fs.readdirSync(solSrcDir).
-            filter(function(filename) {
-              return path.extname(filename) === '.sol';
-            })
+          // solSrcFiles = fs.readdirSync(solSrcDir).
+          //   filter(function(filename) {
+          //     return path.extname(filename) === '.sol';
+          //   })
         }
 
         Promise.all(solSrcFiles).

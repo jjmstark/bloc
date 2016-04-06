@@ -191,12 +191,12 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 
     var found = false;
     var userContractPath = path.join('app', 'users', user, 'contracts');
-    var contractPath = path.join('app', 'contracts');			
+    var contractPath = path.join('app', 'contracts');     
     var metaPath = path.join('app','meta');
     
     console.log("+++++++++++++++++++++++++++++++++++++");
-    console.log(req.body.password);
-    console.log(req.body);
+    //console.log(req.body.password);
+    //console.log(req.body);
 
     contractHelpers.userKeysStream(user)
       .pipe(es.map(function (data,cb) {
@@ -212,54 +212,57 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                   var store = new lw.keystore.deserialize(JSON.stringify(data));
                   var privkeyFrom = store.exportPrivateKey(address, password);
 
-		              var contractCreationTx = Solidity(src)
-		                .then(function(solObj) {
-			                        mkdirp(userContractPath + '/' + solObj.name, function (err) { 
+                  console.log("About to upload contract")
+
+                  var contractCreationTx = Solidity(src)
+                    .then(function(solObj) {
+                              console.log(JSON.stringify(solObj))
+                              mkdirp(userContractPath + '/' + solObj.name, function (err) { 
                                 if (err) { console.err(err); res.send(err); }
                                 else {  console.log("success contractCreationTx, returning solObj: " + JSON.stringify(solObj)); 
                                      return solObj; }
-		                           });
+                               });
 
-			             return solObj;
-		              })
+                   return solObj;
+                  })
 
-		              .then(function(solObj) {
-			               mkdirp(metaPath + '/' + solObj.name, function (err) { 
+                  .then(function(solObj) {
+                     mkdirp(metaPath + '/' + solObj.name, function (err) { 
                               if (err) { console.err(err); res.send(err); }
                               else {  console.log("success metaCreationTx, returning solObj: " + JSON.stringify(solObj)); 
                                      return solObj; }
-		          });
+              });
 
-			       return solObj;
-		       })
-		  
-		      .then(function(solObj) {
-			       return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
-			     })
+             return solObj;
+           })
+      
+          .then(function(solObj) {
+             return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
+           })
 
-	         .then(function(txResult)  {
-    			  var metaWithAddress = txResult[1];
-    			  metaWithAddress.address = txResult[0].account.address.toString();
-    			  console.log("txResult[0]: " + JSON.stringify(txResult[0]));
+           .then(function(txResult)  {
+            var metaWithAddress = txResult[1];
+            metaWithAddress.address = txResult[0].account.address.toString();
+            console.log("txResult[0]: " + JSON.stringify(txResult[0]));
 //          console.log("txResult[1]: " + JSON.stringify(txResult[1]));
                                                           
-			     return metaWithAddress;
-		      })
-		      .then(function(solObj) {
+           return metaWithAddress;
+          })
+          .then(function(solObj) {
                           var fileName = metaPath + '/' + solObj.name + '/' + solObj.address + '.json';
                           console.log("synchronously committing metadata to disk");
-			                    fs.writeFileSync(fileName, JSON.stringify(solObj));
-			  
-			                    return solObj;
-		      })
+                          fs.writeFileSync(fileName, JSON.stringify(solObj));
+        
+                          return solObj;
+          })
 
-		      .then(function(solObj) {
+          .then(function(solObj) {
                           var fileName = userContractPath + '/' + solObj.name + '/' +  solObj.address + '.json';
-			                    fs.writeFile(fileName, JSON.stringify(solObj));
-			  
-			                    res.send(solObj.address);
-		      });
-		  			   	 
+                          fs.writeFile(fileName, JSON.stringify(solObj));
+        
+                          res.send(solObj.address);
+          });
+                 
 //                 res.send("contract creation in progress");
               } catch (e) {
                   console.log("don't have the key! error: " + e);
@@ -278,8 +281,8 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
      method: theMethod,
      args: {
         namedArg1: val1,
-	namedArg2: val2,
-	..
+  namedArg2: val2,
+  ..
         }
     }
 */
@@ -294,7 +297,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
     var contractAddress = req.params.contractAddress;
     var address = req.params.address;
     var user = req.params.user;
-	
+  
     var found = false;
 
     var userContractPath = path.join('app', 'users', user, 'contracts', contractName);
@@ -310,49 +313,49 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         }))
 
         .pipe(es.map(function(data, cb) {
-	         var privkeyFrom;
-	         try { 
+           var privkeyFrom;
+           try { 
                 var store = new lw.keystore.deserialize(JSON.stringify(data));
                 privkeyFrom = store.exportPrivateKey(address, password);
             } catch (e) {
-		          res.send("address not found or password incorrect");
+              res.send("address not found or password incorrect");
             }
 
-	    cb(null, privkeyFrom);
-	}))
+      cb(null, privkeyFrom);
+  }))
 
-	.on('data', function(privkeyFrom) {
-	    var fileName = path.join(metaPath,contractAddress+'.json');
-	    
-	    fs.readFile(fileName, function (err,data) {
-                console.log("err: " + err);
-                console.log("contract: " + data);
+  .on('data', function(privkeyFrom) {
+      var fileName = path.join(metaPath,contractAddress+'.json');
+      
+      fs.readFile(fileName, function (err,data) {
+                //console.log("err: " + err);
+                //console.log("contract: " + data);
 
                 var contractJson = JSON.parse(data);
-		            var contract = Solidity.attach(JSON.parse(data));
+                var contract = Solidity.attach(JSON.parse(data));
 
                 contract.address = contractJson.address;
 
-            		var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
+                var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
 
-            		if (value != undefined) {
-            		    params.value = units.convertEth(value).from("ether").to("wei" );
-            		    console.log("params.value: " + params.value);
-            		}
+                if (value != undefined) {
+                    params.value = units.convertEth(value).from("ether").to("wei" );
+                    console.log("params.value: " + params.value);
+                }
 
-            		try {
+                try {
                     console.log("trying to invoke contract")
-            		    contract.state[method](args)
-            		       .txParams(params).callFrom(privkeyFrom)
-            		       .then(function (txResult) {
-            		          console.log("txResult: " + txResult);
+                    contract.state[method](args)
+                       .txParams(params).callFrom(privkeyFrom)
+                       .then(function (txResult) {
+                          console.log("txResult: " + txResult);
                           res.send("transaction returned: " + txResult);
-            		       });
-            	      } catch (e) { res.send('method call failed'); }
+                       });
+                    } catch (e) { res.send('method call failed'); }
       });
-	})
+  })
 
-	.on('end', function () {
+  .on('end', function () {
            if (!found) res.send('method call failed');
         });
 });

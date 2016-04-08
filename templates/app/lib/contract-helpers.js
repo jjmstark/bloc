@@ -49,11 +49,13 @@ function contractAddressesStream(name) {
 
 function contractsMetaAddressStream(name,address) { 
     return vinylFs.src( [ path.join('app', 'meta', name, address + '.json') ] )
+      .on('error', function(err){console.log("error: " + err); stream.emit('end');})
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))
        }));
 }
+
 /* emits all contract metadata as json */
 function contractsMetaStream() { 
     return vinylFs.src( [ path.join('meta', '*.json') ] )

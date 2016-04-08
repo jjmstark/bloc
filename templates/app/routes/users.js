@@ -338,6 +338,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 
                 var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
 
+                value = Math.max(0, value)
                 if (value != undefined) {
                     params.value = units.convertEth(value).from("ether").to("wei" );
                     console.log("params.value: " + params.value);

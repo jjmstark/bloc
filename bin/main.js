@@ -110,6 +110,7 @@ function main (){
         }
         else {
           console.log("compiling all contracts no longer supported!");
+          break;
 
           // solSrcFiles = fs.readdirSync(solSrcDir).
           //   filter(function(filename) {

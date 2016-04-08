@@ -294,9 +294,17 @@ function main (){
         });
 
         break;
+
+    case 'version':
+        analytics.insight.trackEvent("start");
+        var pkginfo = require('pkginfo')(module, 'version');
+        console.log("bloc version " + module.exports.version);
+        break;
+
     default:
         console.log("unrecognized command");
     }
+
 }
 
 if (require.main === module) {

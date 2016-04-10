@@ -37,50 +37,64 @@ var stratoVersion = "1.1"
 
 var lw = require('eth-lightwallet');
 
-function checkAnalytics() {
-    if (analytics.insight.optOut === undefined) {
-      return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
-        main();
-      });
-    } else {
-        main();
-    }
+function makeConfig(result) {
+  var name = result.appName;
+  var stat;
+  try {
+    stat = fs.statSync(name);
+  } catch (e) {
+  }
+
+  if (stat !== undefined) {
+    console.log("project: " + name + " already exists");
+  } else {
+    scaffold(result.appName, result.developer);
+    result.transferGasLimit = 21000;
+    result.contractGasLimit = 10000000;
+    result.gasPrice = 50000000000;
+
+    yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
+  }
+
+}
+
+function blocinit(cmdArgv) {
+  console.log(icon());
+
+  analytics.insight.trackEvent("init");
+
+  if('appName' in cmdArgv &&
+     'developer' in cmdArgv &&
+     'apiURL' in cmdArgv) {
+    makeConfig({
+      appName: cmdArgv.appName,
+      developer: cmdArgv.developer,
+      apiURL: cmdArgv.apiURL
+    });
+  }
+  else {
+    prompt.start();
+    prompt.getAsync(scaffoldApp).then(makeConfig);
+  }
+  return;
 }
 
 function main (){
-
     var cmdArr = cmd.argv._;
     if (cmdArr[0] == "init") {
-        console.log(icon());
-
-        analytics.insight.trackEvent("init");
-
-        if(cmdArr.length > 1){
-            var name = cmdArr.slice(-1)[0];
-            scaffoldApp.properties.appName.default = name;
-        }
-
-        var stat;
-
-        prompt.start();
-        prompt.getAsync(scaffoldApp).then(function(result) {
-            try {
-                stat = fs.statSync(name);
-            } catch (e) {
-            }
-
-            if (stat !== undefined) {
-                console.log("project: " + name + " already exists");
-            } else {
-                scaffold(result.appName, result.developer);
-                result.transferGasLimit = 21000;
-                result.contractGasLimit = 10000000;
-                result.gasPrice = 50000000000;
-
-                yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
-            }
-        });
-        return;
+      if (cmd.argv.optOut) {
+        analytics.insight.config.set("optOut", true);
+        delete cmd.argv.optOut;
+        return blocinit(cmd.argv);
+      }
+      else if (cmd.argv.optIn) {
+        analytics.insight.config.set("optOut", false);
+        delete cmd.argv.optIn;
+        return blocinit(cmd.argv);
+      }
+      return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
+        blocinit(cmd.argV);
+      });
     }
 
     try {
@@ -308,5 +322,5 @@ function main (){
 }
 
 if (require.main === module) {
-    checkAnalytics();
+    main();
 }

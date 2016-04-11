@@ -168,9 +168,9 @@ router.post('/:user/:address/send', cors(), function(req, res) {
                  
                 valueTX.send(privkeyFrom, toAddress).then(function(txResult) {
                   console.log("transaction result: " + txResult.message);
+                  res.send(JSON.stringify(valueTX));
                 });                 
                 
-                res.send(JSON.stringify(valueTX));
               } catch (e) {
                 console.log("don't have the key!")
               }

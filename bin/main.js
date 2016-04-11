@@ -63,7 +63,8 @@ function blocinit(cmdArgv) {
 
   analytics.insight.trackEvent("init");
 
-  if('appName' in cmdArgv &&
+  if(cmdArgv &&
+     'appName' in cmdArgv &&
      'developer' in cmdArgv &&
      'apiURL' in cmdArgv) {
     makeConfig({
@@ -93,7 +94,7 @@ function main (){
         return blocinit(cmd.argv);
       }
       return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
-        blocinit(cmd.argV);
+        blocinit(cmd.argv);
       });
     }
 

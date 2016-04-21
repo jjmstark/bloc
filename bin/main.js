@@ -32,10 +32,11 @@ var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 var PrivateKey = api.ethbase.Crypto.PrivateKey;
+var lw = require('eth-lightwallet');
 
 var stratoVersion = "1.1"
+var config = '';
 
-var lw = require('eth-lightwallet');
 
 function makeConfig(result) {
   var name = result.appName;
@@ -55,7 +56,6 @@ function makeConfig(result) {
 
     yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
   }
-
 }
 
 function blocinit(cmdArgv) {
@@ -98,21 +98,13 @@ function main (){
       });
     }
 
-    try {
-        var config = yamlConfig.readYaml('config.yaml');
-    } catch (e){
-        throw 'Cannot open config.yaml - are you in the project directory?';
-    }
     
-    //api.setProfile("strato-dev", config.apiURL);
-    api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
-
     switch(cmdArr[0]) {
 
     case 'compile':
-
-        analytics.insight.trackEvent("compile");
-
+      analytics.insight.trackEvent("compile");
+      checkForProject();
+      setApiProfile();
         var solSrcDir = path.normalize('./app/contracts');
         var config = yamlConfig.readYaml('config.yaml');
 
@@ -142,7 +134,9 @@ function main (){
         break;
 
     case 'upload':
-        analytics.insight.trackEvent("upload");
+      analytics.insight.trackEvent("upload");
+      checkForProject();
+      setApiProfile();
         var contractName = cmdArr[1];
         if (contractName === undefined) {
             console.log("contract name required");
@@ -177,29 +171,13 @@ function main (){
               });      
           })
         
-        // prompt.start();
-        // prompt.getAsync(requestPassword).get("password").then(function(password) {
-        //     var store = key.readKeystore();
-        //     var privkey;
-        //     if (store) {
-        //         var address = store.addresses[0];
-        //         privkey = store.exportPrivateKey(address, password);
-        //     }
-        //     else {
-        //         privkey = PrivateKey.fromMnemonic(password).toString();
-        //     }
-        //     return upload(contractName, privkey);
-        // }).then(function (solObjWAddr) {
-        //     console.log("adding address to app/meta/" + contractName + ".json");
-        //     if (doScaffold) {
-        //         codegen.writeJS(contractName, solObjWAddr);
-        //     }
-        // });
-
         break;
 
     case 'genkey':
-        analytics.insight.trackEvent("genkey");
+      analytics.insight.trackEvent("genkey");
+      checkForProject();
+      setApiProfile();
+
 	    var userName = cmdArr[1];
 
         prompt.start();
@@ -208,27 +186,14 @@ function main (){
         if (userName === undefined) key.generateKey(password,'admin');
 	    else key.generateKey(password,userName); 
 
-         //    if (password) {
-         //        if (numKeys === undefined) key.generateKey(password);
-	        // else key.generateKeys(password,numKeys);
-         //    }
-         //    else {
-         //        for (var i = 0; i < (numKeys || 1); ++i) {
-         //            var key = PrivateKey();
-         //            var addr = key.toAddress();
-         //            api.routes.faucet(addr).then(function() {
-         //                console.log("Your address is: " + addr);
-         //                console.log("Your password is: " + key.toMnemonic());
-         //                console.log("This information is not stored!  If you forget it, it cannot be recovered.");
-         //            });
-         //        }
-         //    }
-
 	    });
         break;
 
     case 'register':
-        analytics.insight.trackEvent("register");
+      analytics.insight.trackEvent("register");
+      checkForProject();
+      setApiProfile();
+
         prompt.start();
         prompt.getAsync(registerPassword).get("password").then(function(password) {
             var loginObj = {
@@ -248,9 +213,9 @@ function main (){
         break;
 
     case 'send':
-
-        analytics.insight.trackEvent("send");
-
+      analytics.insight.trackEvent("send");
+      checkForProject();
+      setApiProfile();
         var config = yamlConfig.readYaml('config.yaml');
         var transferObj = transfer;
 
@@ -302,7 +267,10 @@ function main (){
         break;
 
     case 'start':
-        analytics.insight.trackEvent("start");
+      analytics.insight.trackEvent("start");
+      checkForProject();
+      setApiProfile();
+
         var server = spawn('node', [ 'app.js' ]);
         server.stdout.on('data', function(data) {
            console.log(data.toString("utf-8"));
@@ -311,16 +279,35 @@ function main (){
         break;
 
     case 'version':
-        analytics.insight.trackEvent("start");
+        analytics.insight.trackEvent("version");
         var pkginfo = require('pkginfo')(module, 'version');
         console.log("bloc version " + module.exports.version);
         break;
 
     default:
-        console.log("unrecognized command");
+        console.log("Unrecognized command, try bloc --help");
     }
 
 }
+
+function checkForProject() {
+  try {
+    config = yamlConfig.readYaml('config.yaml');
+  } catch (e){
+    throw 'Cannot open config.yaml - are you in the project directory?';
+  } 
+}
+
+function setApiProfile() {
+  api.setProfile("strato-dev", config.apiURL);
+  //api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
+}
+
+
+process.on('unhandledRejection', function(reason, p) {
+  console.log("Exiting bloc");
+  process.exit(1);
+});
 
 if (require.main === module) {
     main();

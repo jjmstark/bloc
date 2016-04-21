@@ -1,11 +1,12 @@
-
-<div for="cs in data.contractMeta" style="border: 1px solid black; padding: 10px; margin-bottom: 1em;">
-    <p>${cs.name} Status </p>
-    <ul class="nav nav-pills">
-    <li class="active"><a href="#">Compiled</a> </li>
-    <li class="active" if="notEmpty(cs.address)">
-      <a href="#">Uploaded with address: <span class="upload-address">$cs.address</span></a>
+<div for="cs in data.contractMeta">
+  <ul class="list-group">
+    <li class="list-group-item">
+      Contract Address<br>
+      <a href="${data.apiURL}/eth/v1.1/account?address=${cs.address}", target="_blank"><span class="upload-address">$cs.address</span></a>
     </li>
-    <li else> <a href="#"> Not yet uploaded! Upload with <b> bloc upload ${cs.name} </b> </a> </div>
-    </ul>
+    <li class="list-group-item">
+      Contract<br>
+      <a href="/contracts/${cs.name}/${cs.address}/state", target="_blank"><span class="upload-address">State</span></a>
+    </li>
+  </ul>
 </div>

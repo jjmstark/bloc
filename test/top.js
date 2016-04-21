@@ -24,7 +24,7 @@ describe("top", function () {
     importTest("keygen", './keygen/keygen.test.js');
     importTest("contract", './contract/contract.test.js');
 
-    //chainTest("config", './config/config.test.js', "keygen", './keygen/keygen.test.js');
+    //chainTest("keygen", './keygen/keygen.test.js', "contract", './contract/contract.test.js');
 
     after(function () {
         console.log("after all tests");

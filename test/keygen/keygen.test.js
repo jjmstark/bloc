@@ -24,7 +24,7 @@ var faucetMock = function (address) {
         function (resolve, reject) {
             resolve({ 
                 method: 'POST',
-                uri: 'http://strato-dev2.blockapps.net', 
+                uri: 'http://strato-dev3.blockapps.net', 
                 form: {
                     address: address
                 }                    
@@ -38,17 +38,17 @@ function isHex(h) {
     return (a.toString(16) === h)
 }
 
-keygen.__set__("fs", fsMock);
-keygen.__set__("faucet", faucetMock);
+//keygen.__set__("fs", fsMock);
+//keygen.__set__("faucet", faucetMock);
 
 describe('Key Generation', function() {
     describe('#generateKey()', function () {
     var mockedKey;
 
-    beforeEach(function(done){
+    before(function(done){
         console.log("before keygen")
-        mockedKey = keygen.generateKey(options.password, options.username);
-        done();
+        mockedKey = keygen.generateKeyPreWrite(options.password, options.username);
+        keygen.writeKeyToDisk(options.username, mockedKey).delay(1).then(function(){done();})
     });
 
     it('should create a key file with an address and a privkey. The address should be valid hex.', 

@@ -33,10 +33,12 @@ var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 var PrivateKey = api.ethbase.Crypto.PrivateKey;
 var lw = require('eth-lightwallet');
+var chalk = require('chalk');
 
 var stratoVersion = "1.1"
 var config = '';
 
+//console.log(chalk.green('Hello %s'), name);
 
 function makeConfig(result) {
   var name = result.appName;
@@ -117,14 +119,14 @@ function main (){
           try {
             fs.accessSync(solSrcDir + '/' + fname, fs.F_OK);
           } catch (e) {
-            console.log("Contract not found");
+            console.log(chalk.red("ERROR: ") + "Contract not found");
             break;
           }
-          console.log('compiling single contract: ' + fname);
+          console.log(chalk.yellow("Compiling single contract: ") + chalk.white(fname));
           solSrcFiles = [fname];
         }
         else {
-          console.log("compiling all contracts no longer supported!");
+          console.log("Compiling all contracts no longer supported!");
           break;
 
           // solSrcFiles = fs.readdirSync(solSrcDir).
@@ -146,7 +148,7 @@ function main (){
       setApiProfile();
         var contractName = cmdArr[1];
         if (contractName === undefined) {
-            console.log("contract name required");
+            console.log(chalk.red("ERROR: ") + "Contract name required");
             break;
         }
 

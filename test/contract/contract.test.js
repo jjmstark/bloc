@@ -1,4 +1,4 @@
-//'use strict';
+'use strict';
 
 var common = require("../common");
 var options = common.options;
@@ -20,12 +20,10 @@ var compile = require("../../lib/compile.js")
 describe('compiling contracts', function(){
 
   var payOutSolWAddr = null;
+  var privKey = null;
 
   before(function(done){
-      console.log("before contracts")
-
-      solSrcFiles = "templates/app/contracts/Payout.sol"
-
+      var solSrcFiles = "templates/app/contracts/Payout.sol"
       var src = fs.readFileSync(solSrcFiles).toString();
 
       compile(src).then(function(){
@@ -40,31 +38,33 @@ describe('compiling contracts', function(){
                 var store = lw.keystore.deserialize(d);
                 var address = store.addresses[0];
 
-                var privkey = store.exportPrivateKey(address, options.password);
+                privKey = store.exportPrivateKey(address, options.password);
 
-                upload(contractName, privkey)
+                upload(contractName, privKey)
                  .then(function (solObjWAddr) {
                     payOutSolWAddr = solObjWAddr;
                     done();
                 });      
             })
-
-        //done();
       })
   });
 
   describe('payoutTest', function(){
 
-    // beforeEach("uploading contract", function(){
-    //   console.log("uplao")
-    // })
-
     it("Payout is uploaded", function(){
        var address = JSON.parse(payOutSolWAddr[1]).address;
-       console.log("address is: " + address)
        assert(address != null)
     });
 
-  })
+    it("Can call Payout", function(done){
+      var payout = blockapps.Solidity.attach(payOutSolWAddr[1]);
+      payout.state.Dividend().callFrom(privKey).then(function(res){
+        done()
+      })
+    });
+
+  });
+
+
 });
 

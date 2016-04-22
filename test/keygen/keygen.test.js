@@ -1,3 +1,5 @@
+'use strict';
+
 var common = require("../common");
 var options = common.options;
 var assert = common.assert;

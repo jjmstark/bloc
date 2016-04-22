@@ -110,8 +110,16 @@ function main (){
 
         var solSrcFiles;
         if (cmdArr[1]) {
+
           var fname = path.parse(cmdArr[1]).ext === '.sol' ?
                                            cmdArr[1] : cmdArr[1] + ".sol";
+          // Make sure the file exists
+          try {
+            fs.accessSync(solSrcDir + '/' + fname, fs.F_OK);
+          } catch (e) {
+            console.log("Contract not found");
+            break;
+          }
           console.log('compiling single contract: ' + fname);
           solSrcFiles = [fname];
         }
@@ -127,7 +135,6 @@ function main (){
 
         Promise.all(solSrcFiles).
           map(function (filename) {
-            console.log(path.join(solSrcDir, filename));
             return fs.readFileSync(path.join(solSrcDir, filename)).toString()
           }).  
           map(compile);

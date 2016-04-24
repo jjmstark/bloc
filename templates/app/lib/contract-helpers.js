@@ -39,7 +39,11 @@ function contractsStream() {
 }
 
 function contractDirsStream() { 
-   return readdirp({root: path.join('app','meta'), depth: 1});
+   return readdirp({
+     root: path.join('app','meta'), 
+     depth: 1, 
+     fileFilter: ['!temp.json']
+  });
 }
 
 function contractAddressesStream(name) {

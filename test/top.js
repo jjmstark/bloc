@@ -19,7 +19,7 @@ var common = require("./common");
 
 describe("top", function () {
     beforeEach(function(done){
-        common.blockapps.setProfile("strato-dev", "http://23.96.12.110");
+        common.blockapps.setProfile("strato-dev", "http://strato-dev3.blockapps.net");
         done();
     });
     importTest("config", './config/config.test.js');

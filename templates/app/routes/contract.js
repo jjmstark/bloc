@@ -26,17 +26,26 @@ router.get('/', cors(), function(req, res) {
     helper.contractDirsStream()
 	.pipe( helper.collect() )
 	.pipe( es.map(function (data,cb) {
-            var directoryTree = {};
+   var directoryTree = {};
+    data.map(function (item) {
+    
+    var createdAt = Date.parse(item.stat.birthtime);
+    
+    var entries = item.path.split('/');
+    if (directoryTree[entries[0]] === undefined) { 
+      directoryTree[entries[0]] = [];
+    }
+    // Remove .json 
+    var address = entries[1].replace('.json', '');
 
-	    data.map(function (item) {
-                var entries = item.path.split('/');
+    var contractObj = {
+      "address": address,
+      "createdAt": createdAt
+    };
 
-                if (directoryTree[entries[0]] === undefined) { 
-                    directoryTree[entries[0]] = [];
-                }
-
-                directoryTree[entries[0]].push(entries[1])
-	    });
+    directoryTree[entries[0]].push(contractObj);
+    //entries[0].sort(function(a, b) {return b - a});
+  });
 
 	    cb(null,directoryTree);
         }))				   

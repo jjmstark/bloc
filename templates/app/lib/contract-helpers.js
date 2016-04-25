@@ -38,6 +38,10 @@ function contractsStream() {
       .pipe( map(getPath) );  
 }
 
+/**
+ * Recursively find compiled contracts.
+ * @return {object} Array of compiled contract files
+ */
 function contractDirsStream() { 
    return readdirp({
      root: path.join('app','meta'), 

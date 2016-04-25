@@ -28,3 +28,4 @@ exports.options = options;
 exports.chai = chai;
 exports.blockapps = blockapps;
 exports.assert = chai.assert;
+exports.promise = promise;

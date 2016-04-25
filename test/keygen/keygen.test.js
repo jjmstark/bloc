@@ -21,24 +21,24 @@ var fsMock = {
         }
 };
 
-var faucetMock = function (address) {
-    return new promise(
-        function (resolve, reject) {
-            resolve({ 
-                method: 'POST',
-                uri: 'http://strato-dev3.blockapps.net', 
-                form: {
-                    address: address
-                }                    
-            });
-        }
-    );
-}
+// var faucetMock = function (address) {
+//     return new promise(
+//         function (resolve, reject) {
+//             resolve({ 
+//                 method: 'POST',
+//                 uri: 'http://strato-dev3.blockapps.net', 
+//                 form: {
+//                     address: address
+//                 }                    
+//             });
+//         }
+//     );
+// }
 
-function isHex(h) {
-    var a = parseInt(h,16);
-    return (a.toString(16) === h)
-}
+// function isHex(h) {
+//     var a = parseInt(h,16);
+//     return (a.toString(16) === h)
+// }
 
 //keygen.__set__("fs", fsMock);
 //keygen.__set__("faucet", faucetMock);

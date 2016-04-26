@@ -14,12 +14,34 @@ var Account = common.blockapps.ethbase.Account;
 var transaction = blockapps.ethbase.Transaction;
 var ethValue = blockapps.ethbase.Units.ethValue;
 
+var promise = common.promise;
+
+var keygen = require("../../lib/keygen.js");
 var helper = require('../../lib/contract-helpers.js');
 var upload = require("../../lib/upload.js")
 var compile = require("../../lib/compile.js")
 
 var privKey;
 var address;
+
+var pairs = []
+
+var getPrivKeys = function(l, cb){
+  return promise.all(l.map(function(n){
+
+    var keyStream = helper.userKeysStream(options.username_multi);
+    return keyStream
+        .pipe(helper.collect())
+        .on('data', function (data) { 
+            var d = JSON.stringify(data[0]);
+            var store = lw.keystore.deserialize(d);
+            var t_address = store.addresses[0];
+            var t_privKey = store.exportPrivateKey(address, options.password); 
+            pairs.push((t_address, t_privKey));
+            console.log("pushed private key");
+        })
+  })).then(function(){console.log("done 3 keys"); cb();});
+}
 
 var myUpload = function(name, cb){
 
@@ -30,18 +52,16 @@ var myUpload = function(name, cb){
 
     var contractName = name;
     var keyStream = helper.userKeysStream(options.username);
-
     return keyStream
         .pipe(helper.collect())
         .on('data', function (data) { 
             var d = JSON.stringify(data[0]);
             var store = lw.keystore.deserialize(d);
             address = store.addresses[0];
-
             privKey = store.exportPrivateKey(address, options.password);
-
             upload(contractName, privKey)
              .then(function (solObjWAddr) {
+                //console.log("contract address: " + solObjWAddr)
                 cb(solObjWAddr);
             });      
         })
@@ -53,6 +73,7 @@ describe('compiling Payout', function(){
   var payOutSolWAddr = null;
 
   before(function(done){
+    console.log("uploading Payout")
     myUpload("Payout", function(c){payOutSolWAddr = c; done()});
   });
 
@@ -83,13 +104,14 @@ describe('compiling Payout', function(){
   });
 });
 
-
 describe('compiling SimpleMultiSig', function(){
 
   var smsSolWAddr = null;
 
   before(function(done){
-    myUpload("SimpleMultiSig", function(c){smsSolWAddr = c; done()});
+
+    myUpload("SimpleMultiSig", function(c){smsSolWAddr = c; done()})
+      
   });
 
   describe('#SimpleMultiSigTest()', function(){

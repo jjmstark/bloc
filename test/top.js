@@ -19,13 +19,15 @@ var common = require("./common");
 
 describe("top", function () {
     beforeEach(function(done){
-        common.blockapps.setProfile("strato-dev", "http://strato-dev3.blockapps.net");
+        common.blockapps.setProfile("strato-dev", "http://23.96.12.110");
+        //common.blockapps.setProfile("ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com");
+        //common.blockapps.setProfile("ethereum-frontier", "http://23.96.12.110");
         done();
     });
     importTest("config", './config/config.test.js');
     importTest("keygen", './keygen/keygen.test.js');
-    importTest("contract", './contract/contract.test.js');
-    //importTest("multi", './multi/multi.test.js');
+    //importTest("contract", './contract/contract.test.js');
+    importTest("multi", './multi/multi.test.js');
 
     after(function () {
         console.log("after all tests");

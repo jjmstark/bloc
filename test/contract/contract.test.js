@@ -91,6 +91,7 @@ describe('compiling Payout', function(){
       var valueTX = transaction({"value" : ethValue(1).in("wei")}); 
 
       valueTX.send(privKey, addressTo).then(function(txResult) {
+          console.log("txResult: " + JSON.stringify(txResult))
           console.log("tx " + address + " -> " + addressTo)
           done();
       });

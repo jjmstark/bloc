@@ -21,7 +21,7 @@ var ethValue = blockapps.ethbase.Units.ethValue;
 describe('Multi-transactions', function() {
 
     var multiKeys = [];
-    var n = 3;
+    var n = 5;
 
     before("before #multiTXs", function(done){
         console.log("generating " + n + " private keys")

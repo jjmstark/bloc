@@ -20,8 +20,9 @@ var common = require("./common");
 describe("top", function () {
     beforeEach(function(done){
         //var profile = ["ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com"]
-        var profile = ["ethereum-frontier", "http://23.96.12.110"]
+        //var profile = ["ethereum-frontier", "http://23.96.12.110"]
         //var profile = ["strato-dev", "http://23.96.12.110"]
+        var profile = ["strato-dev", "http://strato-dev3.blockapps.net"]
 
         common.blockapps.setProfile(profile[0], profile[1]);
         console.log("using: " + profile)

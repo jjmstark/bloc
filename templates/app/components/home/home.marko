@@ -3,15 +3,23 @@
 <header />
 <body>
   <div class="container">
-    <h1>Inspect your Contracts!</h1>
+    <h4>Compiled Contracts</h4>
     <div class="row">
       <div for="(contractName,contractList) in data">
-          <b> ${contractName} </b>
-          <ul class="lead">
-            <li for="contract in contractList">
-              <a href="/contracts/${contractName}/${contract}"> ${contract}</a>
-            </li>
-          </ul>
+        <h5> ${contractName} </h5>
+        <table class="table">
+          <tr for="contract in contractList">
+            <td>
+              <a href="/contracts/${contractName}/${contract.address}"> ${contract.address}</a>
+            </td>
+            <td>
+              <a href="/contracts/${contractName}/${contract.address}.html">Generated HTML</a>
+            </td>
+            <td>
+              <a href="/contracts/${contractName}/${contract.address}/state"> Contract State</a>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
   </div>

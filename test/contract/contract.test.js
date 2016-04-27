@@ -62,6 +62,7 @@ var myUpload = function(name, cb){
             upload(contractName, privKey)
              .then(function (solObjWAddr) {
                 //console.log("contract address: " + solObjWAddr)
+                console.log("calling callback")
                 cb(solObjWAddr);
             });      
         })

@@ -19,9 +19,12 @@ var common = require("./common");
 
 describe("top", function () {
     beforeEach(function(done){
-        common.blockapps.setProfile("strato-dev", "http://23.96.12.110");
-        //common.blockapps.setProfile("ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com");
-        //common.blockapps.setProfile("ethereum-frontier", "http://23.96.12.110");
+        //var profile = ["ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com"]
+        var profile = ["ethereum-frontier", "http://23.96.12.110"]
+        //var profile = ["strato-dev", "http://23.96.12.110"]
+
+        common.blockapps.setProfile(profile[0], profile[1]);
+        console.log("using: " + profile)
         done();
     });
     importTest("config", './config/config.test.js');

@@ -33,10 +33,12 @@ var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 var PrivateKey = api.ethbase.Crypto.PrivateKey;
 var lw = require('eth-lightwallet');
+var chalk = require('chalk');
 
 var stratoVersion = "1.1"
 var config = '';
 
+//console.log(chalk.green('Hello %s'), name);
 
 function makeConfig(result) {
   var name = result.appName;
@@ -110,13 +112,21 @@ function main (){
 
         var solSrcFiles;
         if (cmdArr[1]) {
+
           var fname = path.parse(cmdArr[1]).ext === '.sol' ?
                                            cmdArr[1] : cmdArr[1] + ".sol";
-          console.log('compiling single contract: ' + fname);
+          // Make sure the file exists
+          try {
+            fs.accessSync(solSrcDir + '/' + fname, fs.F_OK);
+          } catch (e) {
+            console.log(chalk.red("ERROR: ") + "Contract not found");
+            break;
+          }
+          console.log(chalk.yellow("Compiling single contract: ") + chalk.white(fname));
           solSrcFiles = [fname];
         }
         else {
-          console.log("compiling all contracts no longer supported!");
+          console.log("Compiling all contracts no longer supported!");
           break;
 
           // solSrcFiles = fs.readdirSync(solSrcDir).
@@ -127,7 +137,6 @@ function main (){
 
         Promise.all(solSrcFiles).
           map(function (filename) {
-            console.log(path.join(solSrcDir, filename));
             return fs.readFileSync(path.join(solSrcDir, filename)).toString()
           }).  
           map(compile);
@@ -139,7 +148,7 @@ function main (){
       setApiProfile();
         var contractName = cmdArr[1];
         if (contractName === undefined) {
-            console.log("contract name required");
+            console.log(chalk.red("ERROR: ") + "Contract name required");
             break;
         }
 

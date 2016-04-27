@@ -109,14 +109,21 @@ router.post('/:user', cors(), function(req, res) {
     del([fileName]).then(function(paths){
       console.log('Deleted files and folders:\n', paths.join('\n'));
         fs.rmdir(thePath, function(err, files){
-            console.log("user " + user + " gone beacuse empty: "+err);
+            console.log("user " + user + " gone because empty: "+err);
       });
     });
 
   } else {
     console.log("just registering name, no faucet called");
 
-    var newAddress = req.body.address;
+
+    var seed = lw.keystore.generateRandomSeed();
+    var password = req.body.password;
+
+    var store = new lw.keystore(seed, password);
+    store.generateNewAddress(password);
+
+    var newAddress = store.addresses[0];
 
     var fileName = path.join(thePath, newAddress + '.json');
     

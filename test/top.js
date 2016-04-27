@@ -30,7 +30,7 @@ describe("top", function () {
     importTest("config", './config/config.test.js');
     importTest("keygen", './keygen/keygen.test.js');
     importTest("contract", './contract/contract.test.js');
-    //importTest("multi", './multi/multi.test.js');
+    importTest("multi", './multi/multi.test.js');
 
     after(function () {
         console.log("after all tests");

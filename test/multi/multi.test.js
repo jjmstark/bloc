@@ -21,14 +21,18 @@ var ethValue = blockapps.ethbase.Units.ethValue;
 describe('Multi-transactions', function() {
 
     var multiKeys = [];
-    var n = 5;
+    var n = 3;
 
     before("before #multiTXs", function(done){
         console.log("generating " + n + " private keys")
         for(var i = 0; i < n; i++){
-            multiKeys.push(keygen.generateKeyPreWrite(options.password, options.username));
-            //keygen.writeKeyToDisk(options.username, mockedKey).delay(1).then(function(){done();})
+            var kk = keygen.generateKeyPreWrite(options.password, options.username)
+            multiKeys.push(kk);
+            // keygen.writeKeyToDisk(options.username, kk, function(err, ret){
+            //     done();
+            // })
         }
+
         console.log('done generating keys')
         done()
     })

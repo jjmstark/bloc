@@ -13,17 +13,23 @@ var fs = Promise.promisifyAll(require('fs'));
 var mkdirp = Promise.promisifyAll(require('mkdirp'));
 
 var path = require('path');
+var yaml = require('js-yaml');
+
+var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
+var apiURI = config.apiURL;
 
 var api = require('blockapps-js');
+var stratoVersion = "1.1";
+
+api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
+
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');
 
 var jsonParser = bodyParser.json();
 
-var yaml = require('js-yaml');
 
-var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
-var apiURI = config.apiURL;
+
 
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;

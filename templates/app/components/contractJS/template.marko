@@ -47,6 +47,7 @@ function callFunc(funcName) {
     
     $.ajax({
         method: "POST",
+        timeout: "60000",
         headers: {
             "content-type": "application/json"
 	    },

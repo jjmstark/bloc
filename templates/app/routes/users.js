@@ -136,7 +136,7 @@ router.post('/:user', cors(), function(req, res) {
     mkdirp(thePath, function (err) { 
         if (err) { console.err(err); res.send(err); }
         else { 
-            fs.writeFile(fileName, JSON.stringify({ "addresses":[ newAddress ] }), function() { 
+            fs.writeFile(fileName, store.serialize(), function() { 
                 res.send(newAddress);
             });
         }

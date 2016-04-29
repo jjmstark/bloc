@@ -107,7 +107,7 @@ function main (){
       analytics.insight.trackEvent("compile");
       checkForProject();
       setApiProfile();
-        var solSrcDir = path.normalize('./app/contracts');
+        var solSrcDir = path.join('app', 'contracts');
         var config = yamlConfig.readYaml('config.yaml');
 
         var solSrcFiles;
@@ -117,7 +117,7 @@ function main (){
                                            cmdArr[1] : cmdArr[1] + ".sol";
           // Make sure the file exists
           try {
-            fs.accessSync(solSrcDir + '/' + fname, fs.F_OK);
+            fs.accessSync(path.join(solSrcDir,fname), fs.F_OK);
           } catch (e) {
             console.log(chalk.red("ERROR: ") + "Contract not found");
             break;
@@ -308,8 +308,8 @@ function checkForProject() {
 }
 
 function setApiProfile() {
-  api.setProfile("strato-dev", config.apiURL);
-  //api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
+//  api.setProfile("strato-dev", config.apiURL);
+  api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
 }
 
 

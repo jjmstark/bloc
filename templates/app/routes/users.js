@@ -302,9 +302,10 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                         res.send(err);
                         return;
                     })
-      
+
                     .then(function(solObj) {
                         console.log("attempting to upload now");
+                        //return Promise.join(solObj.construct().txParams({"gasLimit" : Int(3141592),"gasPrice" : Int(1)}).callFrom(privkeyFrom), Promise.resolve(solObj));
                         return Promise.join(solObj.newContract(privkeyFrom), Promise.resolve(solObj));
                     })
 

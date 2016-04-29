@@ -7,7 +7,7 @@
     "bloc": "bin/main.js"
   },
   "scripts": {
-    "test": "mocha --timeout 100000"
+    "test": "mocha --timeout 300000"
   },
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bignumber.js": "^2.0.7",
-    "blockapps-js": "blockapps/blockapps-js#v3.0.0",
+    "blockapps-js": "^3.0.0",
     "bluebird": "^2.9.34",
     "body-parser": "^1.14.1",
     "chalk": "^1.1.1",

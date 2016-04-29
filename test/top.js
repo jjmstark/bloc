@@ -2,7 +2,9 @@
 
 function importTest(name, path) {
     describe(name, function () {
-        require(path);
+        step(name, function(){
+            require(path);
+        })
     });
 }
 
@@ -19,18 +21,19 @@ var common = require("./common");
 
 describe("top", function () {
     beforeEach(function(done){
-        //var profile = ["ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com"]
+        var profile = ["ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com"]
         //var profile = ["ethereum-frontier", "http://23.96.12.110"]
         //var profile = ["strato-dev", "http://23.96.12.110"]
-        var profile = ["strato-dev", "http://strato-dev3.blockapps.net"]
+        //var profile = ["strato-dev", "http://strato-dev3.blockapps.net"]
 
         common.blockapps.setProfile(profile[0], profile[1]);
         console.log("using: " + profile)
         done();
     });
+
     importTest("config", './config/config.test.js');
     importTest("keygen", './keygen/keygen.test.js');
-    importTest("contract", './contract/contract.test.js');
+    //importTest("contract", './contract/contract.test.js');
     importTest("multi", './multi/multi.test.js');
 
     after(function () {

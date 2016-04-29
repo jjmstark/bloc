@@ -313,10 +313,10 @@ function setApiProfile() {
 }
 
 
-process.on('unhandledRejection', function(reason, p) {
-  console.log("Exiting bloc");
-  process.exit(1);
-});
+// process.on('unhandledRejection', function(reason, p) {
+//   console.log("Exiting bloc");
+//   process.exit(1);
+// });
 
 if (require.main === module) {
     main();

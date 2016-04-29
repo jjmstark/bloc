@@ -53,7 +53,9 @@ describe('Key Generation', function() {
         before(function(done){
             console.log("before keygen")
             mockedKey = keygen.generateKeyPreWrite(options.password, options.username);
-            keygen.writeKeyToDisk(options.username, mockedKey).delay(1).then(function(){done();})
+            keygen.writeKeyToDisk(options.username, mockedKey, function(err, ret){
+                done();
+            })
         });
 
         it('should create a key file with an address and a privkey. The address should be valid hex.', 

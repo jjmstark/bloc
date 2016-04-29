@@ -7,7 +7,7 @@
     "bloc": "bin/main.js"
   },
   "scripts": {
-    "test": "mocha --timeout 100000"
+    "test": "mocha --timeout 300000"
   },
   "repository": {
     "type": "git",

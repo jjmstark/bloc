@@ -56,6 +56,7 @@ var myUpload = function(name, cb){
         .pipe(helper.collect())
         .on('data', function (data) { 
             var d = JSON.stringify(data[0]);
+            console.log("data is " + d)
             var store = lw.keystore.deserialize(d);
             address = store.addresses[0];
             privKey = store.exportPrivateKey(address, options.password);

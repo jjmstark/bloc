@@ -5,6 +5,7 @@ var mocha = require('mocha');
 var expect = chai.expect;
 var promise = require('bluebird');
 var assert = require('assert');
+var step = require('mocha-steps');
 
 var blockapps = require("blockapps-js");
 

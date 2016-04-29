@@ -160,42 +160,65 @@ router.post('/:user/:address/send', cors(), function(req, res) {
 
     var found = false;
 
-    var strVal = float2rat(value)
+    var strVal = float2rat(value);
 
-    var h1 = strVal.split('/')[0]
-    var h2 = strVal.split('/')[1]
+    var h1 = strVal.split('/')[0];
+    var h2 = strVal.split('/')[1];
+
+    if ((typeof password === 'undefined') || (password === '')) {
+        res.send('password required');
+        return;
+    }
+
+    if ((typeof toAddress === 'undefined') || (toAddress === '')) {
+        res.send('toAddress required');
+        return;
+    }
+
+    if ((typeof value === 'undefined') || (value === '')) {
+        res.send('value required');
+        return;
+    }
 
     contractHelpers.userKeysStream(user)
       .pipe(es.map(function (data,cb) {
                       if (data.addresses[0] == address) cb(null,data);
                       else cb();
                    }))
+
       .on('data', function (data) {
-          
+         
               api.query.serverURI =  process.env.API || apiURI;               
               found = true; 
              
               try { 
-                var store = new lw.keystore.deserialize(JSON.stringify(data));
-                var privkeyFrom = store.exportPrivateKey(address, password);
+                  var store = new lw.keystore.deserialize(JSON.stringify(data));
+                  var privkeyFrom = store.exportPrivateKey(address, password);
+              } catch (e) {
+                  console.log("don't have the key!");
+                  res.send("invalid address or incorrect password");     
+                  return;
+              }
+  
+              var valWei = units.convertEth(h1,h2).from("ether").to("wei");
+              console.log(valWei);
 
-                var valWei = units.convertEth(h1,h2).from("ether").to("wei")
-                console.log(valWei)
-
-                var valueTX = Transaction({"value" : valWei, 
-                                           "gasLimit" : Int(21000),
-                                           "gasPrice" : Int(50000000000)});
+              var valueTX = Transaction({"value" : valWei, 
+                                         "gasLimit" : Int(21000),
+                                         "gasPrice" : Int(50000000000)});
                  
-                valueTX.send(privkeyFrom, toAddress).then(function(txResult) {
-                  console.log("transaction result: " + txResult.message);
-                  res.send(JSON.stringify(valueTX));
+              valueTX.send(privkeyFrom, toAddress)
+                .then(function(txResult) {
+                    console.log("transaction result: " + txResult.message);
+                    res.send(JSON.stringify(valueTX));
+                })
+                
+                .catch(function(err) { 
+                    res.send(err);
                 });                 
                 
-              } catch (e) {
-                console.log("don't have the key!");
-                res.send("invalid address or incorrect password");     
-              }
-       })
+          })
+
       .on('end', function () {
            if (!found) res.send('address not found');
        });

@@ -186,25 +186,39 @@ router.get('/:contractName/:contractAddress/state', cors(), function (req, res) 
     var contractName = req.params.contractName;
     var contractAddress = req.params.contractAddress;
     
+    var found = false;
+
     helper.contractsMetaAddressStream(contractName,contractAddress)
       .pipe( es.map(function (data,cb) {
-	          if (data.name == contractName) cb(null,data);
+	          if (data.name == contractName) { 
+                      found = true;
+                      cb(null,data);
+                  }
                   else cb();                      
         }))
 
       .on('data', function(data) {
 	    var contract = Solidity.attach(data);
-	    return Promise.props(contract.state).then(function(sVars) {
+	    return Promise.props(contract.state)
+              .then(function(sVars) {
 
                 var parsed = traverse(sVars).forEach(function (x) { 
                     if (Buffer.isBuffer(x)) { 
                         this.update(x.toString());
                     }
-                });
+                 });
              
-		res.send(parsed);
-	    });
-	});
+		 res.send(parsed);
+	      })
+
+              .catch(function(err) { 
+                 res.send(err);
+              });
+	})
+
+      .on('end', function () { 
+           res.send("contract not found");
+        });
 
 });
 

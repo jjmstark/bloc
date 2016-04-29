@@ -244,7 +244,9 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
            })
       
           .then(function(solObj) {
-             return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
+
+             return Promise.join(solObj.construct().txParams({"gasLimit" : Int(3141592),"gasPrice" : Int(1)}).callFrom(privkeyFrom), Promise.resolve(solObj));
+             //return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
            })
 
            .then(function(txResult)  {

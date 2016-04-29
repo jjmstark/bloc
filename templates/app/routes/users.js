@@ -21,15 +21,13 @@ var apiURI = config.apiURL;
 var api = require('blockapps-js');
 var stratoVersion = "1.1";
 
-api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
+//api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
+api.setProfile("strato-dev", apiURI);
 
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');
 
 var jsonParser = bodyParser.json();
-
-
-
 
 var Transaction = api.ethbase.Transaction;
 var units = api.ethbase.Units;
@@ -77,12 +75,19 @@ router.post('/:user', cors(), function(req, res) {
 
   var user = req.params.user;
   var thePath = path.join('app', 'users', user);
+  var password = req.body.password;
+  
+  if ((typeof password === 'undefined') || (password === '')) { 
+      res.send('password required');
+      return;
+  }
+
 
   console.log("thePath: " + thePath);
     
   if (req.body.faucet === '1'){
     var seed = lw.keystore.generateRandomSeed();
-    var password = req.body.password;
+
 
     var store = new lw.keystore(seed, password);
     store.generateNewAddress(password);
@@ -101,10 +106,13 @@ router.post('/:user', cors(), function(req, res) {
     api.query.serverURI =  process.env.API || apiURI;
     console.log("hitting faucet for " + store.addresses[0]);
       
-    api.routes.faucet(store.addresses[0]).then(function(result) {
-                res.send(store.addresses[0]);
+    api.routes.faucet(store.addresses[0])
+      .then(function(result) {
+          res.send(store.addresses[0]);
+      })
+      .catch(function(err) { 
+          res.send(err);
       });
-      
 
   } else if(req.body.remove === '1'){
     var newAddress = req.body.address;
@@ -122,9 +130,8 @@ router.post('/:user', cors(), function(req, res) {
   } else {
     console.log("just registering name, no faucet called");
 
-
     var seed = lw.keystore.generateRandomSeed();
-    var password = req.body.password;
+  
 
     var store = new lw.keystore(seed, password);
     store.generateNewAddress(password);
@@ -185,7 +192,8 @@ router.post('/:user/:address/send', cors(), function(req, res) {
                 });                 
                 
               } catch (e) {
-                console.log("don't have the key!")
+                console.log("don't have the key!");
+                res.send("invalid address or incorrect password");     
               }
        })
       .on('end', function () {
@@ -206,6 +214,11 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
     var userContractPath = path.join('app', 'users', user, 'contracts');
     var contractPath = path.join('app', 'contracts');     
     var metaPath = path.join('app','meta');
+
+    if ((typeof password === 'undefined') || (password === '')) {
+        res.send('password required');
+        return;
+    }
     
     console.log("+++++++++++++++++++++++++++++++++++++");
     //console.log(req.body.password);
@@ -226,63 +239,93 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                   var privkeyFrom = store.exportPrivateKey(address, password);
 
                   console.log("About to upload contract")
+              } catch (e) {
+                  console.log("don't have the key! error: " + e);
+                  res.send('invalid address or incorrect password');
+                  return;
+              }
 
-                  var contractCreationTx = Solidity(src)
+              var contractCreationTx = Solidity(src)
                     .then(function(solObj) {
                               console.log(JSON.stringify(solObj))
                               mkdirp(userContractPath + '/' + solObj.name, function (err) { 
                                 if (err) { console.err(err); res.send(err); }
-                                else {  console.log("success contractCreationTx, returning solObj: " + JSON.stringify(solObj)); 
-                                     return solObj; }
-                               });
+                                else {  
+                                     console.log("success contractCreationTx, returning solObj: " + JSON.stringify(solObj)); 
+                                     return solObj; 
+                               }
+                          });
+                        return solObj;
+                    })
 
-                   return solObj;
-                  })
+                    .catch(function(err) { 
+                        res.send(err);
+                        return;
+                    })
 
-                  .then(function(solObj) {
-                     mkdirp(metaPath + '/' + solObj.name, function (err) { 
-                              if (err) { console.err(err); res.send(err); }
-                              else {  console.log("success metaCreationTx, returning solObj: " + JSON.stringify(solObj)); 
-                                     return solObj; }
-              });
+                    .then(function(solObj) {
+                       mkdirp(metaPath + '/' + solObj.name, function (err) { 
+                           if (err) { console.err(err); res.send(err); }
+                           else {  
+                               console.log("success metaCreationTx, returning solObj: " + JSON.stringify(solObj));
+                               return solObj; 
+                           }
+                       });
 
-             return solObj;
-           })
+                         return solObj;
+                    })
+
+                    .catch(function(err) { 
+                        res.send(err);
+                        return;
+                    })
       
-          .then(function(solObj) {
-             return Promise.join(solObj.newContract(privkeyFrom,{"gasLimit" : Int(3141592),"gasPrice" : Int(1)}), Promise.resolve(solObj));
-           })
+                    .then(function(solObj) {
+                        console.log("attempting to upload now");
+                        return Promise.join(solObj.newContract(privkeyFrom), Promise.resolve(solObj));
+                    })
 
-           .then(function(txResult)  {
-            var metaWithAddress = txResult[1];
-            metaWithAddress.address = txResult[0].account.address.toString();
-            console.log("txResult[0]: " + JSON.stringify(txResult[0]));
-//          console.log("txResult[1]: " + JSON.stringify(txResult[1]));
-                                                          
-           return metaWithAddress;
-          })
-          .then(function(solObj) {
+                    .catch(function(err) { 
+                        res.send(err);
+                        return;
+                    })
+
+                    .then(function(txResult)  {
+                        var metaWithAddress = txResult[1];
+                        metaWithAddress.address = txResult[0].account.address.toString();
+                        console.log("txResult[0]: " + JSON.stringify(txResult[0]));
+
+                        return metaWithAddress;
+                    })
+ 
+                    .then(function(solObj) {
                           var fileName = metaPath + '/' + solObj.name + '/' + solObj.address + '.json';
                           console.log("synchronously committing metadata to disk");
                           fs.writeFileSync(fileName, JSON.stringify(solObj));
         
                           return solObj;
-          })
+                     })
 
-          .then(function(solObj) {
+                    .catch(function(err) { 
+                        res.send(err);
+                        return;
+                    })
+
+                    .then(function(solObj) {
                           var fileName = userContractPath + '/' + solObj.name + '/' +  solObj.address + '.json';
                           fs.writeFile(fileName, JSON.stringify(solObj));
         
                           res.send(solObj.address);
-          });
-                 
-//                 res.send("contract creation in progress");
-              } catch (e) {
-                  console.log("don't have the key! error: " + e);
-              }
+                    })
+
+                    .catch(function(err) { 
+                        res.send(err);
+                        return;
+                    });                 
+
        })
       .on('end', function () {
-           if (!found) res.send('contract creation failed');
+           if (!found) res.send('invalid address or incorrect password');
        });
 });
 

@@ -21,7 +21,8 @@ var options = {
     foo: "foo",
     address: "e1fd0d4a52b75a694de8b55528ad48e2e2cf7859",
     password: 'thepassword',
-    username: makeid()
+    username: makeid(),
+    username_multi: makeid()
 };
 
 exports.options = options;

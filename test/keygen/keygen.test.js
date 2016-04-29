@@ -8,6 +8,9 @@ var rewire = require('rewire');
 var helper = rewire('../../lib/contract-helpers.js');
 var keygen = rewire("../../lib/keygen.js");
 
+
+var promise = common.promise;
+
 var blockapps = common.blockapps;
 var expect = common.chai.expect;
 
@@ -45,37 +48,65 @@ var fsMock = {
 
 describe('Key Generation', function() {
     describe('#generateKey()', function () {
-    var mockedKey;
+        var mockedKey;
 
-    before(function(done){
-        console.log("before keygen")
-        mockedKey = keygen.generateKeyPreWrite(options.password, options.username);
-        keygen.writeKeyToDisk(options.username, mockedKey).delay(1).then(function(){done();})
-    });
-
-    it('should create a key file with an address and a privkey. The address should be valid hex.', 
-        function () 
-        {
-            expect(mockedKey.addresses).not.to.be.empty;
-            expect(mockedKey.encSeed).not.to.be.empty;
-            expect(mockedKey.encPrivKeys).not.to.be.empty;
-            expect(mockedKey.addresses[0]).to.match(/^[0-9A-F]+/i);
+        before(function(done){
+            console.log("before keygen")
+            mockedKey = keygen.generateKeyPreWrite(options.password, options.username);
+            keygen.writeKeyToDisk(options.username, mockedKey).delay(1).then(function(){done();})
         });
 
-    it('should successfully encrypt and decrypt with the right password. The key should be valid hex.', function () {
-        var exported = mockedKey.exportPrivateKey(mockedKey.addresses[0], options.password);
-        
-        expect(exported).not.to.be.undefined;
-        expect(exported).to.match(/^[0-9A-F]+/i);
-    });
+        it('should create a key file with an address and a privkey. The address should be valid hex.', 
+            function () 
+            {
+                expect(mockedKey.addresses).not.to.be.empty;
+                expect(mockedKey.encSeed).not.to.be.empty;
+                expect(mockedKey.encPrivKeys).not.to.be.empty;
+                expect(mockedKey.addresses[0]).to.match(/^[0-9A-F]+/i);
+            });
 
-    it('should throw an exception if the password is incorrect', function () {
-        expect(
-            function () { 
-                mockedKey.exportPrivateKey(mockedKey.addresses[0], 'not the password');
-            }).to.throw('Invalid Password');
+        it('should successfully encrypt and decrypt with the right password. The key should be valid hex.', function () {
+            var exported = mockedKey.exportPrivateKey(mockedKey.addresses[0], options.password);
+            
+            expect(exported).not.to.be.undefined;
+            expect(exported).to.match(/^[0-9A-F]+/i);
+        });
+
+        it('should throw an exception if the password is incorrect', function () {
+            expect(
+                function () { 
+                    mockedKey.exportPrivateKey(mockedKey.addresses[0], 'not the password');
+                }).to.throw('Invalid Password');
         });
     });
+
+    describe.skip('#generateKey_multi()', function () {
+        var mockedKey;
+        var keys = []
+        before(function(done){
+            console.log("before keygen")
+            promise.all([1,2,3].map(function(n){
+                mockedKey = keygen.generateKeyPreWrite(options.password, options.username_multi);
+                keys.push(mockedKey)
+                return keygen.writeKeyToDisk(options.username_multi, mockedKey).delay(1)
+            })).then(function(){
+                done()
+            })
+        });
+
+        it('multi key should create a key file with an address and a privkey. The address should be valid hex.', 
+            function () 
+            {
+                //console.log(keys)
+                expect(keys[0].addresses).not.to.be.empty;
+                expect(keys[0].encSeed).not.to.be.empty;
+                expect(keys[0].encPrivKeys).not.to.be.empty;
+                expect(keys[0].addresses[0]).to.match(/^[0-9A-F]+/i);
+                expect(keys[1].addresses[0]).to.match(/^[0-9A-F]+/i);
+                expect(keys[2].addresses[0]).to.match(/^[0-9A-F]+/i);
+            });
+    });
+});
     
 //     describe('#generateKey2()', function () {
 //     var mockedKey;
@@ -176,4 +207,4 @@ describe('Key Generation', function() {
 //         });
 //         });  
 //    });
-});
+

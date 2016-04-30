@@ -21,8 +21,8 @@ var apiURI = config.apiURL;
 var api = require('blockapps-js');
 var stratoVersion = "1.1";
 
-//api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
-api.setProfile("strato-dev", apiURI);
+api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
+// api.setProfile("strato-dev", apiURI);
 
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');
@@ -302,10 +302,9 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                         res.send(err);
                         return;
                     })
-
+      
                     .then(function(solObj) {
                         console.log("attempting to upload now");
-                        //return Promise.join(solObj.construct().txParams({"gasLimit" : Int(3141592),"gasPrice" : Int(1)}).callFrom(privkeyFrom), Promise.resolve(solObj));
                         return Promise.join(solObj.newContract(privkeyFrom), Promise.resolve(solObj));
                     })
 
@@ -416,7 +415,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 
                 contract.address = contractJson.address;
 
-                var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
+                var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(1)};
 
                 value = Math.max(0, value)
                 if (value != undefined) {
@@ -424,15 +423,18 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                     console.log("params.value: " + params.value);
                 }
 
-                try {
                     console.log("trying to invoke contract")
                     contract.state[method](args)
                        .txParams(params).callFrom(privkeyFrom)
                        .then(function (txResult) {
                           console.log("txResult: " + txResult);
                           res.send("transaction returned: " + txResult);
-                       });
-                    } catch (e) { res.send('method call failed'); }
+                       })
+
+                       .catch(function(err) { 
+                          res.send(err);
+                          return;
+                        });                 
       });
   })
 

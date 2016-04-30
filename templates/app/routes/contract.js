@@ -16,8 +16,8 @@ var apiURI = config.apiURL;
 var api = require('blockapps-js');
 var stratoVersion = "1.1";
 
-//api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
-api.setProfile("strato-dev", apiURI);
+api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
+// api.setProfile("strato-dev", apiURI);
 
 api.query.serverURI =  process.env.API || apiURI;
 
@@ -212,7 +212,7 @@ router.get('/:contractName/:contractAddress/state', cors(), function (req, res) 
 	      })
 
               .catch(function(err) { 
-                 res.send(err);
+                 res.send(JSON.stringify(err));
               });
 	})
 

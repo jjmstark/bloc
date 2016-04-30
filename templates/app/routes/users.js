@@ -306,13 +306,15 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                     .then(function(solObj) {
                         console.log("attempting to upload now");
                         return Promise.join(solObj
-					      .newContract
-            				      .txParams({"gasLimit" : Int(31415920),"gasPrice" : Int(1)})
+					    .construct()
+              				      .txParams({"gasLimit" : Int(31415920),"gasPrice" : Int(1)})
            				      .callFrom(privkeyFrom), Promise.resolve(solObj) );
                     })
 
-                    .catch(function(err) { 
-                        res.send(err);
+                  .catch(function(err) {
+   		      console.log("error after upload!!!!");
+		      console.log("Error: " + err)
+//                        res.send(err);
                         return;
                     })
 
@@ -333,7 +335,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                      })
 
                     .catch(function(err) { 
-                        res.send(err);
+//                        res.send(err);
                         return;
                     })
 
@@ -345,7 +347,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                     })
 
                     .catch(function(err) { 
-                        res.send(err);
+  //                      res.send(err);
                         return;
                     });                 
 

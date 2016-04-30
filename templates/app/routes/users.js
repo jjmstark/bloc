@@ -305,7 +305,10 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
       
                     .then(function(solObj) {
                         console.log("attempting to upload now");
-                        return Promise.join(solObj.newContract(privkeyFrom), Promise.resolve(solObj));
+                        return Promise.join(solObj
+					      .newContract
+            				      .txParams({"gasLimit" : Int(31415920),"gasPrice" : Int(1)})
+           				      .callFrom(privkeyFrom), Promise.resolve(solObj) );
                     })
 
                     .catch(function(err) { 
@@ -415,7 +418,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 
                 contract.address = contractJson.address;
 
-          var params = {"gasLimit" : Int(3141592),"gasPrice" : Int(1)};
+          var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
 
                 value = Math.max(0, value)
                 if (value != undefined) {

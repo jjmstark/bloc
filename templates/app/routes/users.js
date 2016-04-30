@@ -21,8 +21,8 @@ var apiURI = config.apiURL;
 var api = require('blockapps-js');
 var stratoVersion = "1.1";
 
-api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
-// api.setProfile("strato-dev", apiURI);
+//api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
+api.setProfile("strato-dev", apiURI);
 
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');
@@ -415,7 +415,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 
                 contract.address = contractJson.address;
 
-                var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(1)};
+          var params = {"gasLimit" : Int(3141592),"gasPrice" : Int(1)};
 
                 value = Math.max(0, value)
                 if (value != undefined) {

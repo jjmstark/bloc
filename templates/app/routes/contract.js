@@ -217,7 +217,7 @@ router.get('/:contractName/:contractAddress/state', cors(), function (req, res) 
 	})
 
       .on('end', function () { 
-           res.send("contract not found");
+           if (!found) res.send("contract not found");
         });
 
 });

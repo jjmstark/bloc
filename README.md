@@ -10,7 +10,7 @@
 
 ##Installation
 
-__For the latest `bloc` do, 
+For the latest `bloc` do, 
 ```
 npm install -g blockapps-bloc@1.1.1-beta2
 ```

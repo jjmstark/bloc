@@ -10,8 +10,9 @@
 
 ##Installation
 
+__For the latest `bloc` do, 
 ```
-npm install blockapps-bloc
+npm install -g blockapps-bloc@1.1.1-beta2
 ```
 
 Enter the bloc directory:

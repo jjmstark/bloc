@@ -41,7 +41,7 @@ function scaffold(projectName,developer) {
     else {
         var projectAbsolutePath = path.resolve(projectName);
         var templatesFolder =
-            path.normalize(path.join(__dirname, '..', 'templates'));
+            path.normalize(path.join(__dirname, '../../..', 'templates'));
 	
         readdirp({ 
             root: path.join(templatesFolder), 

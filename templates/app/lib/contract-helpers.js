@@ -38,16 +38,8 @@ function contractsStream() {
       .pipe( map(getPath) );  
 }
 
-/**
- * Recursively find compiled contracts.
- * @return {object} Array of compiled contract files
- */
 function contractDirsStream() { 
-   return readdirp({
-     root: path.join('app','meta'), 
-     depth: 1, 
-     fileFilter: ['!temp.json']
-  });
+   return readdirp({root: path.join('app','meta'), depth: 1});
 }
 
 function contractAddressesStream(name) {
@@ -57,13 +49,11 @@ function contractAddressesStream(name) {
 
 function contractsMetaAddressStream(name,address) { 
     return vinylFs.src( [ path.join('app', 'meta', name, address + '.json') ] )
-      .on('error', function(err){console.log("error: " + err); this.emit('end');})
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))
        }));
 }
-
 /* emits all contract metadata as json */
 function contractsMetaStream() { 
     return vinylFs.src( [ path.join('meta', '*.json') ] )

@@ -7,7 +7,7 @@ var path = require('path');
 
 module.exports = upload;
 function upload(contractName, privkey) { 
-  var compiledFile = path.join('app', 'meta', contractName, "temp.json");
+  var compiledFile = path.join('app', 'meta', contractName, contractName + ".json");
 
   var id = setInterval(function () { console.log("    ...waiting for transaction to be mined"); }, 2000);
 

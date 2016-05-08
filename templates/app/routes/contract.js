@@ -38,7 +38,12 @@ router.get('/', cors(), function(req, res) {
     
     var createdAt = Date.parse(item.stat.birthtime);
     
-    var entries = item.path.split('/');
+    // Windows split on '\'
+    if (process.platform === 'win32') {
+      var entries = item.path.split('\\');
+    } else {
+      var entries = item.path.split('/');
+    }
     if (directoryTree[entries[0]] === undefined) { 
       directoryTree[entries[0]] = [];
     }

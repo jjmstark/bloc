@@ -178,6 +178,23 @@ function fuseStream() {
   return strm;
 }
 
+function pendingForUser(username){
+  return vinylFs.src( ['./queue/' + username + '/*.json'])
+  .pipe(map(getContents))
+  .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
+
+function pendingForAddress(address){
+  return vinylFs.src( ['./queue/' + address + '/*.json'])
+  .pipe(map(getContents))
+  .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
+
+
 module.exports  = {
   contractNameStream : contractNameStream,
   contractsStream : contractsStream,
@@ -191,5 +208,7 @@ module.exports  = {
   userNameStream : userNameStream,
   userKeysStream : userKeysStream,
   userKeysAddressStream : userKeysAddressStream,
-  allKeysStream : allKeysStream
+  allKeysStream : allKeysStream,
+  pendingForUser: pendingForUser,
+  pendingForAddress: pendingForAddress
 };

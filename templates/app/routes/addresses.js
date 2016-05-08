@@ -23,4 +23,26 @@ router.get('/', cors(), function(req, res){
        });
 });
 
+router.get('/:address/pending', cors(), function(req, res){
+
+    var address = req.params.address; 
+
+    contractHelpers.pendingForAddress(address)
+    .pipe(contractHelpers.collect())
+
+    .on('data', function (data) {
+      res.send(data);
+    })
+});
+
+router.get('/:address/pending/remove/:time', cors(), function(req, res){
+
+	var address = req.params.address; 
+	var time = req.params.time;
+
+	fs.unlink('./queue/'+address+"/"+time+".json", function(r){
+		console.log("removed a queue entry: " + time)
+	})
+});
+
 module.exports = router;

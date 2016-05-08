@@ -302,15 +302,19 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                         res.send(err);
                         return;
                     })
-
+      
                     .then(function(solObj) {
                         console.log("attempting to upload now");
-                        //return Promise.join(solObj.construct().txParams({"gasLimit" : Int(3141592),"gasPrice" : Int(1)}).callFrom(privkeyFrom), Promise.resolve(solObj));
-                        return Promise.join(solObj.newContract(privkeyFrom), Promise.resolve(solObj));
+                        return Promise.join(solObj
+					    .construct()
+              				      .txParams({"gasLimit" : Int(31415920),"gasPrice" : Int(1)})
+           				      .callFrom(privkeyFrom), Promise.resolve(solObj) );
                     })
 
-                    .catch(function(err) { 
-                        res.send(err);
+                  .catch(function(err) {
+   		      console.log("error after upload!!!!");
+		      console.log("Error: " + err)
+//                        res.send(err);
                         return;
                     })
 
@@ -331,7 +335,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                      })
 
                     .catch(function(err) { 
-                        res.send(err);
+//                        res.send(err);
                         return;
                     })
 
@@ -343,7 +347,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                     })
 
                     .catch(function(err) { 
-                        res.send(err);
+  //                      res.send(err);
                         return;
                     });                 
 
@@ -416,7 +420,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
 
                 contract.address = contractJson.address;
 
-                var params = {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)};
+          var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
 
                 value = Math.max(0, value)
                 if (value != undefined) {
@@ -424,15 +428,18 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                     console.log("params.value: " + params.value);
                 }
 
-                try {
                     console.log("trying to invoke contract")
                     contract.state[method](args)
                        .txParams(params).callFrom(privkeyFrom)
                        .then(function (txResult) {
                           console.log("txResult: " + txResult);
                           res.send("transaction returned: " + txResult);
-                       });
-                    } catch (e) { res.send('method call failed'); }
+                       })
+
+                       .catch(function(err) { 
+                          res.send(err);
+                          return;
+                        });                 
       });
   })
 

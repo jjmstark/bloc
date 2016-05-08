@@ -151,6 +151,18 @@ router.post('/:user', cors(), function(req, res) {
   }
 });
 
+router.get('/:user/pending', cors(), function(req, res){
+
+    var user = req.params.user; 
+
+    contractHelpers.pendingForUser(user)
+    .pipe(contractHelpers.collect())
+
+    .on('data', function (data) {
+      res.send(data);
+    })
+});
+
 router.post('/:user/:address/send', cors(), function(req, res) {
     var password = req.body.password;
     var user = req.params.user;  
@@ -397,6 +409,12 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         }))
 
         .pipe(es.map(function(data, cb) {
+
+          if (data.devices) {
++           console.log("actuall called through device - saving in queue"); 
++           cb(null, data)
++         } else { 
++        
            var privkeyFrom;
            try { 
                 var store = new lw.keystore.deserialize(JSON.stringify(data));
@@ -406,41 +424,79 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
             }
 
       cb(null, privkeyFrom);
+    }
   }))
 
   .on('data', function(privkeyFrom) {
-      var fileName = path.join(metaPath,contractAddress+'.json');
-      
-      fs.readFile(fileName, function (err,data) {
-                //console.log("err: " + err);
-                //console.log("contract: " + data);
 
-                var contractJson = JSON.parse(data);
-                var contract = Solidity.attach(JSON.parse(data));
+      console.log("privkeyFrom: " + privkeyFrom)
 
-                contract.address = contractJson.address;
+      if(privkeyFrom.devices){
 
-          var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
+        var date = new Date();
+        var dt = date.getTime();
 
-                value = Math.max(0, value)
-                if (value != undefined) {
-                    params.value = units.convertEth(value).from("ether").to("wei" );
-                    console.log("params.value: " + params.value);
-                }
+        var call = {
+                    contractName: contractName, 
+                    method: method,
+                    args: args,
+                    txArgs: {"gasLimit" : Int(1000000),"gasPrice" : Int(50000000000)},
+                    time: dt,
+                    value: req.body.value,
+                    message: req.body.message
+                  }
 
-                    console.log("trying to invoke contract")
-                    contract.state[method](args)
-                       .txParams(params).callFrom(privkeyFrom)
-                       .then(function (txResult) {
-                          console.log("txResult: " + txResult);
-                          res.send("transaction returned: " + txResult);
-                       })
+        var pp = "./queue/"+address+"/";
+        
+        var filename = pp+dt+".json";
+        mkdirp(pp, function (err) { 
+          if (err) { console.err(err); res.send(err); }
+            else { 
+                console.log('path: ' + pp)
+                console.log('filename: ' + filename)
+                fs.writeFile(filename, JSON.stringify(call), function() { 
+                    console.log("wrote: " + filename);
+                    res.send("/users/"+user+"/queue/")
+                });
+            }
+        });
+       
 
-                       .catch(function(err) { 
-                          res.send(err);
-                          return;
-                        });                 
-      });
+      } else {
+
+        var fileName = path.join(metaPath,contractAddress+'.json');
+        
+        fs.readFile(fileName, function (err,data) {
+                  //console.log("err: " + err);
+                  //console.log("contract: " + data);
+
+                  var contractJson = JSON.parse(data);
+                  var contract = Solidity.attach(JSON.parse(data));
+
+                  contract.address = contractJson.address;
+
+            var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
+
+                  value = Math.max(0, value)
+                  if (value != undefined) {
+                      params.value = units.convertEth(value).from("ether").to("wei" );
+                      console.log("params.value: " + params.value);
+                  }
+
+                      console.log("trying to invoke contract")
+                      contract.state[method](args)
+                         .txParams(params).callFrom(privkeyFrom)
+                         .then(function (txResult) {
+                            console.log("txResult: " + txResult);
+                            res.send("transaction returned: " + txResult);
+                         })
+
+                         .catch(function(err) { 
+                            res.send(err);
+                            return;
+                          });                 
+        });
+      }
   })
 
   .on('end', function () {

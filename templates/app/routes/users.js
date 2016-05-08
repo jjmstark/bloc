@@ -34,6 +34,9 @@ var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 
+var compile = require("../lib/compile.js");
+var upload = require("../lib/upload.js");
+
 function float2rat(x) {
     var tolerance = 1.0E-6;
     var h1=1; var h2=0;
@@ -232,6 +235,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 
     var password = req.body.password;
     var src = req.body.src;
+    var contract = req.body.contract;
 
     var found = false;
     var userContractPath = path.join('app', 'users', user, 'contracts');
@@ -268,88 +272,17 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                   return;
               }
 
-              var contractCreationTx = Solidity(src)
-                    .then(function(solObj) {
-                              console.log(JSON.stringify(solObj))
-                              mkdirp(userContractPath + '/' + solObj.name, function (err) { 
-                                if (err) { console.err(err); res.send(err); }
-                                else {  
-                                     console.log("success contractCreationTx, returning solObj: " + JSON.stringify(solObj)); 
-                                     return solObj; 
-                               }
-                          });
-                        return solObj;
-                    })
+              compile(src)
+               .then(function (solObj) {
+                   if ((typeof contract) === 'undefined') { 
+                     contract = solObj.name;
+                   }
 
-                    .catch(function(err) { 
-                        res.send(err);
-                        return;
-                    })
+                 return upload(contract,privkeyFrom);
+               }).then(function (arr) { 
+                   res.send(arr[4]);
+               });
 
-                    .then(function(solObj) {
-                       mkdirp(metaPath + '/' + solObj.name, function (err) { 
-                           if (err) { console.err(err); res.send(err); }
-                           else {  
-                               console.log("success metaCreationTx, returning solObj: " + JSON.stringify(solObj));
-                               return solObj; 
-                           }
-                       });
-
-                         return solObj;
-                    })
-
-                    .catch(function(err) { 
-                        res.send(err);
-                        return;
-                    })
-      
-                    .then(function(solObj) {
-                        console.log("attempting to upload now");
-                        return Promise.join(solObj
-					    .construct()
-              				      .txParams({"gasLimit" : Int(31415920),"gasPrice" : Int(1)})
-           				      .callFrom(privkeyFrom), Promise.resolve(solObj) );
-                    })
-
-                  .catch(function(err) {
-   		      console.log("error after upload!!!!");
-		      console.log("Error: " + err)
-//                        res.send(err);
-                        return;
-                    })
-
-                    .then(function(txResult)  {
-                        var metaWithAddress = txResult[1];
-                        metaWithAddress.address = txResult[0].account.address.toString();
-                        console.log("txResult[0]: " + JSON.stringify(txResult[0]));
-
-                        return metaWithAddress;
-                    })
- 
-                    .then(function(solObj) {
-                          var fileName = metaPath + '/' + solObj.name + '/' + solObj.address + '.json';
-                          console.log("synchronously committing metadata to disk");
-                          fs.writeFileSync(fileName, JSON.stringify(solObj));
-        
-                          return solObj;
-                     })
-
-                    .catch(function(err) { 
-//                        res.send(err);
-                        return;
-                    })
-
-                    .then(function(solObj) {
-                          var fileName = userContractPath + '/' + solObj.name + '/' +  solObj.address + '.json';
-                          fs.writeFile(fileName, JSON.stringify(solObj));
-        
-                          res.send(solObj.address);
-                    })
-
-                    .catch(function(err) { 
-  //                      res.send(err);
-                        return;
-                    });                 
 
        })
       .on('end', function () {

@@ -1,5 +1,4 @@
 var fs = require('fs');
-var codegen = require('./codegen.js');
 var Solidity = require('blockapps-js').Solidity;
 var path = require('path');
 var mkdirp = require('mkdirp');

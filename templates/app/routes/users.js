@@ -404,8 +404,16 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
     
     contractHelpers.userKeysStream(user)
         .pipe(es.map(function (data,cb) {
-          if (data.addresses[0] == address) { found = true; cb(null,data); }
-          else cb();
+          if (data.addresses[0] == address) {
+            console.log("address found");
+            found = true; cb(null,data); 
+          }
+          else{
+            console.log("address does not exist for user");
+            res.send("address does not exist for user");
+            return;
+            //cb();
+          } 
         }))
 
         .pipe(es.map(function(data, cb) {
@@ -428,10 +436,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
   }))
 
   .on('data', function(privkeyFrom) {
-
-      console.log("privkeyFrom: " + privkeyFrom)
-
-      if(privkeyFrom.devices){
+    if(privkeyFrom.devices){
 
         var date = new Date();
         var dt = date.getTime();
@@ -463,45 +468,62 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
        
 
       } else {
+      var fileName = path.join(metaPath,contractAddress+'.json');
+      
+      fs.readFile(fileName, function (err,data) {
+                //console.log("err: " + err);
+                //console.log("contract: " + data);
 
-        var fileName = path.join(metaPath,contractAddress+'.json');
-        
-        fs.readFile(fileName, function (err,data) {
-                  console.log("err: " + err);
-                  console.log("contract: " + data);
+                if(data == undefined){
+                  console.log("contract does not exist at that address");
+                  res.send("contract does not exist at that address");
+                  return;
+                }
 
-                  var contractJson = JSON.parse(data);
-                  var contract = Solidity.attach(JSON.parse(data));
+                var contractJson = JSON.parse(data);
 
-                  contract.address = contractJson.address;
+                var contract = Solidity.attach(JSON.parse(data));
 
-            var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
+                contract.address = contractJson.address;
 
-                  value = Math.max(0, value)
-                  if (value != undefined) {
-                      params.value = units.convertEth(value).from("ether").to("wei" );
-                      console.log("params.value: " + params.value);
-                  }
+          var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
 
-                      console.log("trying to invoke contract")
+                value = Math.max(0, value)
+                if (value != undefined) {
+                    params.value = units.convertEth(value).from("ether").to("wei" );
+                    console.log("params.value: " + params.value);
+                }
+
+                    console.log("trying to invoke contract")
+                    //console.log("methods: " + JSON.stringify(contract.state))
+                    if(contract.state[method] != undefined){
                       contract.state[method](args)
-                         .txParams(params).callFrom(privkeyFrom)
-                         .then(function (txResult) {
-                            console.log("txResult: " + txResult);
-                            res.send("transaction returned: " + txResult);
-                         })
+                       .txParams(params).callFrom(privkeyFrom)
+                       .then(function (txResult) {
+                          console.log("txResult: " + txResult);
+                          res.send("transaction returned: " + txResult);
+                       })
 
-                         .catch(function(err) { 
-                            res.send(err);
-                            return;
-                          });                 
-        });
+                       .catch(function(err) { 
+                          console.log("error calling contract: " + err)
+                          res.send(err);
+                          return;
+                        });
+                    } else {
+                      console.log("contract " + contractName + " doesn't have method: " + method);
+                      res.send("contract " + contractName + " doesn't have method: " + method);
+                      return;
+                    } 
+
       }
-  })
+  }
 
   .on('end', function () {
-           if (!found) res.send('method call failed');
+           if (!found){
+            console.log('user not found: ' + user);
+            res.send('user not found: ' + user);
+           } 
         });
-});
+};
 
 module.exports = router;

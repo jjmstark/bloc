@@ -1,4 +1,4 @@
-contract Array {
+contract Stake {
   mapping (address => uint) stake; // percentages by address (basically)
   address[] stakeHolders; // to iterate over
   address holdingTheBag; // last arrival to the party

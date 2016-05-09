@@ -444,7 +444,9 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                 }
 
                     console.log("trying to invoke contract")
-                    contract.state[method](args)
+                    //console.log("methods: " + JSON.stringify(contract.state))
+                    if(contract.state[method] != undefined){
+                      contract.state[method](args)
                        .txParams(params).callFrom(privkeyFrom)
                        .then(function (txResult) {
                           console.log("txResult: " + txResult);
@@ -452,9 +454,15 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                        })
 
                        .catch(function(err) { 
+                          console.log("error calling contract: " + err)
                           res.send(err);
                           return;
-                        });                 
+                        });
+                    } else {
+                      console.log("contract " + contractName + " doesn't have method: " + method);
+                      res.send("contract " + contractName + " doesn't have method: " + method);
+                      return;
+                    }              
       });
   })
 

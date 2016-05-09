@@ -392,8 +392,16 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
     
     contractHelpers.userKeysStream(user)
         .pipe(es.map(function (data,cb) {
-          if (data.addresses[0] == address) { found = true; cb(null,data); }
-          else cb();
+          if (data.addresses[0] == address) {
+            console.log("address found");
+            found = true; cb(null,data); 
+          }
+          else{
+            console.log("address does not exist for user");
+            res.send("address does not exist for user");
+            return;
+            //cb();
+          } 
         }))
 
         .pipe(es.map(function(data, cb) {
@@ -415,7 +423,14 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                 //console.log("err: " + err);
                 //console.log("contract: " + data);
 
+                if(data == undefined){
+                  console.log("contract does not exist at that address");
+                  res.send("contract does not exist at that address");
+                  return;
+                }
+
                 var contractJson = JSON.parse(data);
+
                 var contract = Solidity.attach(JSON.parse(data));
 
                 contract.address = contractJson.address;

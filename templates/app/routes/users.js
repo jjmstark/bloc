@@ -459,7 +459,10 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
   })
 
   .on('end', function () {
-           if (!found) res.send('method call failed');
+           if (!found){
+            console.log('user not found: ' + user);
+            res.send('user not found: ' + user);
+           } 
         });
 });
 

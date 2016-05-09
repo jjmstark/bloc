@@ -411,10 +411,10 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         .pipe(es.map(function(data, cb) {
 
           if (data.devices) {
-+           console.log("actuall called through device - saving in queue"); 
-+           cb(null, data)
-+         } else { 
-+        
+            console.log("actuall called through device - saving in queue"); 
+            cb(null, data)
+          } else { 
+        
            var privkeyFrom;
            try { 
                 var store = new lw.keystore.deserialize(JSON.stringify(data));
@@ -467,8 +467,8 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         var fileName = path.join(metaPath,contractAddress+'.json');
         
         fs.readFile(fileName, function (err,data) {
-                  //console.log("err: " + err);
-                  //console.log("contract: " + data);
+                  console.log("err: " + err);
+                  console.log("contract: " + data);
 
                   var contractJson = JSON.parse(data);
                   var contract = Solidity.attach(JSON.parse(data));

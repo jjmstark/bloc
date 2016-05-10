@@ -7,8 +7,10 @@
     "bloc": "bin/main.js"
   },
   "scripts": {
-    "test": "mocha --timeout 300000"
+    "test": "mocha --timeout 300000",
+    "jshint": "./node_modules/jshint/bin/jshint -c .jshintrc --exclude-path .gitignore bin lib templates test" 
   },
+  "pre-commit": [ "jshint" ], 
   "repository": {
     "type": "git",
     "url": "https://github.com/blockapps/bloc"
@@ -31,6 +33,7 @@
     "express-session": "^1.12.1",
     "insight": "^0.7.0",
     "js-yaml": "^3.3.1",
+    "jshint": "^2.9.2",
     "map-stream": "0.0.6",
     "minimatch": "^3.0.0",
     "mkdirp": "^0.5.1",
@@ -47,8 +50,9 @@
     "chai": "^3.4.1",
     "event-stream": "^3.3.2",
     "mocha": "^2.2.5",
-    "traverse": "^0.6.6",
-    "rewire": "^2.5.1"
+    "pre-commit": "^1.1.2",
+    "rewire": "^2.5.1",
+    "traverse": "^0.6.6"
   },
   "author": "Kieren James-Lubin",
   "license": "MIT",

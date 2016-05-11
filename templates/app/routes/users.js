@@ -547,8 +547,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
               });
             } else {
               console.log("calling land")
-              contractstate.state[method](args)
-               .txParams(params).callFrom(privkeyFrom)
+              contractstate.callFrom(privkeyFrom)
                .then(function (txResult) {
                   console.log("txResult: " + txResult);
                   res.send("transaction returned: " + txResult);

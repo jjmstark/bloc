@@ -179,7 +179,9 @@ function fuseStream() {
 }
 
 function pendingForUser(username){
-  return vinylFs.src( ['./queue/' + username + '/*.json'])
+  var thepath = path.join('app', 'users', username, 'pending', '*.json');
+  console.log('looking in : ' + thepath)
+  return vinylFs.src( thepath )
   .pipe(map(getContents))
   .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))
@@ -187,13 +189,34 @@ function pendingForUser(username){
 }
 
 function pendingForAddress(address){
-  return vinylFs.src( ['./queue/' + address + '/*.json'])
+  var thepath = path.join('app', 'pending', address, '*.json');
+  console.log('looking in : ' + thepath)
+  return vinylFs.src( thepath )
   .pipe(map(getContents))
   .pipe( es.map(function (data, cb) {
          cb(null, JSON.parse(data))
        }));
 }
 
+function txToJSON(t) {
+    var result = {
+        "nonce"      : t.nonce,
+        "gasPrice"   : t.gasPrice,
+        "gasLimit"   : t.gasLimit,
+        "to"         : t.to ? t.to.toString(): "",
+        "value"      : t.value,
+        "codeOrData" : t.data ? t.data.toString("hex") : "",
+        "from"       : t.from ? t.from.toString() : "",
+        "r"          : t.r ? t.r.toString(16) : "",
+        "s"          : t.s ? t.s.toString(16) : "",
+        "v"          : t.v ? t.v.toString(16) : "",
+        "hash"       : t.partialHash()
+    }
+    if (result.to == "") {
+        delete result.to;
+    }
+    return result;
+}
 
 module.exports  = {
   contractNameStream : contractNameStream,
@@ -210,5 +233,6 @@ module.exports  = {
   userKeysAddressStream : userKeysAddressStream,
   allKeysStream : allKeysStream,
   pendingForUser: pendingForUser,
-  pendingForAddress: pendingForAddress
+  pendingForAddress: pendingForAddress,
+  txToJSON: txToJSON
 };

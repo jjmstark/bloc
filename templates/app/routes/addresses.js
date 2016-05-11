@@ -10,15 +10,16 @@ var del = require('del');
 var rimraf = require('rimraf')
 var vinylFs  = require( 'vinyl-fs' )
 var _ = require('underscore')
+var path = require('path')
 
 router.get('/', cors(), function(req, res){
-   console.log(contractHelpers.allKeysStream())
+   //console.log(contractHelpers.allKeysStream())
     contractHelpers.allKeysStream()
       .pipe(contractHelpers.collect())
       .on('data', function(data) {
-      	  var temp = _.map(data, function(v){
-      	  	return v.addresses;
-      	  })
+          var temp = _.map(data, function(v){
+            return v.addresses;
+          })
           res.send(JSON.stringify(_.flatten(temp)));
        });
 });
@@ -37,12 +38,12 @@ router.get('/:address/pending', cors(), function(req, res){
 
 router.get('/:address/pending/remove/:time', cors(), function(req, res){
 
-	var address = req.params.address; 
-	var time = req.params.time;
+  var address = req.params.address; 
+  var time = req.params.time;
 
-	fs.unlink('./queue/'+address+"/"+time+".json", function(r){
-		console.log("removed a queue entry: " + time)
-	})
+  fs.unlink('app/pending/'+address+"/"+time+".json", function(r){
+    console.log("removed a queue entry: " + time)
+  })
 });
 
 module.exports = router;

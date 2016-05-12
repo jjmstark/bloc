@@ -280,12 +280,12 @@ function main (){
       checkForProject();
       setApiProfile();
 
-        var server = spawn('node', [ 'app.js' ]);
-        server.stdout.on('data', function(data) {
-           console.log(data.toString("utf-8"));
-        });
+      var server = spawn('node', [ 'app.js' ]);
+      server.stdout.on('data', function(data) {
+         console.log(data.toString("utf-8"));
+      });
 
-        break;
+      break;
 
     case 'version':
         analytics.insight.trackEvent("version");

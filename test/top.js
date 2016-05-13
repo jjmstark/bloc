@@ -1,42 +1,34 @@
 'use strict';
 
-function importTest(name, path) {
-    describe(name, function () {
-        step(name, function(){
-            require(path);
-        })
-    });
-}
-
-function chainTest(name, path, name2, path2){
-    describe(name, function () {
-        require(path);
-        describe(name2, function(){
-            require(path2);
-        });
-    });   
-}
-
 var common = require("./common");
+var yaml = require('js-yaml');
 
 describe("top", function () {
-    beforeEach(function(done){
-        var profile = ["ethereum-frontier", "http://rynet4.centralus.cloudapp.azure.com"]
-        //var profile = ["ethereum-frontier", "http://23.96.12.110"]
-        //var profile = ["strato-dev", "http://23.96.12.110"]
-        //var profile = ["strato-dev", "http://strato-dev3.blockapps.net"]
+  beforeEach(function(done){
 
-        common.blockapps.setProfile(profile[0], profile[1]);
-        console.log("using: " + profile)
-        done();
-    });
+    var profile;
 
-    importTest("config", './config/config.test.js');
-    importTest("keygen", './keygen/keygen.test.js');
-    //importTest("contract", './contract/contract.test.js');
-    importTest("multi", './multi/multi.test.js');
+    try {
+      var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
+      var apiURI = config.apiURL;
+            //var stratoVersion = "1.1";
+            //var profile = ["ethereum-frontier", apiURI];                   
+      profile = ["strato-dev", apiURI];
+    } catch (e){
+      profile = ["strato-dev", "http://strato-dev3.blockapps.net"]
+    }
 
-    after(function () {
-        console.log("after all tests");
-    });
+    common.blockapps.setProfile(profile[0], profile[1]);
+    console.log("using: " + profile)
+    done();
+  });
+
+  common.importTest("config", './config/config.test.js');
+  common.importTest("keygen", './keygen/keygen.test.js');
+  common.importTest("contract", './contract/contract.test.js');
+  common.importTest("multi", './multi/multi.test.js');
+
+  after(function () {
+    console.log("after all tests");
+  });
 });

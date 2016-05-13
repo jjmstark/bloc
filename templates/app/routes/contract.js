@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var helper = require('../lib/contract-helpers.js');
 var router = express.Router();
@@ -19,7 +21,7 @@ var stratoVersion = "1.1";
 api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
 // api.setProfile("strato-dev", apiURI);
 
-api.query.serverURI =  process.env.API || apiURI;
+api.query.serverURI = process.env.API || apiURI;
 
 require('marko/node-require').install();
 
@@ -38,13 +40,13 @@ router.get('/', cors(), function(req, res) {
     console.error('no contracts compiled', err); 
     res.format(
       {
-          html: function() {
-              homeTemplate.render([], res);
-          },
+        html: function() {
+          homeTemplate.render([], res);
+        },
 
-          json: function() {
-              res.send(JSON.stringify([]));
-          } 
+        json: function() {
+          res.send(JSON.stringify([]));
+        } 
       })
   })
   .pipe( helper.collect() )
@@ -53,55 +55,55 @@ router.get('/', cors(), function(req, res) {
     var directoryTree = {};
     data.map(function (item) {
     
-    var createdAt = Date.parse(item.stat.birthtime);
+      var createdAt = Date.parse(item.stat.birthtime);
     
     // Windows split on '\'
-    if (process.platform === 'win32') {
-      var entries = item.path.split('\\');
-    } else {
-      var entries = item.path.split('/');
-    }
-    if (directoryTree[entries[0]] === undefined) { 
-      directoryTree[entries[0]] = [];
-    }
+      if (process.platform === 'win32') {
+        var entries = item.path.split('\\');
+      } else {
+        var entries = item.path.split('/');
+      }
+      if (directoryTree[entries[0]] === undefined) { 
+        directoryTree[entries[0]] = [];
+      }
     // Remove .json 
-    var address = entries[1].replace('.json', '');
+      var address = entries[1].replace('.json', '');
 
-    var contractObj = {
-      "address": address,
-      "createdAt": createdAt
-    };
+      var contractObj = {
+        "address": address,
+        "createdAt": createdAt
+      };
 
-    directoryTree[entries[0]].push(contractObj);
+      directoryTree[entries[0]].push(contractObj);
     //entries[0].sort(function(a, b) {return b - a});
-  });
+    });
 
-  cb(null,directoryTree);
-    }))          
+    cb(null,directoryTree);
+  }))          
    .on('data', function (data) {
-                  res.format({
-                      html: function() {
-                          homeTemplate.render(data, res);
-                      },
+     res.format({
+       html: function() {
+         homeTemplate.render(data, res);
+       },
 
-                      json: function() {
-                          res.send(JSON.stringify(data));
-                      } 
-                  })
+       json: function() {
+         res.send(JSON.stringify(data));
+       } 
+     })
    })
 });
 
 router.get('/:contractName', cors(), function (req, res) {
-    var contractName = req.params.contractName;
-    helper.contractAddressesStream(contractName)
+  var contractName = req.params.contractName;
+  helper.contractAddressesStream(contractName)
       .pipe( helper.collect() )
       .pipe( es.map(function (data,cb) {
-      var names = data.map(function (item) {
-               return item.split('.')[0];
-      });
+        var names = data.map(function (item) {
+          return item.split('.')[0];
+        });
 
-      cb(null,JSON.stringify(names));
-       }))
+        cb(null,JSON.stringify(names));
+      }))
       .pipe(res)
 });
 
@@ -117,130 +119,130 @@ router.get('/:contractName/:contractAddress\.:extension?', function (req, res) {
   var contractMetaAddressStream = helper.contractsMetaAddressStream(contractName,contractAddress)
       .pipe( helper.collect() )
       .pipe( es.map(function (data,cb) {
-            var contractData = {};
-            contractData.contractMeta = data[0];
+        var contractData = {};
+        contractData.contractMeta = data[0];
 
-      cb(null,contractData);
-       }))
+        cb(null,contractData);
+      }))
        
   var configStream = helper.configStream();
   var fusedStream = helper.fuseStream([configStream,contractMetaAddressStream])
 
-    fusedStream
+  fusedStream
        .on('error', function (err) { 
-              console.log("error, contract not found");
-              res.send(err);
-          })
+         console.log("error, contract not found");
+         res.send(err);
+       })
 
        .on('data', function (data) {
-                      console.log("there's data!");
-                      if (typeof data.contractMeta === 'undefined') { 
-                          res.send("contract metadata not found");
-                          return;
-                      }
+         console.log("there's data!");
+         if (typeof data.contractMeta === 'undefined') { 
+           res.send("contract metadata not found");
+           return;
+         }
 
-                      if (extension === 'html') { 
-                          data.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
-                          data.txFailedHandlerName = "txFailHandler";
-                          contractTemplate.render(data, res); 
-                      } else { 
-                          console.log('extension not html, assume json');
-                          res.send(JSON.stringify(data.contractMeta)); 
-                      }
-          })
+         if (extension === 'html') { 
+           data.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
+           data.txFailedHandlerName = "txFailHandler";
+           contractTemplate.render(data, res); 
+         } else { 
+           console.log('extension not html, assume json');
+           res.send(JSON.stringify(data.contractMeta)); 
+         }
+       })
 });
 
 
 router.get('/:contractName/:contractAddress/functions', cors(), function (req, res) {
-    var contractName = req.params.contractName;
-    var contractAddress = req.params.contractAddress;
-    var found = false;
+  var contractName = req.params.contractName;
+  var contractAddress = req.params.contractAddress;
+  var found = false;
 
-    helper.contractsMetaAddressStream(contractName,contractAddress)
+  helper.contractsMetaAddressStream(contractName,contractAddress)
         .pipe( es.map(function (data,cb) {
-            if (data.name == contractName) {
-                found = true;
-    var funcs = Object.keys(data.xabi.funcs);
-                cb(null,JSON.stringify(funcs));
-      }
-            else cb();                      
-          }))
+          if (data.name == contractName) {
+            found = true;
+            var funcs = Object.keys(data.xabi.funcs);
+            cb(null,JSON.stringify(funcs));
+          }
+          else cb();                      
+        }))
         .on('error', function(err) { 
-              console.log("error: " + err);
-              res.send(err);
-          })
+          console.log("error: " + err);
+          res.send(err);
+        })
         .on('data', function(data) { 
-              res.send(data);
-          })
+          res.send(data);
+        })
         .on('end', function() {
-            if (!found) res.send("contract not found"); 
+          if (!found) res.send("contract not found"); 
         });
 });
 
 router.get('/:contractName/:contractAddress/symbols', cors(), function (req, res) {
-    var contractName = req.params.contractName;
-    var contractAddress = req.params.contractAddress;
+  var contractName = req.params.contractName;
+  var contractAddress = req.params.contractAddress;
 
-    var found = false;
+  var found = false;
 
-    helper.contractsMetaAddressStream(contractName,contractAddress)
+  helper.contractsMetaAddressStream(contractName,contractAddress)
         .pipe( es.map(function (data,cb) {
-            if (data.name == contractName) {
-                found = true;
-    var funcs = Object.keys(data.xabi.vars);
-                cb(null,JSON.stringify(funcs));
-      }
-            else cb();                      
-          }))
+          if (data.name == contractName) {
+            found = true;
+            var funcs = Object.keys(data.xabi.vars);
+            cb(null,JSON.stringify(funcs));
+          }
+          else cb();                      
+        }))
         .on('error', function(err) { 
-              console.log("error: " + err);
-              res.send(err);
-          })
+          console.log("error: " + err);
+          res.send(err);
+        })
         .on('data', function(data) { 
-              res.send(data);
-          })
+          res.send(data);
+        })
         .on('end', function() {
-            if (!found) res.send("contract not found"); 
+          if (!found) res.send("contract not found"); 
         });
 });
 
 router.get('/:contractName/:contractAddress/state', cors(), function (req, res) {
-    var contractName = req.params.contractName;
-    var contractAddress = req.params.contractAddress;
+  var contractName = req.params.contractName;
+  var contractAddress = req.params.contractAddress;
     
-    var found = false;
+  var found = false;
 
-    helper.contractsMetaAddressStream(contractName,contractAddress)
+  helper.contractsMetaAddressStream(contractName,contractAddress)
       .pipe( es.map(function (data,cb) {
-            if (data.name == contractName) { 
-                      found = true;
-                      cb(null,data);
-                  }
-                  else cb();                      
-        }))
+        if (data.name == contractName) { 
+          found = true;
+          cb(null,data);
+        }
+        else cb();                      
+      }))
 
       .on('data', function(data) {
-      var contract = Solidity.attach(data);
-      return Promise.props(contract.state)
+        var contract = Solidity.attach(data);
+        return Promise.props(contract.state)
               .then(function(sVars) {
 
                 var parsed = traverse(sVars).forEach(function (x) { 
-                    if (Buffer.isBuffer(x)) { 
-                        this.update(x.toString());
-                    }
-                 });
+                  if (Buffer.isBuffer(x)) { 
+                    this.update(x.toString());
+                  }
+                });
              
-     res.send(parsed);
-        })
+                res.send(parsed);
+              })
 
               .catch(function(err) { 
-                 res.send(JSON.stringify(err));
+                res.send(JSON.stringify(err));
               });
-  })
+      })
 
       .on('end', function () { 
-           if (!found) res.send("contract not found");
-        });
+        if (!found) res.send("contract not found");
+      });
 
 });
 

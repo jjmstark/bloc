@@ -75,7 +75,7 @@
     "block-scoped-var": 1,      // treat var statements as if they were block scoped (off by default)
     "complexity": 0,            // specify the maximum cyclomatic complexity allowed in a program (off by default)
     "consistent-return": 1,     // require return statements to either always or never specify values
-    "curly": 1,                 // specify curly brace conventions for all control statements
+    "curly": 0,                 // specify curly brace conventions for all control statements
     "default-case": 1,          // require default case in switch statements (off by default)
     "dot-notation": 1,          // encourages use of dot notation whenever possible
     "eqeqeq": 0,                // require the use of === and !==
@@ -138,7 +138,7 @@
     "no-undef": 0,                    // disallow use of undeclared variables unless mentioned in a /*global */ block
     "no-undef-init": 1,               // disallow use of undefined when initializing variables
     "no-undefined": 0,                // disallow use of undefined variable (off by default)
-    "no-unused-vars": 1,              // disallow declaration of variables that are not used in the code
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],              // disallow declaration of variables that are not used in the code
     "no-use-before-define": 1,        // disallow use of variables before they are defined
 
 
@@ -165,7 +165,7 @@
     "func-style": 0,                // enforces use of function declarations or expressions (off by default)
     "key-spacing": 0,               // enforces spacing between keys and values in object literal properties
     "max-nested-callbacks": 0,      // specify the maximum depth callbacks can be nested (off by default)
-    "new-cap": 1,                   // require a capital letter for constructors
+    "new-cap": 0,                   // require a capital letter for constructors
     "new-parens": 1,                // disallow the omission of parentheses when invoking a constructor with no arguments
     "no-array-constructor": 0,      // disallow use of the Array constructor
     "no-inline-comments": 0,        // disallow comments inline after code (off by default)
@@ -197,6 +197,7 @@
     "space-unary-ops": 0,           // Require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
     "spaced-line-comment": 0,       // require or disallow a space immediately following the // in a line comment (off by default)
     "wrap-regex": 0,                // require regex literals to be wrapped in parentheses (off by default)
+    "indent": ["error", 2, { "SwitchCase": 1 }],
 
 
     ////////// ECMAScript 6 //////////

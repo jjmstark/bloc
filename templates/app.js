@@ -4,17 +4,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 
-var yaml = require('js-yaml');
-var path = require('path');
-var fs = require('fs');
-
 var home = require('./app/routes/home.js');
 var users = require('./app/routes/users.js');
 var addresses = require('./app/routes/addresses.js');
 var contracts = require('./app/routes/contract.js');
-
-var blocRootDir = path.normalize(path.join(__dirname, '..'));
-var configFile = yaml.safeLoad(fs.readFileSync('config.yaml'));
 
 var helper = require('./app/lib/contract-helpers');
 var Solidity = require('blockapps-js').Solidity;
@@ -62,7 +55,7 @@ var contractState = io.of('/contracts/state');
 contractState.on('connection', function(socket) { 
   console.log("a user connected");
   console.log("the namespace was: " + JSON.stringify(Object.keys(socket.nsp)));
-  console.log("the namespace name was: " +  JSON.stringify(socket.nsp.name));
+  console.log("the namespace name was: " + JSON.stringify(socket.nsp.name));
  
   console.log("the handshake was: " + JSON.stringify(Object.keys(socket.handshake)));
   console.log("the handshake url was: " + JSON.stringify(socket.handshake.url));
@@ -76,36 +69,36 @@ contractState.on('connection', function(socket) {
 });
 
 function emitStateIfChange(sock,contract,oldState,callback) { 
-   Promise.props(contract.state).then(function(sVars) {
-        if ((! _.isEqual(oldState,sVars)) && !(JSON.stringify(oldState) === JSON.stringify(sVars))) { 
-            sock.emit('current state', sVars);
-            console.log("it's different!");
-            console.log("oldState: " + JSON.stringify(oldState));
-            console.log("newState: " + JSON.stringify(sVars));
-        } else {                     
-            console.log("still subscribed, no change");
-        }
+  Promise.props(contract.state).then(function(sVars) {
+    if (! _.isEqual(oldState,sVars) && !(JSON.stringify(oldState) === JSON.stringify(sVars))) { 
+      sock.emit('current state', sVars);
+      console.log("it's different!");
+      console.log("oldState: " + JSON.stringify(oldState));
+      console.log("newState: " + JSON.stringify(sVars));
+    } else {                     
+      console.log("still subscribed, no change");
+    }
  
-       if (sock.connected) { 
+    if (sock.connected) { 
 
-           setTimeout( 
+      setTimeout( 
               callback(sock,contract,sVars,callback)
               , 1000
            );
-       }
-   });
- } 
+    }
+  });
+} 
 
 function createStateStream(sock) {
-    helper.contractsMetaAddressStream(sock.handshake.query.contractName,sock.handshake.query.contractAddress)
+  helper.contractsMetaAddressStream(sock.handshake.query.contractName,sock.handshake.query.contractAddress)
       .pipe( es.map(function (data,cb) {
-                  if (data.name == sock.handshake.query.contractName) cb(null,data);
-                  else cb();
-        }))
+        if (data.name == sock.handshake.query.contractName) cb(null,data);
+        else cb();
+      }))
 
       .on('data', function(data) {
-            var contract = Solidity.attach(data);
+        var contract = Solidity.attach(data);
           
-            emitStateIfChange(sock,contract,{},emitStateIfChange);
-       });
- }
+        emitStateIfChange(sock,contract,{},emitStateIfChange);
+      });
+}

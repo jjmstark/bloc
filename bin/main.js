@@ -15,7 +15,6 @@ var yamlConfig = require('../lib/yaml-config.js');
 
 var compile = require('../lib/compile.js');
 var upload = require('../lib/upload.js');
-var codegen = require('../lib/codegen.js');
 
 var promptSchema = require('../lib/prompt-schema.js');
 var requestPassword = require('../lib/prompt-schema.js').requestPassword;
@@ -28,7 +27,6 @@ var helper = require('../lib/contract-helpers.js');
 var icon = require('../lib/icon.js').blocIcon;
 var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
-var units = api.ethbase.Units;
 var Int = api.ethbase.Int;
 var ethValue = api.ethbase.Units.ethValue;
 var PrivateKey = api.ethbase.Crypto.PrivateKey;
@@ -80,229 +78,6 @@ function blocinit(cmdArgv) {
   return;
 }
 
-function main (){
-    var cmdArr = cmd.argv._;
-    if (cmdArr[0] == "init") {
-      if (cmd.argv.optOut) {
-        analytics.insight.config.set("optOut", true);
-        delete cmd.argv.optOut;
-        return blocinit(cmd.argv);
-      }
-      else if (cmd.argv.optIn) {
-        analytics.insight.config.set("optOut", false);
-        delete cmd.argv.optIn;
-        return blocinit(cmd.argv);
-      }
-      return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
-        blocinit(cmd.argv);
-      });
-    }
-
-    
-    switch(cmdArr[0]) {
-
-    case 'compile':
-      analytics.insight.trackEvent("compile");
-      checkForProject();
-      setApiProfile();
-        var solSrcDir = path.join('app', 'contracts');
-        var config = yamlConfig.readYaml('config.yaml');
-
-        var solSrcFiles;
-        if (cmdArr[1]) {
-
-          var fname = path.parse(cmdArr[1]).ext === '.sol' ?
-                                           cmdArr[1] : cmdArr[1] + ".sol";
-          // Make sure the file exists
-          try {
-            fs.accessSync(path.join(solSrcDir,fname), fs.F_OK);
-          } catch (e) {
-            console.log(chalk.red("ERROR: ") + "Contract not found");
-            break;
-          }
-          console.log(chalk.yellow("Compiling single contract: ") + chalk.white(fname));
-          solSrcFiles = [fname];
-        }
-        else {
-          console.log("Compiling all contracts no longer supported!");
-          break;
-
-          // solSrcFiles = fs.readdirSync(solSrcDir).
-          //   filter(function(filename) {
-          //     return path.extname(filename) === '.sol';
-          //   })
-        }
-
-        Promise.all(solSrcFiles).
-          map(function (filename) {
-            return fs.readFileSync(path.join(solSrcDir, filename)).toString()
-          }).  
-          map(compile);
-        break;
-
-    case 'upload':
-      analytics.insight.trackEvent("upload");
-      checkForProject();
-      setApiProfile();
-        var contractName = cmdArr[1];
-        if (contractName === undefined) {
-            console.log(chalk.red("ERROR: ") + "Contract name required");
-            break;
-        }
-
-        var userName = cmd.argv.u;
-        var address = cmd.argv.a;
-
-        var keyStream;
-        if (address === undefined) { 
-            keyStream = helper.userKeysStream(userName);
-          if (!keyStream) {
-            console.log(chalk.red("ERROR: Key Not Found"));
-            console.log(chalk.yellow("Try command: ") + "bloc genkey");
-            return;
-          }
-        } else { 
-            keyStream = helper.userKeysAddressStream(userName,address);
-        }
-
-        
-        keyStream
-          .pipe(helper.collect())
-          .on('data', function (data) { 
-              var store = lw.keystore.deserialize(JSON.stringify(data[0]));
-              var address = store.addresses[0];
-
-              console.log("address: " + address);
-              prompt.start();
-              prompt.getAsync(requestPassword).then(function(result) {
-                  var privkey = store.exportPrivateKey(address, result.password);
-                  return [contractName, privkey];
-               })
-               .spread(upload)
-               .then(function (solObjWAddr) {
-                 console.log("creating metadata for " + contractName);
-              });      
-          })
-        
-        break;
-
-    case 'genkey':
-      analytics.insight.trackEvent("genkey");
-      checkForProject();
-      setApiProfile();
-
-      var userName = cmdArr[1];
-
-        prompt.start();
-        prompt.getAsync(createPassword).get("password").then(function(password) {
-
-        if (userName === undefined) key.generateKey(password,'admin');
-	    else key.generateKey(password,userName); 
-
-	    });
-        break;
-
-    case 'register':
-      analytics.insight.trackEvent("register");
-      checkForProject();
-      setApiProfile();
-
-        prompt.start();
-        prompt.getAsync(registerPassword).get("password").then(function(password) {
-            var loginObj = {
-                "email": config.email,
-                "app": config.appName,
-                "loginpass": password
-            };
-            var appObj = {
-                "developer": config.developer,
-                "appurl": config.appURL,
-                "repourl": config.repo
-            };
-            return api.routes.register(loginObj, appObj);
-        }).tap(function() {
-            console.log("registered, confirm via email")
-        });
-        break;
-
-    case 'send':
-      analytics.insight.trackEvent("send");
-      checkForProject();
-      setApiProfile();
-        var config = yamlConfig.readYaml('config.yaml');
-        var transferObj = transfer;
-
-        transferObj.properties.gasLimit.default = config.transferGasLimit;
-        transferObj.properties.gasPrice.default = config.gasPrice;
-
-        var userName = cmd.argv.u;
-        var address = cmd.argv.a;
-
-        var keyStream;
-        if (address === undefined) { 
-            keyStream = helper.userKeysStream(userName);
-        } else { 
-            keyStream = helper.userKeysAddressStream(userName,address);
-        }
-
-        keyStream
-          .pipe(helper.collect())
-          .on('data', function (data) { 
-              var store = lw.keystore.deserialize(JSON.stringify(data[0]));
-
-              prompt.start();
-              prompt.get(transferObj, function(err,result) {
-                  prompt.get(promptSchema.confirmTransfer(result), function(err2, result2) {
-
-                    var address;
-                    var privkeyFrom;
-                    if (store) {
-                        address = store.addresses[0];
-                        privkeyFrom = store.exportPrivateKey(address, result.password);
-                    }
-                    else {
-                        privkeyFrom = PrivateKey.fromMnemonic(result.password);
-                        address = privkeyFrom.toAddress();
-                    }
-
-                    var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
-                                               "gasLimit" : Int(result.gasLimit),
-                                               "gasPrice" : Int(result.gasPrice)});
-
-                    var addressTo = result.to;
-
-                    valueTX.send(privkeyFrom, addressTo).then(function(txResult) {
-                      console.log("transaction result: " + txResult.message);
-                    });                 
-                  });
-              });
-            });
-        break;
-
-    case 'start':
-      analytics.insight.trackEvent("start");
-      checkForProject();
-      setApiProfile();
-
-      var server = spawn('node', [ 'app.js' ]);
-      server.stdout.on('data', function(data) {
-         console.log(data.toString("utf-8"));
-      });
-
-      break;
-
-    case 'version':
-        analytics.insight.trackEvent("version");
-        var pkginfo = require('pkginfo')(module, 'version');
-        console.log("bloc version " + module.exports.version);
-        break;
-
-    default:
-        console.log("Unrecognized command, try bloc --help");
-    }
-
-}
-
 function checkForProject() {
   try {
     config = yamlConfig.readYaml('config.yaml');
@@ -316,6 +91,226 @@ function setApiProfile() {
   api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
 }
 
+function main (){
+  var cmdArr = cmd.argv._;
+  if (cmdArr[0] == "init") {
+    if (cmd.argv.optOut) {
+      analytics.insight.config.set("optOut", true);
+      delete cmd.argv.optOut;
+      return blocinit(cmd.argv);
+    }
+    else if (cmd.argv.optIn) {
+      analytics.insight.config.set("optOut", false);
+      delete cmd.argv.optIn;
+      return blocinit(cmd.argv);
+    }
+    return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
+      blocinit(cmd.argv);
+    });
+  }
+
+    
+  switch(cmdArr[0]) {
+
+    case 'compile':
+      analytics.insight.trackEvent("compile");
+      checkForProject();
+      setApiProfile();
+      var solSrcDir = path.join('app', 'contracts');
+      var config = yamlConfig.readYaml('config.yaml');
+
+      var solSrcFiles;
+      if (cmdArr[1]) {
+
+        var fname = path.parse(cmdArr[1]).ext === '.sol' ?
+                                           cmdArr[1] : cmdArr[1] + ".sol";
+          // Make sure the file exists
+        try {
+          fs.accessSync(path.join(solSrcDir,fname), fs.F_OK);
+        } catch (e) {
+          console.log(chalk.red("ERROR: ") + "Contract not found");
+          break;
+        }
+        console.log(chalk.yellow("Compiling single contract: ") + chalk.white(fname));
+        solSrcFiles = [fname];
+      }
+      else {
+        console.log("Compiling all contracts no longer supported!");
+        break;
+
+          // solSrcFiles = fs.readdirSync(solSrcDir).
+          //   filter(function(filename) {
+          //     return path.extname(filename) === '.sol';
+          //   })
+      }
+
+      Promise.all(solSrcFiles).
+          map(function (filename) {
+            return fs.readFileSync(path.join(solSrcDir, filename)).toString()
+          }).  
+          map(compile);
+      break;
+
+    case 'upload':
+      analytics.insight.trackEvent("upload");
+      checkForProject();
+      setApiProfile();
+      var contractName = cmdArr[1];
+      if (contractName === undefined) {
+        console.log(chalk.red("ERROR: ") + "Contract name required");
+        break;
+      }
+
+      var userName = cmd.argv.u;
+      var address = cmd.argv.a;
+
+      var keyStream;
+      if (address === undefined) { 
+        keyStream = helper.userKeysStream(userName);
+        if (!keyStream) {
+          console.log(chalk.red("ERROR: Key Not Found"));
+          console.log(chalk.yellow("Try command: ") + "bloc genkey");
+          return;
+        }
+      } else { 
+        keyStream = helper.userKeysAddressStream(userName,address);
+      }
+
+        
+      keyStream
+          .pipe(helper.collect())
+          .on('data', function (data) { 
+            var store = lw.keystore.deserialize(JSON.stringify(data[0]));
+            var address = store.addresses[0];
+
+            console.log("address: " + address);
+            prompt.start();
+            prompt.getAsync(requestPassword).then(function(result) {
+              var privkey = store.exportPrivateKey(address, result.password);
+              return [contractName, privkey];
+            })
+               .spread(upload)
+               .then(function (_) {
+                 console.log("creating metadata for " + contractName);
+               });      
+          })
+        
+      break;
+
+    case 'genkey':
+      analytics.insight.trackEvent("genkey");
+      checkForProject();
+      setApiProfile();
+
+      var userName = cmdArr[1];
+
+      prompt.start();
+      prompt.getAsync(createPassword).get("password").then(function(password) {
+        if (userName === undefined)
+          key.generateKey(password,'admin');
+        else key.generateKey(password,userName); 
+      });
+      break;
+
+    case 'register':
+      analytics.insight.trackEvent("register");
+      checkForProject();
+      setApiProfile();
+
+      prompt.start();
+      prompt.getAsync(registerPassword).get("password").then(function(password) {
+        var loginObj = {
+          "email": config.email,
+          "app": config.appName,
+          "loginpass": password
+        };
+        var appObj = {
+          "developer": config.developer,
+          "appurl": config.appURL,
+          "repourl": config.repo
+        };
+        return api.routes.register(loginObj, appObj);
+      }).tap(function() {
+        console.log("registered, confirm via email")
+      });
+      break;
+
+    case 'send':
+      analytics.insight.trackEvent("send");
+      checkForProject();
+      setApiProfile();
+      var config = yamlConfig.readYaml('config.yaml');
+      var transferObj = transfer;
+
+      transferObj.properties.gasLimit.default = config.transferGasLimit;
+      transferObj.properties.gasPrice.default = config.gasPrice;
+
+      var userName = cmd.argv.u;
+      var address = cmd.argv.a;
+
+      var keyStream;
+      if (address === undefined) { 
+        keyStream = helper.userKeysStream(userName);
+      } else { 
+        keyStream = helper.userKeysAddressStream(userName,address);
+      }
+
+      keyStream
+          .pipe(helper.collect())
+          .on('data', function (data) { 
+            var store = lw.keystore.deserialize(JSON.stringify(data[0]));
+
+            prompt.start();
+            prompt.get(transferObj, function(err,result) {
+              prompt.get(promptSchema.confirmTransfer(result), function(err2, _) {
+
+                var address;
+                var privkeyFrom;
+                if (store) {
+                  address = store.addresses[0];
+                  privkeyFrom = store.exportPrivateKey(address, result.password);
+                }
+                else {
+                  privkeyFrom = PrivateKey.fromMnemonic(result.password);
+                  address = privkeyFrom.toAddress();
+                }
+
+                var valueTX = Transaction({"value" : ethValue(result.value).in(result.unit), 
+                                               "gasLimit" : Int(result.gasLimit),
+                                               "gasPrice" : Int(result.gasPrice)});
+
+                var addressTo = result.to;
+
+                valueTX.send(privkeyFrom, addressTo).then(function(txResult) {
+                  console.log("transaction result: " + txResult.message);
+                });                 
+              });
+            });
+          });
+      break;
+
+    case 'start':
+      analytics.insight.trackEvent("start");
+      checkForProject();
+      setApiProfile();
+
+      var server = spawn('node', [ 'app.js' ]);
+      server.stdout.on('data', function(data) {
+        console.log(data.toString("utf-8"));
+      });
+
+      break;
+
+    case 'version':
+      analytics.insight.trackEvent("version");
+        // var pkginfo = require('pkginfo')(module, 'version');
+      console.log("bloc version " + module.exports.version);
+      break;
+
+    default:
+      console.log("Unrecognized command, try bloc --help");
+  }
+}
 
 // process.on('unhandledRejection', function(reason, p) {
 //   console.log("Exiting bloc");
@@ -323,5 +318,5 @@ function setApiProfile() {
 // });
 
 if (require.main === module) {
-    main();
+  main();
 }

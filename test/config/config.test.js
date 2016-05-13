@@ -17,30 +17,30 @@ var Account = common.blockapps.ethbase.Account;
 
 describe('setting up blockapps-js', function(){
 
+  beforeEach(function(done){
+    console.log("before config")
+    done();
+  });
+
+  it('blockapps-js is v1.1', function(){
+    assert(blockapps.query.apiPrefix == "/eth/v1.1")
+  });
+
+  describe('balanceTest', function() {
+    var bal = new BigNumber(0);
     beforeEach(function(done){
-        console.log("before config")
+      Account(options.address).balance.then(function(balance) {
+        bal = balance;
         done();
+      });
     });
 
-    it('blockapps-js is v1.1', function(){
-        assert(blockapps.query.apiPrefix == "/eth/v1.1")
+    it('balance is non-zero', function() {
+      console.log("balance of account (" + options.address + "): " + bal.toString())
+      assert(bal.cmp(0) == 1);
     });
 
-    describe('balanceTest', function() {
-        var bal = new BigNumber(0);
-        beforeEach(function(done){
-            Account(options.address).balance.then(function(balance) {
-                bal = balance;
-                done();
-            });
-        });
-
-        it('balance is non-zero', function() {
-            console.log("balance of account (" + options.address + "): " + bal.toString())
-            assert(bal.cmp(0) == 1);
-        });
-
-    });
+  });
 
 });
 

@@ -8,9 +8,12 @@
   },
   "scripts": {
     "test": "mocha --timeout 300000",
-    "jshint": "./node_modules/jshint/bin/jshint -c .jshintrc --exclude-path .gitignore bin lib templates test" 
+    "jshint": "./node_modules/jshint/bin/jshint -c .jshintrc --exclude-path .gitignore bin lib templates test",
+    "eslint": "./node_modules/eslint/bin/eslint.js -c .eslintrc --ignore-path .gitignore bin lib templates test"
   },
-  "pre-commit": [ "jshint" ], 
+  "pre-commit": [
+    "eslint"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/blockapps/bloc"
@@ -24,6 +27,7 @@
     "cookie-parser": "^1.4.0",
     "deepmerge": "^0.2.10",
     "enum": "^2.1.0",
+    "eslint": "^2.9.0",
     "eth-lightwallet": "kejace/eth-lightwallet",
     "ethereumjs-tx": "kejace/ethereumjs-tx",
     "ethereumjs-util": "kejace/ethereumjs-util",

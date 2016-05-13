@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+'use strict'
 
 var Promise = require('bluebird');
 var fs = require('fs');
@@ -180,7 +180,7 @@ function main (){
                })
                .spread(upload)
                .then(function (solObjWAddr) {
-                 console.log("creating metadata for " +  contractName);
+                 console.log("creating metadata for " + contractName);
               });      
           })
         
@@ -191,7 +191,7 @@ function main (){
       checkForProject();
       setApiProfile();
 
-	    var userName = cmdArr[1];
+      var userName = cmdArr[1];
 
         prompt.start();
         prompt.getAsync(createPassword).get("password").then(function(password) {

@@ -12,7 +12,7 @@
 ##Installation
 
 ```
-npm install blockapps-bloc
+npm install -g blockapps-bloc'
 ```
 
 ##Generate a new blockchain app

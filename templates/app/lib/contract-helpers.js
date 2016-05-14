@@ -168,6 +168,46 @@ function fuseStream() {
   return strm;
 }
 
+function pendingForUser(username){
+  var thepath = path.join('app', 'users', username, 'pending', '*.json');
+  console.log('looking in : ' + thepath)
+  return vinylFs.src( thepath )
+  .pipe(map(getContents))
+  .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
+
+function pendingForAddress(address){
+  var thepath = path.join('app', 'pending', address, '*.json');
+  console.log('looking in : ' + thepath)
+  return vinylFs.src( thepath )
+  .pipe(map(getContents))
+  .pipe( es.map(function (data, cb) {
+         cb(null, JSON.parse(data))
+       }));
+}
+
+function txToJSON(t) {
+    var result = {
+        "nonce"      : t.nonce,
+        "gasPrice"   : t.gasPrice,
+        "gasLimit"   : t.gasLimit,
+        "to"         : t.to ? t.to.toString(): "",
+        "value"      : t.value,
+        "codeOrData" : t.data ? t.data.toString("hex") : "",
+        "from"       : t.from ? t.from.toString() : "",
+        "r"          : t.r ? t.r.toString(16) : "",
+        "s"          : t.s ? t.s.toString(16) : "",
+        "v"          : t.v ? t.v.toString(16) : "",
+        "hash"       : t.partialHash()
+    }
+    if (result.to == "") {
+        delete result.to;
+    }
+    return result;
+}
+
 module.exports  = {
   contractNameStream : contractNameStream,
   contractsStream : contractsStream,
@@ -181,5 +221,8 @@ module.exports  = {
   userNameStream : userNameStream,
   userKeysStream : userKeysStream,
   userKeysAddressStream : userKeysAddressStream,
-  allKeysStream : allKeysStream
+  allKeysStream : allKeysStream,
+  pendingForUser: pendingForUser,
+  pendingForAddress: pendingForAddress,
+  txToJSON: txToJSON
 };

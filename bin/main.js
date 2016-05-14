@@ -38,8 +38,6 @@ var chalk = require('chalk');
 var stratoVersion = "1.1"
 var config = '';
 
-//console.log(chalk.green('Hello %s'), name);
-
 function makeConfig(result) {
   var name = result.appName;
   var stat;
@@ -158,10 +156,16 @@ function main (){
         var keyStream;
         if (address === undefined) { 
             keyStream = helper.userKeysStream(userName);
+          if (!keyStream) {
+            console.log(chalk.red("ERROR: Key Not Found"));
+            console.log(chalk.yellow("Try command: ") + "bloc genkey");
+            return;
+          }
         } else { 
             keyStream = helper.userKeysAddressStream(userName,address);
         }
 
+        
         keyStream
           .pipe(helper.collect())
           .on('data', function (data) { 
@@ -280,12 +284,12 @@ function main (){
       checkForProject();
       setApiProfile();
 
-        var server = spawn('node', [ 'app.js' ]);
-        server.stdout.on('data', function(data) {
-           console.log(data.toString("utf-8"));
-        });
+      var server = spawn('node', [ 'app.js' ]);
+      server.stdout.on('data', function(data) {
+         console.log(data.toString("utf-8"));
+      });
 
-        break;
+      break;
 
     case 'version':
         analytics.insight.trackEvent("version");

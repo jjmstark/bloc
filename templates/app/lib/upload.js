@@ -1,10 +1,18 @@
-var Promise = require('bluebird');
+'use strict'
 
+var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
 var path = require('path');
 
 module.exports = upload;
+
+/**
+ * Upload a contract by name.
+ * @param {string} The name of the contract
+ * @para {string} User's private key
+ * @return {array}
+ */
 function upload(contractName, privkey) { 
   var compiledFile = path.join('app', 'meta', contractName, contractName + ".json");
 

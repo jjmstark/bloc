@@ -1,7 +1,7 @@
 'use strict';
 
 var Insight = require('insight');
-var pkg = require('../package.json');
+var pkg = require('../../../package.json');
 var chalk = require('chalk');
 var exports = module.exports = {};
 

@@ -180,18 +180,6 @@ router.post('/:user', cors(), function(req, res) {
   }
 });
 
-// router.get('/:user/pending', cors(), function(req, res){
-
-//     var user = req.params.user; 
-//     console.log("finding pending transactions for user: " + user)
-
-//     contractHelpers.pendingForUser(user)
-//     .pipe(contractHelpers.collect())
-
-//     .on('data', function (data) {
-//       res.send(data);
-//     })
-// });
 
 router.post('/:user/:address/send', cors(), function(req, res) {
   var password = req.body.password;
@@ -272,6 +260,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
   var user = req.params.user;  
   var address = req.params.address;
 
+
   var password = req.body.password;
   var src = req.body.src;
 
@@ -285,9 +274,6 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
     return;
   }
     
-  console.log("+++++++++++++++++++++++++++++++++++++");
-    //console.log(req.body.password);
-    //console.log(req.body);
 
   contractHelpers.userKeysStream(user)
       .pipe(es.map(function (data,cb) {
@@ -432,15 +418,13 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
     
   contractHelpers.userKeysStream(user)
         .pipe(es.map(function (data,cb) {
-          //console.log("data.addresses[0] == address: " + data.addresses[0] +"  "+ address)
+
           if (data.addresses[0] == address) {
             console.log("address found");
             found = true; cb(null,data); 
           }
           else{
             console.log("address does not exist for user");
-            //res.send("address does not exist for user");
-            //return;
             cb();
           } 
         }))
@@ -463,34 +447,6 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
           }
         }))
   .on('data', function(privkeyFrom) {
-    console.log(privkeyFrom)
-    // if(privkeyFrom.token){
-    //     console.log("in token land")
-    //     var date = new Date();
-    //     var dt = date.getTime();
-    //     var call = {
-    //                 contractName: contractName, 
-    //                 method: method,
-    //                 args: args,
-    //                 txArgs: {"gasLimit" : Int(31415920),"gasPrice" : Int(1)},
-    //                 time: dt,
-    //                 value: req.body.value,
-    //                 message: req.body.message
-    //               }
-    //     var pp = path.join('app', 'pending');
-    //     var filename = path.join(pp, address+"_"+dt+".json");
-    //     mkdirp(pp, function (err) { 
-    //       if (err) { console.err(err); res.send(err); }
-    //         else { 
-    //             console.log('path: ' + pp)
-    //             console.log('filename: ' + filename)
-    //             fs.writeFile(filename, JSON.stringify(call), function() { 
-    //                 console.log("wrote: " + filename);
-    //                 res.send("put transaction in queue for: " + address)
-    //             });
-    //         }
-    //     });
-      //} else {
     var fileName = path.join(metaPath,contractAddress+'.json');
     fs.readFile(fileName, function (err,data) {
       if(data == undefined){
@@ -508,7 +464,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         console.log("params.value: " + params.value);
       }
       console.log("trying to invoke contract")
-          //console.log("methods: " + JSON.stringify(contract.state))
+
       if(contract.state[method] != undefined){
         var contractstate = contract.state[method](args).txParams(params);
 
@@ -520,11 +476,12 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
           var pp = path.join('app', 'pending', address);
           var filename = path.join(pp, dt+".json");
           mkdirp(pp, function (err) { 
-            if (err) { console.err(err); res.send(err); }
-            else { 
+            if (err) { 
+              console.err(err); 
+              res.send(err); 
+            } else { 
               console.log('path: ' + pp)
               console.log('filename: ' + filename)
-              //var jj = JSON.stringify(contractHelpers.txToJSON(contractstate));
               var callData = {
                 contractName: contractName, 
                 method: method,
@@ -565,6 +522,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
         res.send("contract " + contractName + " doesn't have method: " + method);
         return;
       } 
+
     })
      // }
   })

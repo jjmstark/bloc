@@ -6,8 +6,8 @@ var assert = common.assert;
 var promise = common.promise;
 
 var rewire = require('rewire');
-var helper = rewire('../../lib/contract-helpers.js');
-var keygen = rewire("../../lib/keygen.js");
+var helper = rewire('../../app/lib/contract-helpers.js');
+var keygen = rewire("../../app/lib/keygen.js");
 
 var lw = require('eth-lightwallet');
 

@@ -3,7 +3,7 @@
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
-//var codegen = require('./codegen.js');
+
 var path = require('path');
 
 /**
@@ -13,7 +13,7 @@ var path = require('path');
  * @return {array}
  */
 function upload(contractName, privkey) { 
-  var compiledFile = path.join('app', 'meta', contractName, "temp.json");
+  var compiledFile = path.join('app', 'meta', contractName, contractName + ".json");
 
   var id = setInterval(function () { console.log("    ...waiting for transaction to be mined"); }, 2000);
 
@@ -23,12 +23,18 @@ function upload(contractName, privkey) {
     then(function(contrObj){
       var addr = contrObj.account.address.toString();
       var uploadedFile = path.join('app', 'meta', contractName, addr + ".json");
+      var latestPath = path.join('app', 'meta', contractName, "Latest.json");
+
       console.log("writing: " + uploadedFile);
+      console.log("writing: " + latestPath);
       clearInterval(id);
-      return [uploadedFile, contrObj.detach()];
+      return [uploadedFile, latestPath, contrObj.detach(), addr];
     });
 
-  toRet.spread(fs.writeFileAsync);
+  toRet.then(function (arr) { 
+    fs.writeFileAsync(arr[0], arr[2]);
+    fs.writeFileAsync(arr[1], arr[2]);
+  });
 
   return toRet;
     

@@ -3,7 +3,7 @@
 var common = require("../common");
 var options = common.options;
 var rewire = require('rewire');
-var keygen = rewire("../../lib/keygen.js");
+var keygen = rewire("../../app/lib/keygen.js");
 var promise = common.promise;
 var expect = common.chai.expect;
 

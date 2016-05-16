@@ -6,25 +6,27 @@ var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
 var prompt = Promise.promisifyAll(require('prompt'));
-var analytics = require('../lib/analytics.js');
 
-var cmd = require('../lib/cmd.js');
-var key = require('../lib/keygen');
-var scaffold = require('../lib/scaffold.js');
-var yamlConfig = require('../lib/yaml-config.js');
+var analytics = require('../templates/app/lib/analytics.js');
 
-var compile = require('../lib/compile.js');
-var upload = require('../lib/upload.js');
+var cmd = require('../templates/app/lib/cmd.js');
+var key = require('../templates/app/lib/keygen');
+var scaffold = require('../templates/app/lib/scaffold.js');
+var yamlConfig = require('../templates/app/lib/yaml-config.js');
 
-var promptSchema = require('../lib/prompt-schema.js');
-var requestPassword = require('../lib/prompt-schema.js').requestPassword;
-var registerPassword = require('../lib/prompt-schema.js').registerPassword;
-var createPassword = require('../lib/prompt-schema.js').createPassword;
-var scaffoldApp = require('../lib/prompt-schema.js').scaffoldApp;
-var transfer = require('../lib/prompt-schema.js').transfer;
-var helper = require('../lib/contract-helpers.js');
+var compile = require('../templates/app/lib/compile.js');
+var upload = require('../templates/app/lib/upload.js');
 
-var icon = require('../lib/icon.js').blocIcon;
+var promptSchema = require('../templates/app/lib/prompt-schema.js');
+var requestPassword = require('../templates/app/lib/prompt-schema.js').requestPassword;
+var registerPassword = require('../templates/app/lib/prompt-schema.js').registerPassword;
+var createPassword = require('../templates/app/lib/prompt-schema.js').createPassword;
+var scaffoldApp = require('../templates/app/lib/prompt-schema.js').scaffoldApp;
+var transfer = require('../templates/app/lib/prompt-schema.js').transfer;
+var helper = require('../templates/app/lib/contract-helpers.js');
+
+var icon = require('../templates/app/lib/icon.js').blocIcon;
+
 var api = require("blockapps-js");
 var Transaction = api.ethbase.Transaction;
 var Int = api.ethbase.Int;

@@ -4,11 +4,11 @@ var path = require('path');
 var yaml = require('js-yaml');
 var readdirp = require('readdirp');
 
-var vinylFs = require( 'vinyl-fs' ),
-  map = require( 'map-stream' );
-stream = require('stream');  
-es = require('event-stream');
-merge = require('deepmerge');
+var vinylFs = require( 'vinyl-fs' );
+var map = require( 'map-stream' );
+var stream = require('stream');  
+var es = require('event-stream');
+var merge = require('deepmerge');
 
 /* utility */
 var getContents = function(file, cb) {
@@ -38,16 +38,8 @@ function contractsStream() {
       .pipe( map(getPath) );  
 }
 
-/**
- * Recursively find compiled contracts.
- * @return {object} Array of compiled contract files
- */
 function contractDirsStream() { 
-  return readdirp({
-    root: path.join('app','meta'), 
-    depth: 1, 
-    fileFilter: ['!temp.json']
-  });
+  return readdirp({root: path.join('app','meta'), depth: 1});
 }
 
 function contractAddressesStream(name) {
@@ -57,13 +49,11 @@ function contractAddressesStream(name) {
 
 function contractsMetaAddressStream(name,address) { 
   return vinylFs.src( [ path.join('app', 'meta', name, address + '.json') ] )
-      .on('error', function(err){console.log("error: " + err); this.emit('end');})
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
         cb(null, JSON.parse(data))
       }));
 }
-
 /* emits all contract metadata as json */
 function contractsMetaStream() { 
   return vinylFs.src( [ path.join('meta', '*.json') ] )

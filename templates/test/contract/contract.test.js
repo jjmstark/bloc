@@ -12,9 +12,9 @@ var blockapps = common.blockapps;
 var transaction = blockapps.ethbase.Transaction;
 var ethValue = blockapps.ethbase.Units.ethValue;
 
-var helper = require('../../lib/contract-helpers.js');
-var upload = require("../../lib/upload.js")
-var compile = require("../../lib/compile.js")
+var helper = require('../../app/lib/contract-helpers.js');
+var upload = require("../../app/lib/upload.js")
+var compile = require("../../app/lib/compile.js")
 
 var privKey;
 var address;
@@ -56,7 +56,7 @@ var myUpload = function(name, cb){
           upload(contractName, privKey)
              .then(function (solObjWAddr) {
                 //console.log("contract address: " + solObjWAddr)
-               console.log("calling callback")
+               console.log("calling callback");
                cb(solObjWAddr);
              });      
         })
@@ -75,13 +75,13 @@ describe('compiling Payout', function(){
   describe('#payoutTest()', function(){
 
     it("Payout is uploaded", function(){
-      var contractAddress = JSON.parse(payOutSolWAddr[1]).address;
+      var contractAddress = JSON.parse(payOutSolWAddr[2]).address;
       console.log("Contract address: " + contractAddress)
       assert(contractAddress !== null)
     });
 
     it("Send some ether to Payout", function(done){
-      var addressTo = JSON.parse(payOutSolWAddr[1]).address;
+      var addressTo = JSON.parse(payOutSolWAddr[2]).address;
       var valueTX = transaction({"value" : ethValue(1).in("wei")}); 
 
       valueTX.send(privKey, addressTo).then(function(txResult) {
@@ -92,7 +92,7 @@ describe('compiling Payout', function(){
     })
 
     it("Can call Payout", function(done){
-      var payout = blockapps.Solidity.attach(payOutSolWAddr[1]);
+      var payout = blockapps.Solidity.attach(payOutSolWAddr[2]);
       payout.state.Dividend().callFrom(privKey).then(function(_){
         done();
       })
@@ -113,13 +113,13 @@ describe('compiling SimpleMultiSig', function(){
   describe('#SimpleMultiSigTest()', function(){
 
     it("SimpleMultiSig is uploaded", function(){
-      var contractAddress = JSON.parse(smsSolWAddr[1]).address;
+      var contractAddress = JSON.parse(smsSolWAddr[2]).address;
       console.log("Contract address: " + contractAddress)
       assert(contractAddress !== null)
     });
 
     it("Send some ether to SimpleMultiSig", function(done){
-      var addressTo = JSON.parse(smsSolWAddr[1]).address;
+      var addressTo = JSON.parse(smsSolWAddr[2]).address;
       var valueTX = transaction({"value" : ethValue(1).in("wei")}); 
 
       valueTX.send(privKey, addressTo).then(function(_) {
@@ -129,7 +129,7 @@ describe('compiling SimpleMultiSig', function(){
     })
 
     it("Can call SimpleMultiSig", function(done){
-      var sms = blockapps.Solidity.attach(smsSolWAddr[1]);
+      var sms = blockapps.Solidity.attach(smsSolWAddr[2]);
       sms.state.withdraw(address).callFrom(privKey).then(function(_){
         done();
       })

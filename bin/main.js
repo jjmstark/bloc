@@ -36,7 +36,7 @@ var lw = require('eth-lightwallet');
 var chalk = require('chalk');
 
 var stratoVersion = "1.1"
-var config = '';
+var config;
 
 function makeConfig(result) {
   var name = result.appName;
@@ -50,10 +50,6 @@ function makeConfig(result) {
     console.log("project: " + name + " already exists");
   } else {
     scaffold(result.appName, result.developer);
-    result.transferGasLimit = 21000;
-    result.contractGasLimit = 10000000;
-    result.gasPrice = 50000000000;
-
     yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
   }
 }
@@ -70,7 +66,10 @@ function blocinit(cmdArgv) {
     makeConfig({
       appName: cmdArgv.appName,
       developer: cmdArgv.developer,
-      apiURL: cmdArgv.apiURL
+      apiURL: cmdArgv.apiURL,
+      transferGasLimit: 21000,
+      contractGasLimit: 10000000,
+      gasPrice: 50000000000
     });
   }
   else {

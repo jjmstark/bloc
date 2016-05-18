@@ -1,4 +1,5 @@
 'use strict';
+/* @flow weak */
 
 function functionFilt(json) {
   return json.type === "function";

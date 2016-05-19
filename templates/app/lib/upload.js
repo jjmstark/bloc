@@ -19,7 +19,7 @@ function upload(contractName, privkey) {
 
   var toRet = fs.readFileAsync(compiledFile, {encoding:"utf8"}).
     then(Solidity.attach).
-    then(function(solObj) { return solObj.construct().txParams({"gasPrice":1,"gasLimit":31415920}).callFrom(privkey); }).
+    then(function(solObj) { return solObj.construct().callFrom(privkey); }).
     then(function(contrObj){
       var addr = contrObj.account.address.toString();
       var uploadedFile = path.join('app', 'meta', contractName, addr + ".json");

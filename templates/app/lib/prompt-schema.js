@@ -14,7 +14,6 @@ var scaffoldApp = {
       required: true
     },
         
-
     apiURL: {
       message: "Enter the BlockApps API URL you are using or ENTER for default",
       required: false,
@@ -22,6 +21,12 @@ var scaffoldApp = {
       default: 'http://strato-dev3.blockapps.net'
     },
         
+    profile: {
+      message: "Enter the blockchain profile you wish to use.  Options: strato-dev, ethereum",
+      required: false,
+      default: "strato-dev"
+    }
+
   }
 };
 

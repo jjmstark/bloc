@@ -50,10 +50,6 @@ function makeConfig(result) {
     console.log("project: " + name + " already exists");
   } else {
     scaffold(result.appName, result.developer);
-    result.transferGasLimit = 21000;
-    result.contractGasLimit = 10000000;
-    result.gasPrice = 50000000000;
-
     yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
   }
 }
@@ -65,12 +61,12 @@ function blocinit(cmdArgv) {
 
   if(cmdArgv &&
      'appName' in cmdArgv &&
-     'developer' in cmdArgv &&
-     'apiURL' in cmdArgv) {
+     'developer' in cmdArgv) {
     makeConfig({
       appName: cmdArgv.appName,
       developer: cmdArgv.developer,
-      apiURL: cmdArgv.apiURL
+      apiURL: cmdArgv.apiURL,
+      profile: cmdArgv.profile
     });
   }
   else {
@@ -89,8 +85,7 @@ function checkForProject() {
 }
 
 function setApiProfile() {
-//  api.setProfile("strato-dev", config.apiURL);
-  api.setProfile("ethereum-frontier", config.apiURL, stratoVersion);
+  api.setProfile("strato-dev", config.apiURL, stratoVersion);
 }
 
 function main (){

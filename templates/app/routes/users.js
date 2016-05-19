@@ -335,7 +335,6 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
                       console.log("attempting to upload now");
                       return Promise.join(solObj
               .construct()
-                            .txParams({"gasLimit" : Int(31415920),"gasPrice" : Int(1)})
                         .callFrom(privkeyFrom), Promise.resolve(solObj) );
                     })
 

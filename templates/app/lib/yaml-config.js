@@ -4,14 +4,13 @@ var yaml = require('js-yaml');
 var fs = require('fs');
 
 var defaultConfigObj = { 
-  apiURL: 'https://strato-dev.blockapps.net',
+  apiURL: 'http://strato-dev3.blockapps.net',
   appName: 'newproj',
   appURL: 'http://google.com',
   developer: 'kjl',
   email: 'kieren1@gmail.com',
   repo: '',
-  transferGasLimit: 21000, 
-  contractGasLimit: 10000000
+  profile: "strato-dev"
 }
 
 function writeYaml(filename, obj) {

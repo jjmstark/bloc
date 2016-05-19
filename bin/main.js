@@ -239,9 +239,6 @@ function main (){
       var config = yamlConfig.readYaml('config.yaml');
       var transferObj = transfer;
 
-      transferObj.properties.gasLimit.default = config.transferGasLimit;
-      transferObj.properties.gasPrice.default = config.gasPrice;
-
       var userName = cmd.argv.u;
       var address = cmd.argv.a;
 

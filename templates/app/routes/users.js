@@ -263,6 +263,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
   var user = req.params.user;  
   var address = req.params.address;
   var contract = req.body.contract;
+  console.log("contract as body is: " + contract)
 
   var password = req.body.password;
   var src = req.body.src;

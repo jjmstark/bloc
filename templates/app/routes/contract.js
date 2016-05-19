@@ -9,6 +9,7 @@ var api = require('blockapps-js');
 var cors = require('cors');
 var traverse = require('traverse');
 var fs = require('fs');
+var es = require('event-stream')
 
 var yaml = require('js-yaml');
 

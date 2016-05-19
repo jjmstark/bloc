@@ -300,13 +300,14 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 
               compile(src)
                .then(function (solObj) {
-                   if ((typeof contract) === 'undefined') { 
-                     contract = solObj.name;
+                   if (((typeof contract) === 'undefined') || (contract === undefined)) {
+                     contract = solObj[0].src;
                    }
-
-                 return upload(contract,privkeyFrom);
-                  }).then(function (arr) { 
-                    res.send(arr[4]);
+		   
+                 return upload(Object.keys(contract)[0],privkeyFrom);
+               }).then(function (arr) {
+		   console.log(arr[3]);
+                    res.send(arr[3]);
                   });
  
 

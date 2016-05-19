@@ -35,8 +35,8 @@ function compileSol(solSrc) {
         innerObj[name] = solObj;
         theObj['src'] = innerObj;
     }
-
-    return Promise.map(dirs, function (contractPath) { 
+          
+    return Promise.join(theObj, Promise.map(dirs, function (contractPath) { 
         mkdirp(contractPath, function () { 
             Object.keys(theObj.src).map(function (contractName) {
                 var multiPath = path.join(contractPath, contractName + '.json');
@@ -48,7 +48,7 @@ function compileSol(solSrc) {
 		});
             });
 	});  
-    });
+    }));
    
    
   }).

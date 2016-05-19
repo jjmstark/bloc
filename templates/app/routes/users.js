@@ -299,7 +299,9 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
         compile(src)
         .then(function (solObj) {
           if (((typeof contract) === 'undefined') || (contract === undefined)) {
+            console.log("contract in upload was null")
             contract = solObj[0].src;
+            console.log("setting contract to: " + contract)
           }
           return upload(Object.keys(contract)[0],privkeyFrom);
         }).then(function (arr) {

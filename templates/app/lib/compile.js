@@ -35,17 +35,20 @@ function compileSol(solSrc) {
       theObj['src'] = innerObj;
     }
 
-    return Promise.map(dirs, function (contractPath) { 
+    return Promise.join(theObj, Promise.map(dirs, function (contractPath) { 
       mkdirp(contractPath, function () { 
         Object.keys(theObj.src).map(function (contractName) {
           var multiPath = path.join(contractPath, contractName + '.json');
+
+
           var src = theObj.src;
           fs.writeFile(multiPath, src[contractName].detach(), function () {
             console.log(chalk.green("wrote: ") + multiPath);
           });
         });
       });  
-    });
+    }));
+
    
   }).
   catch(function(e) {

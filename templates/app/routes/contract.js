@@ -232,11 +232,11 @@ router.get('/:contractName/:contractAddress/state', cors(), function (req, res) 
                     this.update(x.toString());
                   }
                 });
-             
                 res.send(parsed);
               })
 
               .catch(function(err) { 
+                console.log("contract/state sVars - error: " + err)
                 res.send(JSON.stringify(err));
               });
       })

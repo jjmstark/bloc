@@ -266,9 +266,7 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 
   var password = req.body.password;
   var src = req.body.src;
-
   var found = false;
-
 
   if (typeof password === 'undefined' || password === '') {
     res.send('password required');
@@ -298,11 +296,13 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
 
         compile(src)
         .then(function (solObj) {
+          console.log("contract parameter is: " + contract)
           if (((typeof contract) === 'undefined') || (contract === undefined)) {
             console.log("contract in upload was null")
             contract = solObj[0].src;
-            console.log("setting contract to: " + contract)
+            console.log("setting contract to: " + JSON.stringify(contract))
           }
+          console.log("calling upload with: " + Object.keys(contract))
           return upload(Object.keys(contract)[0],privkeyFrom);
         }).then(function (arr) {
           console.log(arr[3]);

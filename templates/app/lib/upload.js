@@ -3,9 +3,8 @@
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
-var path = require('path');
 
-module.exports = upload;
+var path = require('path');
 
 /**
  * Upload a contract by name.
@@ -33,10 +32,12 @@ function upload(contractName, privkey) {
     });
 
   toRet.then(function (arr) { 
-      fs.writeFileAsync(arr[0], arr[2]);
-      fs.writeFileAsync(arr[1], arr[2]);
+    fs.writeFileAsync(arr[0], arr[2]);
+    fs.writeFileAsync(arr[1], arr[2]);
   });
 
   return toRet;
     
 }
+
+module.exports = upload;

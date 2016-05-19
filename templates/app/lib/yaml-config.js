@@ -1,11 +1,7 @@
-var yaml = require('js-yaml');
-var fs   = require('fs');
+'use strict';
 
-module.exports = {
-    defaultConfigObj : defaultConfigObj,
-    writeYaml : writeYaml,
-    readYaml : readYaml
-}
+var yaml = require('js-yaml');
+var fs = require('fs');
 
 var defaultConfigObj = { 
   apiURL: 'https://strato-dev.blockapps.net',
@@ -24,4 +20,10 @@ function writeYaml(filename, obj) {
 
 function readYaml(filename) {
   return yaml.safeLoad(fs.readFileSync(filename)); 
+}
+
+module.exports = {
+  defaultConfigObj : defaultConfigObj,
+  writeYaml : writeYaml,
+  readYaml : readYaml
 }

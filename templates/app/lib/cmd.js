@@ -1,3 +1,5 @@
+'use strict';
+
 var argv = require('yargs')
                .usage('Usage: $0 <command> (options)')
                .demand(1)
@@ -5,12 +7,12 @@ var argv = require('yargs')
                .command('init [appName]', 'start a new project')
                .command('compile [contract]', 'compile contract in contract folder')
                .command('upload contract', 'upload contract to blockchain', {
-                   user: { 
-                       alias: 'u'
-                   },
-                   address: {
-                       alias: 'a'
-                   }
+                 user: { 
+                   alias: 'u'
+                 },
+                 address: {
+                   alias: 'a'
+                 }
                })
                .default('u', 'admin')
                .command('create', 'create a new [project|module]')

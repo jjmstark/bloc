@@ -1,10 +1,12 @@
+'use strict';
+/* @flow weak */
 
 function functionFilt(json) {
-  return (json.type === "function");
+  return json.type === "function";
 }
 
 function functionNameFilt(json,name) {
-  return (json.type === "function" && json.name === name);
+  return json.type === "function" && json.name === name;
 }
 
 function abiToName(abi) {
@@ -30,14 +32,14 @@ var abiFuncToListTypes = function(abi,funcName) {
 }
 
 var abiToFuncTypeObj = function(abi) {
-  return (abiToListFuncNames(abi)).reduce(function (o,v,t) { 
-     o[v] = abiFuncToListTypes(abi,v); 
-     return o; 
-    }, 
+  return (abiToListFuncNames(abi)).reduce(function (o,v,_) { 
+    o[v] = abiFuncToListTypes(abi,v); 
+    return o; 
+  }, 
  {});
 }
 
-var payloadForSolFunc = function(abi,funcName,listArgs) {
+var payloadForSolFunc = function(abi,funcName,_) {
 
 }
 

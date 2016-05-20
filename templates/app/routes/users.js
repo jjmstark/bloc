@@ -21,10 +21,6 @@ var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
 var apiURI = config.apiURL;
 
 var api = require('blockapps-js');
-//var stratoVersion = "1.1";
-
-//api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
-api.setProfile("strato-dev", apiURI);
 
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');

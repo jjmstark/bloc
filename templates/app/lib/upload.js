@@ -5,6 +5,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
 
 var path = require('path');
+var contractHelpers = require('./contract-helpers.js')
 
 /**
  * Upload a contract by name.
@@ -22,7 +23,9 @@ function upload(contractName, privkey) {
     then(Solidity.attach).
     then(function(solObj) { 
       console.log("solObj after compilation: " + JSON.stringify(solObj))
-      return solObj.construct().txParams({"gasLimit":314159200}).callFrom(privkey); 
+      var toret = solObj.construct();
+      console.log("toRet: " + JSON.stringify(contractHelpers.txToJSON(toret)))
+      return toret.callFrom(privkey);  // txParams({"gasLimit":314159200})
     }).
     then(function(contrObj){
       var addr = contrObj.account.address.toString();

@@ -10,8 +10,12 @@ var addresses = require('./app/routes/addresses.js');
 var contracts = require('./app/routes/contract.js');
 
 var helper = require('./app/lib/contract-helpers');
+var api = require('blockapps-js');
 var Solidity = require('blockapps-js').Solidity;
 var Promise = require('bluebird');
+
+var yaml = require('js-yaml');
+var fs = require('fs');
 
 var app = express();
 var http = require('http').Server(app);
@@ -41,14 +45,20 @@ app.use('/images', express.static('images'));
 var port = process.env.PORT || 8000;
 var host = process.env.HOST || 'localhost';
 
+var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
+var apiURI = config.apiURL;
+              
+api.setProfile(config.profile, apiURI);
+api.query.serverURI = process.env.API || apiURI;
+
 http.listen(port, host, function () {
 // var server = app.listen(3001, 'localhost', function () {
 //   var host = server.address().address;
 //   var port = server.address().port;
   
   console.log('bloc is listening on http://%s:%s', host, port);
+  console.log('api is pointed to ' + config.apiURL + " with profile " + config.profile)
 });
-
 
 var contractState = io.of('/contracts/state');
 

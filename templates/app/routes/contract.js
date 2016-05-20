@@ -5,24 +5,10 @@ var helper = require('../lib/contract-helpers.js');
 var router = express.Router();
 var Promise = require('bluebird');
 var Solidity = require('blockapps-js').Solidity;
-var api = require('blockapps-js');
+
 var cors = require('cors');
 var traverse = require('traverse');
-var fs = require('fs');
 var es = require('event-stream')
-
-var yaml = require('js-yaml');
-
-var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
-var apiURI = config.apiURL;
-
-var api = require('blockapps-js');
-var stratoVersion = "1.1";
-
-api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
-// api.setProfile("strato-dev", apiURI);
-
-api.query.serverURI = process.env.API || apiURI;
 
 require('marko/node-require').install();
 

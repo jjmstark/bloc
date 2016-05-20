@@ -298,12 +298,12 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
         compile(src)
         .then(function (solObj) {
           if (((typeof contract) === 'undefined') || (contract === undefined)) {
-            console.log("caught a multi-contract")
+            console.log("caught a single contract")
             contract = solObj[0].src;
             console.log("uploading " + Object.keys(contract)[0])
             return upload(Object.keys(contract)[0],privkeyFrom);
           } else {
-            console.log("caught a single contract");
+            console.log("caught a multi-contract")
             console.log("uploading " + contract)
             return upload(contract,privkeyFrom);
           }

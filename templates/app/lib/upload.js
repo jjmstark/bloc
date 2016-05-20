@@ -22,7 +22,7 @@ function upload(contractName, privkey) {
     then(Solidity.attach).
     then(function(solObj) { 
       console.log("solObj after compilation: " + JSON.stringify(solObj))
-      return solObj.construct().callFrom(privkey); 
+      return solObj.construct().txParams({"gasLimit":314159200}).callFrom(privkey); 
     }).
     then(function(contrObj){
       var addr = contrObj.account.address.toString();

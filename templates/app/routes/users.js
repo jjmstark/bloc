@@ -391,19 +391,18 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
       var contractJson = JSON.parse(data);
       var contract = Solidity.attach(contractJson);
       contract.address = contractJson.address;
-      var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
       value = Math.max(0, value)
       if (value != undefined) {
-        params.value = units.convertEth(value).from("ether").to("wei" );
-        console.log("params.value: " + params.value);
+        var pv = units.convertEth(value).from("ether").to("wei" );
       }
       console.log("trying to invoke contract")
 
       if(contract.state[method] != undefined){
-        var contractstate = contract.state[method](args).txParams(params);
+        console.log("args: " + JSON.stringify(args))
+        var contractstate = contract.state[method](args).txParams({"value":pv});
 
         if(privkeyFrom.token){
-          console.log("token land")
+          console.log("Putting transaction in /pending")
 
           var date = new Date();
           var dt = date.getTime();
@@ -420,9 +419,8 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                 contractName: contractName, 
                 method: method,
                 args: args,
-                txArgs: {"gasLimit" : Int(31415920),"gasPrice" : Int(1)},
                 time: dt,
-                value: req.body.value,
+                value: pv,
                 message: req.body.message
               };
               var allData = {
@@ -439,7 +437,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
             }
           });
         } else {
-          console.log("calling land")
+          console.log("Making function call now")
           contractstate.callFrom(privkeyFrom)
                .then(function (txResult) {
                  console.log("txResult: " + txResult);

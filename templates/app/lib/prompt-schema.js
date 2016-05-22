@@ -13,14 +13,19 @@ var scaffoldApp = {
       message: "Enter your name",
       required: true
     },
-        
-    apiURL: {
-      message: "Enter the BlockApps API URL you are using or ENTER for default",
-      required: false,
-      pattern: '[^,\/]$',
-      default: 'http://strato-dev3.blockapps.net'
+
+    email: {
+      message: "Enter your email so BlockApps can reach you",
+      required: false
     },
-        
+
+    apiURL: {
+        message: "Enter the BlockApps API URL you are using or ENTER for default",
+        required: false,
+        pattern: '[^,\/]$',
+        default: 'http://strato-dev3.blockapps.net'
+    },
+   
     profile: {
       message: "Enter the blockchain profile you wish to use.  Options: strato-dev, ethereum",
       required: false,

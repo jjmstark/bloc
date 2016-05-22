@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 
+var request = require('request');
 var Promise = require('bluebird');
 var fs = require('fs');
 var path = require('path');
@@ -50,6 +51,26 @@ function makeConfig(result) {
     console.log("project: " + name + " already exists");
   } else {
     scaffold(result.appName, result.developer);
+
+    if ((result.email !== undefined) && (result.email != "")) { 
+      var reportObj = {
+        initName: result.developer,
+        initEmail: result.email,
+        initTimestamp:  Math.floor(new Date() / 1000).toString()
+      };                    
+      console.log("report obj: " + JSON.stringify(reportObj));
+      request({ 
+        method: "POST",
+        uri: "http://strato-license.eastus.cloudapp.azure.com:8081/init",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body:  JSON.stringify(reportObj),
+      }, function (err, res, _) { 
+        console.log("thanks for registering with BlockApps!");
+      });
+    }
+    
     yamlConfig.writeYaml(result.appName + "/config.yaml", result);   
   }
 }
@@ -66,10 +87,16 @@ function blocinit(cmdArgv) {
       appName: cmdArgv.appName,
       developer: cmdArgv.developer,
       apiURL: cmdArgv.apiURL,
-      profile: cmdArgv.profile
+      profile: cmdArgv.profile,
+      email: cmdArgv.email
     });
   }
   else {
+    var cmdArr = cmdArgv._;
+    if(cmdArr.length > 1){
+      var name = cmdArr.slice(-1)[0];
+      scaffoldApp.properties.appName.default = name;
+    }
     prompt.start();
     prompt.getAsync(scaffoldApp).then(makeConfig);
   }

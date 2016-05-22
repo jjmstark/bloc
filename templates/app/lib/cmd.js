@@ -15,7 +15,6 @@ var argv = require('yargs')
                  }
                })
                .default('u', 'admin')
-               .command('create', 'create a new [project|module]')
                .command('genkey [user]', 'generate a new private key and fill it at the faucet, namespaced by user')
                .command('send', 'start prompt, transfer (amount*unit) to (address)')
                .command('start', 'start bloc as a webserver with live reload')

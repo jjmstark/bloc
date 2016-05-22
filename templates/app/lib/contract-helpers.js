@@ -9,6 +9,7 @@ var map = require( 'map-stream' );
 var stream = require('stream');  
 var es = require('event-stream');
 var merge = require('deepmerge');
+var fs = require('fs');
 
 /* utility */
 var getContents = function(file, cb) {
@@ -74,6 +75,12 @@ function configStream() {
 
 /* emit user keys */
 function userKeysStream(user) {
+  try {
+    fs.statSync('./app/users/' + user);
+  } catch(e) {
+    //console.log("err: " + e)
+    return null;
+  }
   return vinylFs.src( [ path.join('app', 'users', user, '*.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {

@@ -288,6 +288,15 @@ function main (){
       checkForProject();
       setApiProfile();
 
+      // check if `npm install` was run - there might be a better way but this is a start
+      try {
+        fs.statSync('./node_modules');
+      } catch(e) {
+        console.log(chalk.red("ERROR: ") + "Please run `npm install`.");
+        //console.log("err: " + e)
+        break;
+      }
+
       var server = spawn('node', [ 'app.js' ]);
       server.stdout.on('data', function(data) {
         console.log(data.toString("utf-8"));

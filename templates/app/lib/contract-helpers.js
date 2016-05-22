@@ -78,7 +78,7 @@ function userKeysStream(user) {
   try {
     fs.statSync('./app/users/' + user);
   } catch(e) {
-    console.log("err: " + e)
+    //console.log("err: " + e)
     return null;
   }
   return vinylFs.src( [ path.join('app', 'users', user, '*.json') ] )

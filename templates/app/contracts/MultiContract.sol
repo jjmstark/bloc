@@ -1,15 +1,11 @@
-contract MultiContractInstance {
-    uint a;
-    function setA(uint t) returns (uint r){
-    	a = t;
-    	return a;
-    }
+contract Consumer {
+  InfoFeed feed;
+  uint global;
+
+  function setFeed(address addr) { feed = InfoFeed(addr); }
+  function callFeed() { global = feed.info(); }
 }
 
-contract MultiContractResolve {
-	uint b;
-	function setB(uint t) returns (uint r){
-		b = t;
-		return b;
-	}
+contract InfoFeed {
+  function info() returns (uint ret) { return 42; }
 }

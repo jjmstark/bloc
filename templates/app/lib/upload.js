@@ -36,6 +36,11 @@ function upload(contractName, privkey) {
       console.log("writing: " + latestPath);
       clearInterval(id);
       return [uploadedFile, latestPath, contrObj.detach(), addr];
+    })
+   .catch(function (err) { 
+      console.log("there was an error: " + JSON.stringify(err));
+      clearInterval(id); 
+      Promise.reject(JSON.stringify(err));
     });
 
   toRet.then(function (arr) { 

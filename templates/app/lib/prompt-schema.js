@@ -20,10 +20,10 @@ var scaffoldApp = {
     },
 
     apiURL: {
-        message: "Enter the BlockApps API URL you are using or ENTER for default",
-        required: false,
-        pattern: '[^,\/]$',
-        default: 'http://strato-dev3.blockapps.net'
+      message: "Enter the BlockApps API URL you are using or ENTER for default",
+      required: false,
+      pattern: '[^,\/]$',
+      default: 'http://strato-dev3.blockapps.net'
     },
    
     profile: {

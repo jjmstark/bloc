@@ -38,10 +38,10 @@ function upload(contractName, privkey) {
       return [uploadedFile, latestPath, contrObj.detach(), addr];
     })
    .catch(function (err) { 
-      console.log("there was an error: " + JSON.stringify(err));
-      clearInterval(id); 
-      Promise.reject(JSON.stringify(err));
-    });
+     console.log("there was an error: " + JSON.stringify(err));
+     clearInterval(id); 
+     Promise.reject(JSON.stringify(err));
+   });
 
   toRet.then(function (arr) { 
     fs.writeFileAsync(arr[0], arr[2]);

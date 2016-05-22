@@ -5,6 +5,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
 
 var path = require('path');
+var contractHelpers = require('./contract-helpers.js')
 
 /**
  * Upload a contract by name.
@@ -13,13 +14,19 @@ var path = require('path');
  * @return {array}
  */
 function upload(contractName, privkey) { 
+  console.log("upload contract: " + contractName)
   var compiledFile = path.join('app', 'meta', contractName, contractName + ".json");
 
   var id = setInterval(function () { console.log("    ...waiting for transaction to be mined"); }, 2000);
 
   var toRet = fs.readFileAsync(compiledFile, {encoding:"utf8"}).
     then(Solidity.attach).
-    then(function(solObj) { return solObj.construct().txParams({"gasPrice":1,"gasLimit":31415920}).callFrom(privkey); }).
+    then(function(solObj) { 
+      console.log("solObj after compilation: " + JSON.stringify(solObj))
+      var toret = solObj.construct();
+      console.log("toRet: " + JSON.stringify(contractHelpers.txToJSON(toret)))
+      return toret.callFrom(privkey);  // txParams({"gasLimit":314159200})
+    }).
     then(function(contrObj){
       var addr = contrObj.account.address.toString();
       var uploadedFile = path.join('app', 'meta', contractName, addr + ".json");

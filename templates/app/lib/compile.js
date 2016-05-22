@@ -19,7 +19,7 @@ function compileSol(solSrc) {
       dirs.push(path.join('app','meta', solObj.name));
     }
   
-    console.log(chalk.yellow("Compile successful: "));
+    console.log(chalk.yellow("Compile successful: " + solSrc));
 
     var theObj = {};
 
@@ -42,6 +42,7 @@ function compileSol(solSrc) {
 
 
           var src = theObj.src;
+          console.log("writing " + contractName + " to " + multiPath)
           fs.writeFile(multiPath, src[contractName].detach(), function () {
             console.log(chalk.green("wrote: ") + multiPath);
           });

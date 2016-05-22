@@ -21,10 +21,6 @@ var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
 var apiURI = config.apiURL;
 
 var api = require('blockapps-js');
-//var stratoVersion = "1.1";
-
-//api.setProfile("ethereum-frontier", apiURI, stratoVersion);                   
-api.setProfile("strato-dev", apiURI);
 
 var Solidity = require('blockapps-js').Solidity;
 var bodyParser = require('body-parser');
@@ -263,12 +259,11 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
   var user = req.params.user;  
   var address = req.params.address;
   var contract = req.body.contract;
+  console.log("contract as body is: " + contract)
 
   var password = req.body.password;
   var src = req.body.src;
-
   var found = false;
-
 
   if (typeof password === 'undefined' || password === '') {
     res.send('password required');
@@ -299,9 +294,16 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
         compile(src)
         .then(function (solObj) {
           if (((typeof contract) === 'undefined') || (contract === undefined)) {
+            console.log("caught a single contract")
             contract = solObj[0].src;
+            console.log("uploading " + Object.keys(contract)[0])
+            return upload(Object.keys(contract)[0],privkeyFrom);
+          } else {
+            console.log("caught a multi-contract")
+            console.log("uploading " + contract)
+            return upload(contract,privkeyFrom);
           }
-          return upload(Object.keys(contract)[0],privkeyFrom);
+          
         }).then(function (arr) {
           console.log(arr[3]);
           res.send(arr[3]);
@@ -385,19 +387,18 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
       var contractJson = JSON.parse(data);
       var contract = Solidity.attach(contractJson);
       contract.address = contractJson.address;
-      var params = {"gasLimit" : Int(31415920),"gasPrice" : Int(1)};
       value = Math.max(0, value)
       if (value != undefined) {
-        params.value = units.convertEth(value).from("ether").to("wei" );
-        console.log("params.value: " + params.value);
+        var pv = units.convertEth(value).from("ether").to("wei" );
       }
       console.log("trying to invoke contract")
 
       if(contract.state[method] != undefined){
-        var contractstate = contract.state[method](args).txParams(params);
+        console.log("args: " + JSON.stringify(args))
+        var contractstate = contract.state[method](args).txParams({"value":pv});
 
         if(privkeyFrom.token){
-          console.log("token land")
+          console.log("Putting transaction in /pending")
 
           var date = new Date();
           var dt = date.getTime();
@@ -414,9 +415,8 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
                 contractName: contractName, 
                 method: method,
                 args: args,
-                txArgs: {"gasLimit" : Int(31415920),"gasPrice" : Int(1)},
                 time: dt,
-                value: req.body.value,
+                value: pv,
                 message: req.body.message
               };
               var allData = {
@@ -433,7 +433,7 @@ router.post('/:user/:address/contract/:contractName/:contractAddress/call', json
             }
           });
         } else {
-          console.log("calling land")
+          console.log("Making function call now")
           contractstate.callFrom(privkeyFrom)
                .then(function (txResult) {
                  console.log("txResult: " + txResult);

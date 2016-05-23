@@ -1,3 +1,5 @@
+'use strict'
+
 function inflateTemplate(fileDataString,templateObj) {
   var Mustache = require('mustache');     
   return Mustache.render(fileDataString,templateObj);

@@ -330,10 +330,6 @@ function main (){
           throw err;
         }); 
 
-      server.stderr.on('data', function (err) {    
-          throw err;
-        }); 
-
       server.stdout.on('data', function(data) {
         console.log(data.toString("utf-8"));
       });
@@ -350,11 +346,6 @@ function main (){
       console.log("Unrecognized command, try bloc --help");
   }
 }
-
-// process.on('unhandledRejection', function(reason, p) {
-//   console.log("Exiting bloc");
-//   process.exit(1);
-// });
 
 if (require.main === module) {
   main();

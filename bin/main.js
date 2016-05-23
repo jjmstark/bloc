@@ -80,16 +80,19 @@ function blocinit(cmdArgv) {
 
   analytics.insight.trackEvent("init");
 
-  if(cmdArgv &&
-     'appName' in cmdArgv &&
-     'developer' in cmdArgv) {
-    makeConfig({
+  if(cmdArgv && 'appName' in cmdArgv && 'developer' in cmdArgv) {
+    var cmdObj = {
       appName: cmdArgv.appName,
       developer: cmdArgv.developer,
       apiURL: cmdArgv.apiURL,
-      profile: cmdArgv.profile,
-      email: cmdArgv.email
-    });
+      profile: cmdArgv.profile || "strato-dev"
+    }
+
+    if ("email" in cmdArgv) {
+      cmdObj.email = cmdArgv.email;
+    }
+
+    makeConfig(cmdObj);
   }
   else {
     var cmdArr = cmdArgv._;
@@ -122,17 +125,18 @@ function main (){
       analytics.insight.config.set("optOut", true);
       delete cmd.argv.optOut;
       return blocinit(cmd.argv);
-    }
-    else if (cmd.argv.optIn) {
+    } else if (cmd.argv.optIn) {
       analytics.insight.config.set("optOut", false);
       delete cmd.argv.optIn;
       return blocinit(cmd.argv);
+    } else if(analytics.insight.optOut === undefined){
+      return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
+        blocinit(cmd.argv);
+      });
+    } else {
+      return blocinit(cmd.argv);
     }
-    return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
-      blocinit(cmd.argv);
-    });
   }
-
     
   switch(cmdArr[0]) {
 

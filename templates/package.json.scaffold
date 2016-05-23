@@ -1,5 +1,5 @@
 {
-  "name": "keyserver",
+  "name": "{{appName}}",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -7,7 +7,7 @@
     "test": "mocha --timeout 300000 test",
     "postinstall": "node node_modules/bower/bin/bower install"
   },
-  "author": "kjl",
+  "author": "{{developer}}",
   "license": "ISC",
   "dependencies": {
     "bower" : "^1.7.7", 

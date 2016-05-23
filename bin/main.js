@@ -325,10 +325,19 @@ function main (){
       }
 
       var server = spawn('node', [ 'app.js' ]);
+
+      server.on('error', function (err) {
+          throw err;
+        }); 
+
+      server.stderr.on('data', function (err) {    
+          throw err;
+        }); 
+
       server.stdout.on('data', function(data) {
         console.log(data.toString("utf-8"));
       });
-
+      
       break;
 
     case 'version':

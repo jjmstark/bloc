@@ -80,16 +80,19 @@ function blocinit(cmdArgv) {
 
   analytics.insight.trackEvent("init");
 
-  if(cmdArgv &&
-     'appName' in cmdArgv &&
-     'developer' in cmdArgv) {
-    makeConfig({
+  if(cmdArgv && 'appName' in cmdArgv && 'developer' in cmdArgv) {
+    var cmdObj = {
       appName: cmdArgv.appName,
       developer: cmdArgv.developer,
       apiURL: cmdArgv.apiURL,
-      profile: cmdArgv.profile,
-      email: cmdArgv.email
-    });
+      profile: cmdArgv.profile || "strato-dev"
+    }
+
+    if ("email" in cmdArgv) {
+      cmdObj.email = cmdArgv.email;
+    }
+
+    makeConfig(cmdObj);
   }
   else {
     var cmdArr = cmdArgv._;

@@ -122,17 +122,18 @@ function main (){
       analytics.insight.config.set("optOut", true);
       delete cmd.argv.optOut;
       return blocinit(cmd.argv);
-    }
-    else if (cmd.argv.optIn) {
+    } else if (cmd.argv.optIn) {
       analytics.insight.config.set("optOut", false);
       delete cmd.argv.optIn;
       return blocinit(cmd.argv);
+    } else if(analytics.insight.optOut === undefined){
+      return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
+        blocinit(cmd.argv);
+      });
+    } else {
+      return blocinit(cmd.argv);
     }
-    return analytics.insight.askPermission( analytics.insight.insightMsg, function(){
-      blocinit(cmd.argv);
-    });
   }
-
     
   switch(cmdArr[0]) {
 

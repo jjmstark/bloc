@@ -61,7 +61,9 @@ router.get('/', cors(), function(req, res) {
         "createdAt": createdAt
       };
 
-      directoryTree[entries[0]].push(contractObj);
+      if (contractObj.address != entries[0]) {
+        directoryTree[entries[0]].push(contractObj);
+      }
     //entries[0].sort(function(a, b) {return b - a});
     });
 

@@ -6,7 +6,7 @@
     <h4>Compiled Contracts</h4>
     <div class="row">
       <div for="(contractName,contractList) in data">
-        <h5> ${contractName} </h5>
+        <h5 if=(notEmpty(contractList))> ${contractName} </h5>
         <table class="table">
           <tr for="contract in contractList">
             <td>

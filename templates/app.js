@@ -43,7 +43,7 @@ app.use('/static', express.static('app/static'));
 app.use('/images', express.static('images'));
 
 var port = process.env.PORT || 8000;
-var host = process.env.HOST || 'localhost';
+var host = process.env.HOST || '0.0.0.0';
 
 var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
 var apiURI = config.apiURL;

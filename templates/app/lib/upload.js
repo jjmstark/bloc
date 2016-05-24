@@ -22,9 +22,9 @@ function upload(contractName, privkey) {
   var toRet = fs.readFileAsync(compiledFile, {encoding:"utf8"}).
     then(Solidity.attach).
     then(function(solObj) { 
-      console.log("solObj after compilation: " + JSON.stringify(solObj))
+   //   console.log("solObj after compilation: " + JSON.stringify(solObj))
       var toret = solObj.construct();
-      console.log("toRet: " + JSON.stringify(contractHelpers.txToJSON(toret)))
+   //   console.log("toRet: " + JSON.stringify(contractHelpers.txToJSON(toret)))
       return toret.callFrom(privkey);  // txParams({"gasLimit":314159200})
     }).
     then(function(contrObj){

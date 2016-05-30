@@ -184,6 +184,7 @@ function main (){
       checkForProject();
       setApiProfile();
       var contractName = cmdArr[1];
+      cmdArr = cmdArr.slice(2);
       if (contractName === undefined) {
         console.log(chalk.red("ERROR: ") + "Contract name required");
         break;
@@ -204,6 +205,13 @@ function main (){
         keyStream = helper.userKeysAddressStream(userName,address);
       }
 
+      var argObj;
+      if (cmdArr.length > 0) {
+        argObj = cmdArr;
+      }
+      else {
+        argObj = cmd.argv;
+      }
         
       keyStream
           .pipe(helper.collect())
@@ -215,7 +223,7 @@ function main (){
             prompt.start();
             prompt.getAsync(requestPassword).then(function(result) {
               var privkey = store.exportPrivateKey(address, result.password);
-              return [contractName, privkey];
+              return [contractName, privkey, argObj];
             })
                .spread(upload)
                .then(function (_) {

@@ -53,7 +53,7 @@ var myUpload = function(name, cb){
           var store = lw.keystore.deserialize(d);
           address = store.addresses[0];
           privKey = store.exportPrivateKey(address, options.password);
-          upload(contractName, privKey)
+          upload(contractName, privKey, [])
              .then(function (solObjWAddr) {
                 //console.log("contract address: " + solObjWAddr)
                console.log("calling callback");

@@ -36,7 +36,7 @@ var address;
 //   })).then(function(){console.log("done 3 keys"); cb();});
 // }
 
-var myUpload = function(name, cb){
+var myUpload = function(name, argObj, cb){
 
   var solSrcFiles = "templates/app/contracts/" + name + ".sol"
   var src = fs.readFileSync(solSrcFiles).toString();
@@ -53,7 +53,7 @@ var myUpload = function(name, cb){
           var store = lw.keystore.deserialize(d);
           address = store.addresses[0];
           privKey = store.exportPrivateKey(address, options.password);
-          upload(contractName, privKey, [])
+          upload(contractName, privKey, argObj)
              .then(function (solObjWAddr) {
                 //console.log("contract address: " + solObjWAddr)
                console.log("calling callback");
@@ -69,7 +69,7 @@ describe('compiling Payout', function(){
 
   before(function(done){
     console.log("uploading Payout")
-    myUpload("Payout", function(c){payOutSolWAddr = c; done()});
+    myUpload("Payout", [], function(c){payOutSolWAddr = c; done()});
   });
 
   describe('#payoutTest()', function(){
@@ -106,7 +106,7 @@ describe('compiling SimpleMultiSig', function(){
 
   before(function(done){
 
-    myUpload("SimpleMultiSig", function(c){smsSolWAddr = c; done()})
+    myUpload("SimpleMultiSig", [], function(c){smsSolWAddr = c; done()})
       
   });
 
@@ -138,4 +138,40 @@ describe('compiling SimpleMultiSig', function(){
 
 });
 
+describe('compiling Greeter', function(){
 
+  var greeterSolWAddr = null;
+
+  before(function(done){
+    console.log("uploading Greeter")
+    myUpload("Greeter", ["Hello!"], function(c){greeterSolWAddr = c; done()});
+  });
+
+  describe('#payoutTest()', function(){
+
+    it("Greeter is uploaded", function(){
+      var contractAddress = JSON.parse(greeterSolWAddr[2]).address;
+      console.log("Contract address: " + contractAddress)
+      assert(contractAddress !== null)
+    });
+
+    it("Send some ether to Greeter", function(done){
+      var addressTo = JSON.parse(greeterSolWAddr[2]).address;
+      var valueTX = transaction({"value" : ethValue(1).in("wei")}); 
+
+      valueTX.send(privKey, addressTo).then(function(txResult) {
+        console.log("txResult: " + JSON.stringify(txResult))
+        console.log("tx " + address + " -> " + addressTo)
+        done();
+      });
+    })
+
+    it("Can call Greeter", function(done){
+      var payout = blockapps.Solidity.attach(greeterSolWAddr[2]);
+      payout.state.greet().callFrom(privKey).then(function(greeting){
+        console.log(greeting);
+        done();
+      })
+    });
+  });
+});

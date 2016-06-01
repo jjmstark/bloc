@@ -43,9 +43,8 @@ function compileSol(solSrc) {
 
           var src = theObj.src;
           console.log("writing " + contractName + " to " + multiPath)
-          fs.writeFile(multiPath, src[contractName].detach(), function () {
-            console.log(chalk.green("wrote: ") + multiPath);
-          });
+          fs.writeFileSync(multiPath, src[contractName].detach());
+          console.log(chalk.green("wrote: ") + multiPath);
         });
       });  
     }));

@@ -261,6 +261,15 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
   var contract = req.body.contract;
   console.log("contract as body is: " + contract)
 
+  var args;
+  if (req.body.args) {
+    args = JSON.parse(req.body.args);
+  }
+  else {
+    args = {};
+  }
+  console.log("constructor arguments: " + req.body.args);
+
   var password = req.body.password;
   var src = req.body.src;
   var found = false;
@@ -297,11 +306,11 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
             console.log("caught a single contract")
             contract = solObj[0].src;
             console.log("uploading " + Object.keys(contract)[0])
-            return upload(Object.keys(contract)[0],privkeyFrom);
+            return upload(Object.keys(contract)[0],privkeyFrom, args);
           } else {
             console.log("caught a multi-contract")
             console.log("uploading " + contract)
-            return upload(contract,privkeyFrom);
+            return upload(contract,privkeyFrom, args);
           }
           
         }).then(function (arr) {

@@ -331,8 +331,8 @@ function main (){
       var server = spawn('node', [ 'app.js' ]);
 
       server.on('error', function (err) {
-          throw err;
-        }); 
+        throw err;
+      }); 
 
       server.stdout.on('data', function(data) {
         console.log(data.toString("utf-8"));

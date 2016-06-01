@@ -5,7 +5,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
 
 var path = require('path');
-var contractHelpers = require('./contract-helpers.js')
+//var contractHelpers = require('./contract-helpers.js')
 
 /**
  * Upload a contract by name.
@@ -35,7 +35,12 @@ function upload(contractName, privkey) {
       console.log("writing: " + uploadedFile);
       console.log("writing: " + latestPath);
       clearInterval(id);
-      return [uploadedFile, latestPath, contrObj.detach(), addr];
+
+      var arr = [uploadedFile, latestPath, contrObj.detach(), addr];
+      return Promise.join(
+        fs.writeFileAsync(arr[0], arr[2]),
+        fs.writeFileAsync(arr[1], arr[2])
+        ).return(arr);
     })
    .catch(function (err) { 
      console.log("there was an error: " + JSON.stringify(err));
@@ -43,13 +48,7 @@ function upload(contractName, privkey) {
      Promise.reject(JSON.stringify(err));
    });
 
-  toRet.then(function (arr) { 
-    fs.writeFileAsync(arr[0], arr[2]);
-    fs.writeFileAsync(arr[1], arr[2]);
-  });
-
   return toRet;
-    
 }
 
 module.exports = upload;

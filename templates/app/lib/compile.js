@@ -3,7 +3,6 @@ var Solidity = require('blockapps-js').Solidity;
 var path = require('path');
 var mkdirp = require('mkdirp');
 var chalk = require('chalk');
-var Promise = require('bluebird');
 
 function compileSol(solSrc) {
   return Solidity(solSrc).then(function(solObj) {
@@ -35,21 +34,19 @@ function compileSol(solSrc) {
       theObj['src'] = innerObj;
     }
 
-    return Promise.join(theObj, Promise.map(dirs, function (contractPath) { 
-      mkdirp(contractPath, function () { 
-        Object.keys(theObj.src).map(function (contractName) {
-          var multiPath = path.join(contractPath, contractName + '.json');
+    dirs.map(function(contractPath) {
+      mkdirp.sync(contractPath);
+      for (contractName in theObj.src) {
+        var contract = theObj.src[contractName];
+        var multiPath = path.join(contractPath, contractName + '.json');
 
-
-          var src = theObj.src;
-          console.log("writing " + contractName + " to " + multiPath)
-          fs.writeFileSync(multiPath, src[contractName].detach());
-          console.log(chalk.green("wrote: ") + multiPath);
-        });
-      });  
-    }));
-
-   
+        console.log("writing " + contractName + " to " + multiPath)
+        fs.writeFileSync(multiPath, contract.detach());
+        console.log(chalk.green("wrote: ") + multiPath);
+      }
+    })
+    
+    return theObj;
   }).
   catch(function(e) {
     console.log("compile failed with error message: " + e);

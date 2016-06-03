@@ -11,8 +11,16 @@
 
 ##Installation
 
+The easiest way to get started is to install `bloc` from NPM:
+
+```sh
+npm install -g blockapps-bloc
 ```
-npm install -g blockapps-bloc'
+
+You can also check out the github repo and build it by running
+```sh
+git clone https://github.com/blockapps/bloc
+cd bloc; npm install -g
 ```
 
 ##Generate a new blockchain app

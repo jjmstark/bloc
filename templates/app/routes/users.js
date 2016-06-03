@@ -261,14 +261,8 @@ router.post('/:user/:address/contract', cors(), function(req, res) {
   var contract = req.body.contract;
   console.log("contract as body is: " + contract)
 
-  var args;
-  if (req.body.args) {
-    args = JSON.parse(req.body.args);
-  }
-  else {
-    args = {};
-  }
-  console.log("constructor arguments: " + req.body.args);
+  var args = req.body.args || {};
+  console.log("constructor arguments: " + JSON.stringify(req.body.args));
 
   var password = req.body.password;
   var src = req.body.src;

@@ -36,7 +36,7 @@ var PrivateKey = api.ethbase.Crypto.PrivateKey;
 var lw = require('eth-lightwallet');
 var chalk = require('chalk');
 
-var stratoVersion = "1.1"
+var stratoVersion = "1.2"
 var config;
 
 function makeConfig(result) {

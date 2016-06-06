@@ -22,8 +22,8 @@ describe('setting up blockapps-js', function(){
     done();
   });
 
-  it('blockapps-js is v1.1', function(){
-    assert(blockapps.query.apiPrefix == "/eth/v1.1")
+  it('blockapps-js is v1.2', function(){
+    assert(blockapps.query.apiPrefix == "/eth/v1.2")
   });
 
   describe('balanceTest', function() {

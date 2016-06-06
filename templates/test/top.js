@@ -11,11 +11,9 @@ describe("top", function () {
     try {
       var config = yaml.safeLoad(fs.readFileSync('config.yaml'));
       var apiURI = config.apiURL;
-            //var stratoVersion = "1.1";
-            //var profile = ["ethereum-frontier", apiURI];                   
       profile = ["strato-dev", apiURI];
     } catch (e){
-      profile = ["strato-dev", "http://strato-dev3.blockapps.net"]
+      profile = ["strato-dev", "http://strato-dev4.blockapps.net"]
     }
 
     common.blockapps.setProfile(profile[0], profile[1]);

@@ -105,15 +105,15 @@ Getting a contract live on the blockchain is a two step process
 1. Compile the contract
 2. Upload the contract
 
-To compile your smart contracts
+To compile a smartcontract, run
 
 ```
-bloc compile 
+bloc compile <ContractName>
 ```
 
 If there are any bugs in your contract code, this is where you will be allowed to fix them.
 
-Upload a contract 
+Upload a contract using
 
 ```
 bloc upload <ContractName>

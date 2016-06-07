@@ -5,7 +5,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var Solidity = require('blockapps-js').Solidity;
 
 var path = require('path');
-//var contractHelpers = require('./contract-helpers.js')
+// var contractHelpers = require('./contract-helpers.js')
 
 /**
  * Upload a contract by name.

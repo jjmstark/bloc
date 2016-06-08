@@ -26,6 +26,8 @@ var scaffoldApp = require('../templates/app/lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../templates/app/lib/prompt-schema.js').transfer;
 var helper = require('../templates/app/lib/contract-helpers.js');
 
+require('pkginfo')(module, 'version');
+
 var icon = require('../templates/app/lib/icon.js').blocIcon;
 
 var api = require("blockapps-js");
@@ -350,7 +352,6 @@ function main (){
 
     case 'version':
       analytics.insight.trackEvent("version");
-        // var pkginfo = require('pkginfo')(module, 'version');
       console.log("bloc version " + module.exports.version);
       break;
 

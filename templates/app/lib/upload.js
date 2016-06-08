@@ -11,9 +11,10 @@ var path = require('path');
  * Upload a contract by name.
  * @param {string} The name of the contract
  * @para {string} User's private key
+ * @param {object} Constructor arguments
  * @return {array}
  */
-function upload(contractName, privkey) { 
+function upload(contractName, privkey, argObj) { 
   console.log("upload contract: " + contractName)
   var compiledFile = path.join('app', 'meta', contractName, contractName + ".json");
 
@@ -23,7 +24,13 @@ function upload(contractName, privkey) {
     then(Solidity.attach).
     then(function(solObj) { 
    //   console.log("solObj after compilation: " + JSON.stringify(solObj))
-      var toret = solObj.construct();
+      var toret;
+      if (argObj.constructor === Object) {
+        toret = solObj.construct(argObj);
+      }
+      else {
+        toret = solObj.construct.apply(solObj, argObj);
+      }
    //   console.log("toRet: " + JSON.stringify(contractHelpers.txToJSON(toret)))
       return toret.callFrom(privkey);  // txParams({"gasLimit":314159200})
     }).

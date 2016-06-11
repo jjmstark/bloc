@@ -26,6 +26,8 @@ var scaffoldApp = require('../templates/app/lib/prompt-schema.js').scaffoldApp;
 var transfer = require('../templates/app/lib/prompt-schema.js').transfer;
 var helper = require('../templates/app/lib/contract-helpers.js');
 
+require('pkginfo')(module, 'version');
+
 var icon = require('../templates/app/lib/icon.js').blocIcon;
 
 var api = require("blockapps-js");
@@ -184,6 +186,7 @@ function main (){
       checkForProject();
       setApiProfile();
       var contractName = cmdArr[1];
+      cmdArr = cmdArr.slice(2);
       if (contractName === undefined) {
         console.log(chalk.red("ERROR: ") + "Contract name required");
         break;
@@ -204,6 +207,13 @@ function main (){
         keyStream = helper.userKeysAddressStream(userName,address);
       }
 
+      var argObj;
+      if (cmdArr.length > 0) {
+        argObj = cmdArr;
+      }
+      else {
+        argObj = cmd.argv;
+      }
         
       keyStream
           .pipe(helper.collect())
@@ -215,7 +225,7 @@ function main (){
             prompt.start();
             prompt.getAsync(requestPassword).then(function(result) {
               var privkey = store.exportPrivateKey(address, result.password);
-              return [contractName, privkey];
+              return [contractName, privkey, argObj];
             })
                .spread(upload)
                .then(function (_) {
@@ -342,7 +352,6 @@ function main (){
 
     case 'version':
       analytics.insight.trackEvent("version");
-        // var pkginfo = require('pkginfo')(module, 'version');
       console.log("bloc version " + module.exports.version);
       break;
 

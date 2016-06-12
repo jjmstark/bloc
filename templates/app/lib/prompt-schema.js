@@ -23,7 +23,7 @@ var scaffoldApp = {
       message: "Enter the BlockApps API URL you are using or ENTER for default",
       required: false,
       pattern: '[^,\/]$',
-      default: 'http://strato-dev3.blockapps.net'
+      default: 'http://strato-dev4.blockapps.net'
     },
    
     profile: {

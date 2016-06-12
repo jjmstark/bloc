@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var contractHelpers = require('../lib/contract-helpers.js');
 var router = express.Router();
@@ -35,19 +37,19 @@ router.get('/:contractName', function (req, res) {
           res.render(contractName, contractTemplateObj);
         }
     ).catch(function(err) {
-          console.log("short circuited with status: " + err);
-          contractTemplateObj = JSON.parse(err.message);
-          contractTemplateObj.globalPassword = globalPassword;
-          contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
-          contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions.";
-          if (contractTemplateObj.contractExists) contractTemplateObj.title = "Viewing " + contractNameSol;
-          else contractTemplateObj.title = "Viewing Non-Existent Contract ;)";
+      console.log("short circuited with status: " + err);
+      contractTemplateObj = JSON.parse(err.message);
+      contractTemplateObj.globalPassword = globalPassword;
+      contractTemplateObj.isLoggedInMessage = "Status: you are logged in and can sign transactions";
+      contractTemplateObj.isNotLoggedInMessage = "Status: you are not logged in, and need to do so to sign transactions.";
+      if (contractTemplateObj.contractExists) contractTemplateObj.title = "Viewing " + contractNameSol;
+      else contractTemplateObj.title = "Viewing Non-Existent Contract ;)";
 
-          contractTemplateObj.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
-          contractTemplateObj.txFailedHandlerName = "txFailHandler";
+      contractTemplateObj.txFailedHandlerCode = "function txFailHandler(e) { $('#passwordModal').modal('show'); }";
+      contractTemplateObj.txFailedHandlerName = "txFailHandler";
 
-          res.render(contractName, contractTemplateObj); // only the SimpleDataFeed template for now
-        }
+      res.render(contractName, contractTemplateObj); // only the SimpleDataFeed template for now
+    }
     );
 });
 

@@ -1,20 +1,24 @@
 <script src="${data.apiURL}/static/js/ethlightjs.min.js"></script>
-<script src="${data.apiURL}/static/js/api.js"></script>
+<script src="${data.apiURL}/static/js/blockapps.js"></script>
+
 <script>
 
 var blockapps = require("blockapps-js");
+var PrivateKey = blockapps.ethbase.Crypto.PrivateKey;
 var Promise = require("bluebird");
 
 
 var contract = blockapps.Solidity.attach( ${JSON.stringify(data.contractMeta)} );
-blockapps.query.serverURI = '$data.apiURL';
+blockapps.setProfile("strato-dev", '$data.apiURL');
 
 var Units = blockapps.ethbase.Units;
 
 ${data.txFailedHandlerCode};
 
 function callFunc(funcName) {
+
     var args = {};
+
     var funcDivElts = document.getElementById(funcName + "Div").children;
     var len = funcDivElts.length;
 
@@ -43,9 +47,10 @@ function callFunc(funcName) {
     
     $.ajax({
         method: "POST",
+        timeout: "60000",
         headers: {
             "content-type": "application/json"
-	},
+	    },
         url: "/users/" + globalUser + "/" + globalAddress + "/contract/" + contract.name + "/" + contractAddress + "/call",
         data: JSON.stringify(invokeContractObj),
       })

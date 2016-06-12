@@ -1,45 +1,46 @@
-var path = require('path');
-var Promise = require('bluebird');
-var fs = Promise.promisifyAll(require("fs"));                                                                     
+'use strict';
+
+var path = require('path');                                                                
 var yaml = require('js-yaml');
 var readdirp = require('readdirp');
 
-var vinylFs  = require( 'vinyl-fs' ),
-    map      = require( 'map-stream' );
-    stream = require('stream');  
-    es = require('event-stream');
-    merge = require('deepmerge');
+var vinylFs = require( 'vinyl-fs' );
+var map = require( 'map-stream' );
+var stream = require('stream');  
+var es = require('event-stream');
+var merge = require('deepmerge');
+var fs = require('fs');
 
 /* utility */
 var getContents = function(file, cb) {
-    cb(null,file.contents);
+  cb(null,file.contents);
 };
 
 var getPath = function(file, cb) {
-    cb(null,file.relative);
+  cb(null,file.relative);
 };
 
-var getDir = function(file, cb) {
-    cb(null,file.cwd);    
-};
+// var getDir = function(file, cb) {
+//   cb(null,file.cwd);    
+// };
 
 function contractNameStream(contractName) {
-    return vinylFs.src( [ path.join('app', 'meta', contractName + '.json') ] )
+  return vinylFs.src( [ path.join('app', 'meta', contractName + '.json') ] )
       .pipe( map(getContents) );
 }
 
 function userNameStream() {
-   return vinylFs.src( [ path.join('app', 'users','*') ] )
+  return vinylFs.src( [ path.join('app', 'users','*') ] )
       .pipe( map(getPath) );
 }
 /* all contract names, just checking for their presence */
 function contractsStream() {
-    return vinylFs.src( [ path.join('app', 'contracts', '*.sol') ] )
+  return vinylFs.src( [ path.join('app', 'contracts', '*.sol') ] )
       .pipe( map(getPath) );  
 }
 
 function contractDirsStream() { 
-   return readdirp({root: path.join('app','meta'), depth: 1});
+  return readdirp({root: path.join('app','meta'), depth: 1});
 }
 
 function contractAddressesStream(name) {
@@ -48,19 +49,19 @@ function contractAddressesStream(name) {
 }
 
 function contractsMetaAddressStream(name,address) { 
-    return vinylFs.src( [ path.join('app', 'meta', name, address + '.json') ] )
+  return vinylFs.src( [ path.join('app', 'meta', name, address + '.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
-         cb(null, JSON.parse(data))
-       }));
+        cb(null, JSON.parse(data))
+      }));
 }
 /* emits all contract metadata as json */
 function contractsMetaStream() { 
-    return vinylFs.src( [ path.join('meta', '*.json') ] )
+  return vinylFs.src( [ path.join('meta', '*.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
-         cb(null, JSON.parse(data))
-       }));
+        cb(null, JSON.parse(data))
+      }));
 }
 
 /* emits config as json */
@@ -68,25 +69,31 @@ function configStream() {
   return vinylFs.src( [ './config.yaml' ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
-         cb(null, yaml.safeLoad(data))
-       }));
+        cb(null, yaml.safeLoad(data))
+      }));
 }
 
 /* emit user keys */
 function userKeysStream(user) {
-    return vinylFs.src( [ path.join('app', 'users', user, '*.json') ] )
+  try {
+    fs.statSync('./app/users/' + user);
+  } catch(e) {
+    //console.log("err: " + e)
+    return null;
+  }
+  return vinylFs.src( [ path.join('app', 'users', user, '*.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
-         cb(null, JSON.parse(data))
-       }));
+        cb(null, JSON.parse(data))
+      }));
 }
 
 function userKeysAddressStream(user,address) {
- return vinylFs.src( [ path.join('app', 'users', user, address + '.json') ] )
+  return vinylFs.src( [ path.join('app', 'users', user, address + '.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
-         cb(null, JSON.parse(data))
-       }));
+        cb(null, JSON.parse(data))
+      }));
 }
 
 /* emit all keys */
@@ -94,8 +101,8 @@ function allKeysStream() {
   return vinylFs.src( [ path.join('app', 'users','**','*','*.json') ] )
       .pipe( map(getContents) )
       .pipe( es.map(function (data, cb) {
-         cb(null, JSON.parse(data))
-       }));
+        cb(null, JSON.parse(data))
+      }));
 }
 
 // collects a bunch of data, makes an array out of it, and emits it 
@@ -151,8 +158,8 @@ function fuseStream() {
       endCount++;
 
       if(endCount == toFuse.length) {
-         strm.emit('data', dataObj);
-         strm.emit('end');
+        strm.emit('data', dataObj);
+        strm.emit('end');
       }
     })
   })
@@ -168,7 +175,47 @@ function fuseStream() {
   return strm;
 }
 
-module.exports  = {
+function pendingForUser(username){
+  var thepath = path.join('app', 'users', username, 'pending', '*.json');
+  console.log('looking in : ' + thepath)
+  return vinylFs.src( thepath )
+  .pipe(map(getContents))
+  .pipe( es.map(function (data, cb) {
+    cb(null, JSON.parse(data))
+  }));
+}
+
+function pendingForAddress(address){
+  var thepath = path.join('app', 'pending', address, '*.json');
+  console.log('looking in : ' + thepath)
+  return vinylFs.src( thepath )
+  .pipe(map(getContents))
+  .pipe( es.map(function (data, cb) {
+    cb(null, JSON.parse(data))
+  }));
+}
+
+function txToJSON(t) {
+  var result = {
+    "nonce"      : t.nonce,
+    "gasPrice"   : t.gasPrice,
+    "gasLimit"   : t.gasLimit,
+    "to"         : t.to ? t.to.toString(): "",
+    "value"      : t.value,
+    "codeOrData" : t.data ? t.data.toString("hex") : "",
+    "from"       : t.from ? t.from.toString() : "",
+    "r"          : t.r ? t.r.toString(16) : "",
+    "s"          : t.s ? t.s.toString(16) : "",
+    "v"          : t.v ? t.v.toString(16) : "",
+    "hash"       : t.partialHash()
+  }
+  if (result.to == "") {
+    delete result.to;
+  }
+  return result;
+}
+
+module.exports = {
   contractNameStream : contractNameStream,
   contractsStream : contractsStream,
   contractsMetaStream : contractsMetaStream,
@@ -181,5 +228,8 @@ module.exports  = {
   userNameStream : userNameStream,
   userKeysStream : userKeysStream,
   userKeysAddressStream : userKeysAddressStream,
-  allKeysStream : allKeysStream
+  allKeysStream : allKeysStream,
+  pendingForUser: pendingForUser,
+  pendingForAddress: pendingForAddress,
+  txToJSON: txToJSON
 };

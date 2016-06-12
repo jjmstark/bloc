@@ -1,17 +1,17 @@
 {
-  "name": "keyserver",
+  "name": "{{appName}}",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --timeout 300000 test",
     "postinstall": "node node_modules/bower/bin/bower install"
   },
-  "author": "kjl",
+  "author": "{{developer}}",
   "license": "ISC",
   "dependencies": {
     "bower" : "^1.7.7", 
-    "blockapps-js": "kejace/blockapps-js",
+    "blockapps-js": "~3.1.0",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",
     "cookie-parser": "^1.4.0",
@@ -41,6 +41,8 @@
     "vinyl-fs": "^2.2.1"
   },
   "devDependencies": {
-    "request-promise": "^2.0.0"
+    "request-promise": "^2.0.0",
+    "mocha": "^2.2.5",
+    "mocha-steps": "^1.0.0"
   }
 }

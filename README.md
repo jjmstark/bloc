@@ -9,6 +9,8 @@
 * Generated Smart Contract APIs to make working with Ethereum smart contracts easy in any language
 * Ethereum Account key management
 
+###NOTE: Bloc is for development purposes and we do not recommend using it for the livenet.
+
 ##Installation
 
 The easiest way to get started is to install `bloc` from NPM:

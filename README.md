@@ -183,6 +183,10 @@ This will be reflected in the application as well as at the terminal
 
 Once you have a deployed contract `bloc` will provide a simple REST API for interacting with the contract. The API has routes for viewing contract methods, symbols, calling contract methods. The keyserver and contract API documentation can be viewed [here](http://blockapps.net/documentation#keyserver-api-endpoints) 
 
+##Where to go from here?
+
+For more details on building an end to end applications that uses bloc server for integrating smart contracts into an application take a look at our [demo application walk through](https://github.com/blockapps/pizza-demo/blob/master/docs/how-it-works.md)
+
 ## Commands
 
 ```

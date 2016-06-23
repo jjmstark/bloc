@@ -168,14 +168,19 @@ Bloc ships with a node server. To get the server up and running
 bloc start
 ```
 
-Now you can visit one of the contracts in your application, for example http://localhost:3000/contracts/Payout. Note
-that the local webserver relies on dynamically generated templates, founds in the `app/components` directory.
+Now navigate to http://localhost:3000/contracts/. You will see a list of contracts that have been compiled as well as uploaded. Each contract has 3 links. The first is a json representation of the contract with the contract ABI. The next link is generated HTML for you to interact and test your contracts. The third is a link to the state route for that contract. 
+
+Click on the link for `Generated HTML` you will be prompted for your password. Now you are ready to interacte with your contract methods. You will notice there are input button and fields that correspond to the structure of your contract. Bloc generates this UI based on your contract's metadata.
+
+Note that the local webserver relies on dynamically generated templates, founds in the `app/components` directory.
 
 `bloc` will run through three contract status checks
 
   1. Does the contract exist in the project
   2. Has the contract been compiled
   3. Has the contract been uploaded to the network
+
+
 
 This will be reflected in the application as well as at the terminal
 

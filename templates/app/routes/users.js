@@ -249,7 +249,7 @@ router.post('/:user/:address/send', cors(), function(req, res) {
       })
 
       .on('end', function () {
-        if (!found) res.send('address not found');
+        if (!found) res.send('address not found: ' + address);
       });
 });
 

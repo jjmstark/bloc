@@ -4,8 +4,8 @@
 
 [![Join the chat at https://gitter.im/blockapps/bloc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/blockapps/bloc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/blockapps/bloc.svg)](https://travis-ci.org/blockapps/bloc) [![npm version](https://badge.fury.io/js/blockapps-bloc.svg)](https://badge.fury.io/js/blockapps-bloc)
 
-`bloc` makes building applications for the Ethereum blockchain as easy. Bloc uses the [blockapps api](https://blockapps.net) and provides: 
-* Application scaffoldig and generated UI based on smart contracts methods to test interactions
+`bloc` makes building applications for the Ethereum blockchain easy. Bloc uses the [blockapps api](https://blockapps.net) and provides: 
+* Application scaffolding and generated UI based on smart contracts methods to test interactions
 * Generated Smart Contract APIs to make working with Ethereum smart contracts easy in any language
 * Ethereum Account key management
 
@@ -31,7 +31,7 @@ You can use `bloc init` to create a sample app.
 bloc init
 ```
 
-`bloc` init builds a base structure for your blockchain app as well as sets some default parameters values for creating transactions. These can be edited in the `config.yaml` file in your app directory.
+`bloc` init builds a base structure for your blockchain app as well as sets some default parameter values for creating transactions. These can be edited in the `config.yaml` file in your app directory.
 
 The `config.yaml` file also holds the app's `apiURL`.  This can be configured to point to an isolated test network, or the real Ethereum network.  You can change this link, which will allow you to build and test in a sandboxed environment, and later re-deploy on the real Ethereum blockchain.
 
@@ -55,7 +55,7 @@ node_modules
 package.json
 ```
 
-- The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://solidity.readthedocs.org/en/latest/.  This is the code that will run on the blockchain.  Samples contracts have been provided to get you started.
+- The "contracts" directory holds Ethereum blockchain code, written in the Solidity language, which you can learn about here- https://solidity.readthedocs.org/en/latest/.  This is the code that will run on the blockchain.  Sample contracts have been provided to get you started.
 
 - Key management to handle account keys for users and signing transactions with bloc. 
 
@@ -75,7 +75,7 @@ Once this is finished run
 bloc genkey
 ```
 
-This generates a new user with name `admin` as well as a private key and fills it with test-ether (note- free sample Ether is only available on the test network, of course). You can view the address information in the newly created `app/users/admin/<address>.json` file. Also, beware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file secure and hidden.
+This generates a new user with name `admin` as well as a private key and fills it with test-ether (note- free sample Ether is only available on the test network, of course). You can view the address information in the newly created `app/users/admin/<address>.json` file. Also, be aware that this file contains your private key, so if you intend to use this address on the live network, make sure you keep this file secure and hidden.
 
 The new account has also been created on the blockchain, and you can view account information by using our REST API directly in a browser by visiting http://strato-dev4.blockapps.net/eth/v1.2/account?address= &lt; fill in your address here &gt;
 
@@ -105,7 +105,7 @@ Getting a contract live on the blockchain is a two step process
 1. Compile the contract
 2. Upload the contract
 
-To compile a smartcontract, run
+To compile a smart contract, run
 
 ```
 bloc compile <ContractName>
@@ -167,7 +167,7 @@ bloc start
 ```
 
 Now you can visit one of the contracts in your application, for example http://localhost:3000/contracts/Payout. Note
-that the local webserver relies on dynamically generated templates, founds in the `app/components` directory.
+that the local webserver relies on dynamically generated templates, found in the `app/components` directory.
 
 `bloc` will run through three contract status checks
 
